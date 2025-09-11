@@ -1,16 +1,11 @@
-import logo from './logo.svg';
+import React from 'react';
+import HomePage from './pages/Home/HomePage';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-
-        <p>
-          UON marketplace application
-        </p>
-      
-      </header>
+      <HomePage />
     </div>
   );
 }

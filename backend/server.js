@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
+
 // Load environment variables
 dotenv.config();
 
@@ -16,15 +17,8 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 //api routes
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/wishlist', wishlistRoutes);
-app.use('/api/admin', adminRoutes);
-app.use("/api/signup", signupRoutes);
-app.use("/api/login", loginRoutes);
-app.use("/api/logout", logoutRoutes);
+app.use('/api/auth', auth);
+
 
 
 

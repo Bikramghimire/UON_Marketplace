@@ -16,6 +16,10 @@
   height: 70px;
 }
 
+.logo {
+  text-decoration: none;
+}
+
 .logo h1 {
   color: #1295D8;
   font-size: 1.8rem;
@@ -57,6 +61,26 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.user-greeting {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.header-actions .btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .btn {

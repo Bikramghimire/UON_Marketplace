@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import './HomePage.css';
@@ -18,8 +19,8 @@ const HomePage = () => {
               Buy, sell, and trade with your university community.
             </p>
             <div className="hero-buttons">
-              <button className="btn btn-primary">Browse Products</button>
-              <button className="btn btn-secondary">Sell Something</button>
+              <Link to="/products" className="btn btn-primary">Browse Products</Link>
+              <Link to="/signup" className="btn btn-secondary">Sell Something</Link>
             </div>
           </div>
         </section>

@@ -1,26 +1,71 @@
 import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
 const Header = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <header className="header">
       <div className="header-container">
-        <div className="logo">
+        <Link to="/" className="logo">
           <h1>UON Marketplace</h1>
-        </div>
+        </Link>
         
         <nav className="navigation">
           <ul className="nav-list">
-            <li><a href="#home" className="nav-link active">Home</a></li>
-            <li><a href="#products" className="nav-link">Products</a></li>
+            <li>
+              <Link 
+                to="/" 
+                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/products" 
+                className={`nav-link ${location.pathname === '/products' ? 'active' : ''}`}
+              >
+                Products
+              </Link>
+            </li>
             <li><a href="#categories" className="nav-link">Categories</a></li>
             <li><a href="#about" className="nav-link">About</a></li>
           </ul>
         </nav>
         
         <div className="header-actions">
-          <button className="btn btn-outline">Login</button>
-          <button className="btn btn-primary">Sign Up</button>
+          {isAuthenticated ? (
+            <>
+              <span className="user-greeting">
+                Hi, {user?.first_name || user?.username || 'User'}!
+              </span>
+              <button 
+                className="btn btn-outline"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-outline">
+                Login
+              </Link>
+              <Link to="/signup" className="btn btn-primary">
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

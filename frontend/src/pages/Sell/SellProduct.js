@@ -165,14 +165,13 @@ const SellProduct = () => {
         setUploading(false);
       }
 
-      // If no images, use default emoji based on category
-      if (processedImages.length === 0) {
-        const selectedCategory = categories.find(cat => cat.name === formData.category);
-        processedImages = [{
-          url: selectedCategory?.icon || '📦',
-          isPrimary: true
-        }];
-      }
+          // If no images, use default emoji
+          if (processedImages.length === 0) {
+            processedImages = [{
+              url: '📦',
+              isPrimary: true
+            }];
+          }
 
       // Mark first image as primary
       if (processedImages.length > 0) {
@@ -328,12 +327,12 @@ const SellProduct = () => {
                       required
                       disabled={submitting}
                     >
-                      <option value="">Select category</option>
-                      {categories.map(cat => (
-                        <option key={cat._id || cat.name} value={cat.name}>
-                          {cat.icon} {cat.name}
-                        </option>
-                      ))}
+                          <option value="">Select category</option>
+                          {categories.map(cat => (
+                            <option key={cat._id || cat.name} value={cat.name}>
+                              {cat.name}
+                            </option>
+                          ))}
                     </select>
                   </div>
                 </div>

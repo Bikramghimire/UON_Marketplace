@@ -86,6 +86,7 @@ export const getProductById = async (id) => {
     // Transform product data
     const productData = {
       ...data.data,
+      id: data.data.id || data.data._id,
       datePosted: formatDate(data.data.datePosted)
     };
 

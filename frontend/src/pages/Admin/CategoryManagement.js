@@ -14,9 +14,9 @@ const CategoryManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', description: '', icon: '' });
+  const [editForm, setEditForm] = useState({ name: '', description: '' });
   const [showAddForm, setShowAddForm] = useState(false);
-  const [addForm, setAddForm] = useState({ name: '', description: '', icon: '📦' });
+  const [addForm, setAddForm] = useState({ name: '', description: '' });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const CategoryManagement = () => {
 
   const handleAdd = () => {
     setShowAddForm(true);
-    setAddForm({ name: '', description: '', icon: '📦' });
+    setAddForm({ name: '', description: '' });
     setError(null);
   };
 
@@ -75,7 +75,7 @@ const CategoryManagement = () => {
       await createCategory(addForm);
       await loadCategories();
       setShowAddForm(false);
-      setAddForm({ name: '', description: '', icon: '📦' });
+      setAddForm({ name: '', description: '' });
     } catch (error) {
       setError(error.message || 'Failed to create category');
     } finally {
@@ -87,8 +87,7 @@ const CategoryManagement = () => {
     setEditingCategory(category);
     setEditForm({
       name: category.name,
-      description: category.description || '',
-      icon: category.icon || '📦'
+      description: category.description || ''
     });
     setError(null);
   };
@@ -105,7 +104,7 @@ const CategoryManagement = () => {
       await updateCategory(editingCategory._id, editForm);
       await loadCategories();
       setEditingCategory(null);
-      setEditForm({ name: '', description: '', icon: '' });
+      setEditForm({ name: '', description: '' });
     } catch (error) {
       setError(error.message || 'Failed to update category');
     } finally {
@@ -174,18 +173,6 @@ const CategoryManagement = () => {
                       disabled={submitting}
                     />
                   </div>
-                  <div className="form-group">
-                    <label>Icon (Emoji)</label>
-                    <input
-                      type="text"
-                      value={addForm.icon}
-                      onChange={(e) => setAddForm({ ...addForm, icon: e.target.value })}
-                      placeholder="📦"
-                      maxLength={2}
-                      disabled={submitting}
-                    />
-                    <small>Enter an emoji (e.g., 📚, 💻, 👕)</small>
-                  </div>
                 </div>
                 <div className="form-group">
                   <label>Description</label>
@@ -202,7 +189,7 @@ const CategoryManagement = () => {
                     type="button"
                     onClick={() => {
                       setShowAddForm(false);
-                      setAddForm({ name: '', description: '', icon: '📦' });
+                      setAddForm({ name: '', description: '' });
                     }}
                     className="btn btn-outline"
                     disabled={submitting}
@@ -228,7 +215,6 @@ const CategoryManagement = () => {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Icon</th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Products</th>
@@ -239,16 +225,13 @@ const CategoryManagement = () => {
                 <tbody>
                   {categories.length === 0 ? (
                     <tr>
-                      <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                      <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>
                         No categories found. Click "Add Category" to create one.
                       </td>
                     </tr>
                   ) : (
                     categories.map((category) => (
                       <tr key={category._id}>
-                        <td style={{ fontSize: '1.5rem', textAlign: 'center' }}>
-                          {category.icon || '📦'}
-                        </td>
                         <td style={{ fontWeight: '600' }}>{category.name}</td>
                         <td>{category.description || '-'}</td>
                         <td style={{ fontWeight: '600', color: '#1295D8' }}>
@@ -295,18 +278,6 @@ const CategoryManagement = () => {
                     required
                     disabled={submitting}
                   />
-                </div>
-                <div className="form-group">
-                  <label>Icon (Emoji)</label>
-                  <input
-                    type="text"
-                    value={editForm.icon}
-                    onChange={(e) => setEditForm({ ...editForm, icon: e.target.value })}
-                    placeholder="📦"
-                    maxLength={2}
-                    disabled={submitting}
-                  />
-                  <small>Enter an emoji (e.g., 📚, 💻, 👕)</small>
                 </div>
                 <div className="form-group">
                   <label>Description</label>

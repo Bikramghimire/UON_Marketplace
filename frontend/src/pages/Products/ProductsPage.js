@@ -2,24 +2,40 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import ProductCard from '../../components/common/ProductCard';
-import { getAllProducts } from '../../services/productService';
+import { getAllProducts, getCategories } from '../../services/productService';
 import './ProductsPage.css';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({
+    category: 'All',
     search: '',
     sortBy: 'newest'
   });
 
   useEffect(() => {
+    loadCategories();
     loadProducts();
   }, []);
 
   useEffect(() => {
     loadProducts();
   }, [filters]);
+
+  const loadCategories = async () => {
+    try {
+      const cats = await getCategories();
+      // Extract category names from objects
+      const categoryNames = cats.map(cat => typeof cat === 'string' ? cat : cat.name);
+      setCategories(['All', ...categoryNames]);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      // Set default categories on error
+      setCategories(['All']);
+    }
+  };
 
   const loadProducts = async () => {
     setLoading(true);
@@ -42,6 +58,10 @@ const ProductsPage = () => {
 
   const handleSearchChange = (e) => {
     handleFilterChange('search', e.target.value);
+  };
+
+  const handleCategoryChange = (e) => {
+    handleFilterChange('category', e.target.value);
   };
 
   const handleSortChange = (e) => {
@@ -76,6 +96,23 @@ const ProductsPage = () => {
                   value={filters.search}
                   onChange={handleSearchChange}
                 />
+              </div>
+
+              {/* Category Filter */}
+              <div className="filter-group">
+                <label htmlFor="category">Category</label>
+                <select
+                  id="category"
+                  className="filter-select"
+                  value={filters.category}
+                  onChange={handleCategoryChange}
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Sort Filter */}

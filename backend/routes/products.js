@@ -68,7 +68,7 @@ router.get('/', async (req, res) => {
     // Execute query
     let productsQuery = Product.find(query)
       .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name icon')
+      .populate('category', 'name')
       .sort(sort);
 
     // If search without text index, use regex
@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         ]
       })
         .populate('user', 'username email firstName lastName location')
-        .populate('category', 'name icon')
+        .populate('category', 'name')
         .sort(sort);
     }
 
@@ -125,7 +125,7 @@ router.get('/my', protect, async (req, res) => {
   try {
     const products = await Product.find({ user: req.user._id })
       .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name icon')
+      .populate('category', 'name')
       .sort({ createdAt: -1 });
 
     // Transform products to match frontend format
@@ -168,7 +168,7 @@ router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
       .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name icon');
+      .populate('category', 'name');
 
     if (!product) {
       return res.status(404).json({
@@ -195,7 +195,8 @@ router.get('/:id', async (req, res) => {
       condition: product.condition,
       status: product.status,
       views: product.views,
-      images: product.images
+      images: product.images,
+      user: product.user // Include full user object for messaging
     };
 
     res.json({
@@ -256,13 +257,13 @@ router.post('/', protect, async (req, res) => {
       })).filter(img => img.url); // Remove empty images
     }
 
-    // If no images provided, use default emoji based on category
-    if (processedImages.length === 0) {
-      processedImages = [{
-        url: categoryDoc.icon || '📦',
-        isPrimary: true
-      }];
-    }
+        // If no images provided, use default emoji
+        if (processedImages.length === 0) {
+          processedImages = [{
+            url: '📦',
+            isPrimary: true
+          }];
+        }
 
     // Create product
     const product = await Product.create({
@@ -278,7 +279,7 @@ router.post('/', protect, async (req, res) => {
 
     const populatedProduct = await Product.findById(product._id)
       .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name icon');
+      .populate('category', 'name');
 
     res.status(201).json({
       success: true,
@@ -348,7 +349,7 @@ router.put('/:id/status', protect, async (req, res) => {
 
     const populatedProduct = await Product.findById(product._id)
       .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name icon');
+      .populate('category', 'name');
 
     res.json({
       success: true,

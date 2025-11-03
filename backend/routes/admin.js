@@ -273,7 +273,7 @@ router.get('/products', async (req, res) => {
 
     const products = await Product.find(query)
       .populate('user', 'username email firstName lastName')
-      .populate('category', 'name icon')
+      .populate('category', 'name')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -308,7 +308,7 @@ router.get('/products/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
       .populate('user', 'username email firstName lastName phone location')
-      .populate('category', 'name description icon');
+      .populate('category', 'name description');
 
     if (!product) {
       return res.status(404).json({
@@ -461,7 +461,7 @@ router.get('/categories/:id', async (req, res) => {
  */
 router.post('/categories', async (req, res) => {
   try {
-    const { name, description, icon } = req.body;
+    const { name, description } = req.body;
 
     // Validation
     if (!name) {
@@ -485,8 +485,7 @@ router.post('/categories', async (req, res) => {
 
     const category = await Category.create({
       name: name.trim(),
-      description: description?.trim() || '',
-      icon: icon || '📦'
+      description: description?.trim() || ''
     });
 
     res.status(201).json({
@@ -519,7 +518,7 @@ router.post('/categories', async (req, res) => {
  */
 router.put('/categories/:id', async (req, res) => {
   try {
-    const { name, description, icon } = req.body;
+    const { name, description } = req.body;
 
     const category = await Category.findById(req.params.id);
 
@@ -548,7 +547,6 @@ router.put('/categories/:id', async (req, res) => {
     // Update fields
     if (name !== undefined) category.name = name.trim();
     if (description !== undefined) category.description = description.trim() || '';
-    if (icon !== undefined) category.icon = icon;
 
     await category.save();
 

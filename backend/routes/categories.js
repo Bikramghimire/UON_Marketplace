@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
-    const { name, description, icon } = req.body;
+    const { name, description } = req.body;
 
     if (!name) {
       return res.status(400).json({
@@ -43,8 +43,7 @@ router.post('/', async (req, res) => {
 
     const category = await Category.create({
       name,
-      description,
-      icon: icon || '📦'
+      description
     });
 
     res.status(201).json({

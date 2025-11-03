@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import ImageCarousel from '../../components/common/ImageCarousel';
+import ComposeMessage from '../../components/messages/ComposeMessage';
 import { getProductById } from '../../services/productService';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showComposeMessage, setShowComposeMessage] = useState(false);
 
   useEffect(() => {
     loadProduct();
@@ -91,7 +95,7 @@ const ProductDetail = () => {
             <div className="product-info-section">
               <div className="product-header">
                 <div className="product-category">
-                  {product.category?.icon || '📦'} {product.category?.name || product.category || 'Uncategorized'}
+                  {product.category?.name || product.category || 'Uncategorized'}
                 </div>
                 <h1 className="product-title">{product.title}</h1>
                 <div className="product-price-large">${product.price?.toFixed(2) || '0.00'}</div>
@@ -144,18 +148,42 @@ const ProductDetail = () => {
 
               {/* Action Buttons */}
               <div className="product-actions">
-                <button className="btn btn-primary btn-contact">
-                  Contact Seller
-                </button>
-                <button className="btn btn-outline btn-share">
-                  Share Product
-                </button>
+                {isAuthenticated && product?.user && 
+                 (product.user._id !== user?._id && product.user !== user?._id) ? (
+                  <button 
+                    className="btn btn-primary btn-contact"
+                    onClick={() => setShowComposeMessage(true)}
+                  >
+                    Contact Seller
+                  </button>
+                ) : !isAuthenticated ? (
+                  <button 
+                    className="btn btn-primary btn-contact"
+                    onClick={() => navigate('/login')}
+                  >
+                    Login to Contact Seller
+                  </button>
+                ) : null}
+               
               </div>
             </div>
           </div>
         </div>
       </main>
       <Footer />
+
+      {/* Compose Message Modal */}
+      {showComposeMessage && product?.user && (
+        <ComposeMessage
+          recipient={product.user}
+          product={product}
+          onClose={() => setShowComposeMessage(false)}
+          onSent={() => {
+            setShowComposeMessage(false);
+            navigate('/messages');
+          }}
+        />
+      )}
     </div>
   );
 };

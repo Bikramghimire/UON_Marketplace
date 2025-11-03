@@ -108,7 +108,7 @@ const AdminDashboard = () => {
                 <div className="stat-card">
                   <div className="stat-icon">💰</div>
                   <div className="stat-info">
-                    <h3>Total Revenue</h3>
+                    <h3>Total Sold Revenue</h3>
                     <p className="stat-value">${stats.revenue.total.toFixed(2)}</p>
                     <p className="stat-sub">From sold products</p>
                   </div>

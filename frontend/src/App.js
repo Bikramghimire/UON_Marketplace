@@ -5,6 +5,7 @@ import HomePage from './pages/Home/HomePage';
 import ProductsPage from './pages/Products/ProductsPage';
 import ProductDetail from './pages/Products/ProductDetail';
 import MyProducts from './pages/MyProducts/MyProducts';
+import Messages from './pages/Messages/Messages';
 import LoginPage from './pages/Auth/LoginPage';
 import SignUpPage from './pages/Auth/SignUpPage';
 import SellProduct from './pages/Sell/SellProduct';
@@ -24,6 +25,7 @@ function App() {
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/my-products" element={<MyProducts />} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="/sell" element={<SellProduct />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />

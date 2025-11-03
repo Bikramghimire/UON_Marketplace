@@ -10,10 +10,6 @@ const categorySchema = new mongoose.Schema({
   description: {
     type: String,
     trim: true
-  },
-  icon: {
-    type: String,
-    default: '📦'
   }
 }, {
   timestamps: true

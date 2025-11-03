@@ -1,129 +1,81 @@
-/**
- * Authentication Middleware
- * Middleware to verify JWT tokens and protect routes
- */
-
 import jwt from 'jsonwebtoken';
-import { config } from '../config/index.js';
+import User from '../models/User.js';
 
 /**
- * Verify JWT token middleware
+ * Protect routes - verify JWT token
  */
-export const authenticate = (req, res, next) => {
+export const protect = async (req, res, next) => {
   try {
-    // Get token from header
-    const authHeader = req.headers.authorization;
+    let token;
 
-    if (!authHeader) {
-      return res.status(401).json({
-        success: false,
-        message: 'No token provided. Authorization header required.'
-      });
+    // Check for token in Authorization header
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
     }
-
-    // Extract token (format: "Bearer <token>")
-    const token = authHeader.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token format. Use: Bearer <token>'
+        message: 'Not authorized to access this route'
       });
     }
 
-    // Verify token
     try {
-      const decoded = jwt.verify(token, config.jwtSecret);
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
-      // Attach user info to request object
-      req.user = {
-        id: decoded.id,
-        username: decoded.username,
-        email: decoded.email
-      };
-
-      next();
-    } catch (tokenError) {
-      if (tokenError.name === 'TokenExpiredError') {
+      // Get user from token
+      req.user = await User.findById(decoded.id).select('-password');
+      
+      if (!req.user) {
         return res.status(401).json({
           success: false,
-          message: 'Token expired. Please login again.'
+          message: 'User not found'
         });
       }
 
+      next();
+    } catch (error) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token'
+        message: 'Not authorized to access this route'
       });
     }
   } catch (error) {
-    console.error('Authentication error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: 'Authentication error',
-      error: error.message
+      message: 'Server error'
     });
   }
 };
 
 /**
- * Optional authentication middleware
- * Attaches user if token is valid, but doesn't require it
+ * Admin only middleware - must be used after protect
  */
-export const optionalAuth = (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (authHeader) {
-      const token = authHeader.split(' ')[1];
-
-      if (token) {
-        try {
-          const decoded = jwt.verify(token, config.jwtSecret);
-          req.user = {
-            id: decoded.id,
-            username: decoded.username,
-            email: decoded.email
-          };
-        } catch (error) {
-          // Token invalid, but continue without user
-          req.user = null;
-        }
-      }
-    }
-
-    next();
-  } catch (error) {
-    // Continue without user if there's an error
-    req.user = null;
-    next();
-  }
-};
-
-/**
- * Admin only middleware
- * Must be used after authenticate middleware
- */
-export const adminOnly = (req, res, next) => {
+export const admin = (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({
       success: false,
-      message: 'Authentication required'
+      message: 'Not authorized to access this route'
     });
   }
 
-  // This would check if user is admin
-  // For now, we'll check if user role is admin
-  // You'll need to fetch user from database to check role
-  // This is a placeholder - implement based on your needs
   if (req.user.role !== 'admin') {
     return res.status(403).json({
       success: false,
-      message: 'Admin access required'
+      message: 'Access denied. Admin privileges required.'
     });
   }
 
   next();
 };
 
-export default { authenticate, optionalAuth, adminOnly };
+/**
+ * Generate JWT Token
+ */
+export const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '30d'
+  });
+};
+

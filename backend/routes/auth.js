@@ -1,221 +1,199 @@
-/**
- * Authentication Routes
- * API endpoints for user authentication
- */
-
 import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import pool from '../config/database.js';
-import { config } from '../config/index.js';
+import User from '../models/User.js';
+import { generateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
 /**
- * POST /api/auth/register
- * Register a new user
+ * @route   POST /api/auth/register
+ * @desc    Register a new user
+ * @access  Public
  */
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, first_name, last_name, phone, location } = req.body;
+    const { username, email, password, firstName, lastName, phone, location } = req.body;
 
-    // Validate required fields
+    // Validation
     if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Username, email, and password are required'
+        message: 'Please provide username, email, and password'
       });
     }
 
     // Check if user already exists
-    const userCheck = await pool.query(
-      'SELECT id FROM users WHERE username = $1 OR email = $2',
-      [username, email]
-    );
+    const userExists = await User.findOne({
+      $or: [{ email }, { username }]
+    });
 
-    if (userCheck.rows.length > 0) {
+    if (userExists) {
       return res.status(400).json({
         success: false,
-        message: 'Username or email already exists'
+        message: 'User already exists with this email or username'
       });
     }
 
-    // Hash password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Create user
+    const user = await User.create({
+      username,
+      email,
+      password,
+      firstName,
+      lastName,
+      phone,
+      location
+    });
 
-    // Insert new user
-    const result = await pool.query(
-      `INSERT INTO users (username, email, password, first_name, last_name, phone, location, role)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, username, email, first_name, last_name, phone, location, role, created_at`,
-      [username, email, hashedPassword, first_name || null, last_name || null, phone || null, location || null, 'user']
-    );
-
-    const user = result.rows[0];
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user.id, username: user.username, email: user.email },
-      config.jwtSecret,
-      { expiresIn: '7d' }
-    );
+    // Generate token
+    const token = generateToken(user._id);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       data: {
+        token,
         user: {
-          id: user.id,
+          _id: user._id,
           username: user.username,
           email: user.email,
-          first_name: user.first_name,
-          last_name: user.last_name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           phone: user.phone,
           location: user.location,
           role: user.role,
-          created_at: user.created_at
-        },
-        token
+          createdAt: user.createdAt
+        }
       }
     });
   } catch (error) {
-    console.error('Error registering user:', error);
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error registering user',
-      error: error.message
+      message: error.message || 'Server error during registration'
     });
   }
 });
 
 /**
- * POST /api/auth/login
- * Login user
+ * @route   POST /api/auth/login
+ * @desc    Login user
+ * @access  Public
  */
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate required fields
+    // Validation
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Email and password are required'
+        message: 'Please provide email and password'
       });
     }
 
-    // Find user by email
-    const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
-    );
+    // Check if user exists and get password
+    const user = await User.findOne({ email }).select('+password');
 
-    if (result.rows.length === 0) {
+    if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid credentials'
       });
     }
 
-    const user = result.rows[0];
+    // Check password
+    const isMatch = await user.matchPassword(password);
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-
-    if (!isValidPassword) {
+    if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid credentials'
       });
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user.id, username: user.username, email: user.email },
-      config.jwtSecret,
-      { expiresIn: '7d' }
-    );
+    // Generate token
+    const token = generateToken(user._id);
 
     res.json({
       success: true,
       message: 'Login successful',
       data: {
+        token,
         user: {
-          id: user.id,
+          _id: user._id,
           username: user.username,
           email: user.email,
-          first_name: user.first_name,
-          last_name: user.last_name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           phone: user.phone,
           location: user.location,
           role: user.role,
-          created_at: user.created_at
-        },
-        token
+          createdAt: user.createdAt
+        }
       }
     });
   } catch (error) {
-    console.error('Error logging in user:', error);
+    console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error logging in user',
-      error: error.message
+      message: error.message || 'Server error during login'
     });
   }
 });
 
 /**
- * GET /api/auth/me
- * Get current user profile (requires authentication)
+ * @route   GET /api/auth/me
+ * @desc    Get current user
+ * @access  Private
  */
 router.get('/me', async (req, res) => {
   try {
-    // Get token from header
-    const token = req.headers.authorization?.split(' ')[1];
+    // Check token manually since we're not using protect middleware here
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'No token provided'
+        message: 'Not authorized'
       });
     }
 
-    // Verify token
-    try {
-      const decoded = jwt.verify(token, config.jwtSecret);
+    const jwt = (await import('jsonwebtoken')).default;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
 
-      // Get user from database
-      const result = await pool.query(
-        'SELECT id, username, email, first_name, last_name, phone, location, role, created_at FROM users WHERE id = $1',
-        [decoded.id]
-      );
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
-
-      res.json({
-        success: true,
-        data: result.rows[0]
-      });
-    } catch (tokenError) {
-      return res.status(401).json({
+    if (!user) {
+      return res.status(404).json({
         success: false,
-        message: 'Invalid or expired token'
+        message: 'User not found'
       });
     }
+
+    res.json({
+      success: true,
+      data: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        location: user.location,
+        role: user.role,
+        createdAt: user.createdAt
+      }
+    });
   } catch (error) {
-    console.error('Error getting user profile:', error);
+    console.error('Get user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error getting user profile',
-      error: error.message
+      message: error.message || 'Server error'
     });
   }
 });
 
 export default router;
+

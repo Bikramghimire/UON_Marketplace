@@ -1,98 +1,65 @@
-/**
- * Categories Routes
- * API endpoints for categories management
- */
-
 import express from 'express';
 import Category from '../models/Category.js';
 
 const router = express.Router();
 
 /**
- * GET /api/categories
- * Get all categories
+ * @route   GET /api/categories
+ * @desc    Get all categories
+ * @access  Public
  */
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.findAll();
+    const categories = await Category.find().sort({ name: 1 });
+
     res.json({
       success: true,
-      count: categories.length,
       data: categories
     });
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error('Get categories error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching categories',
-      error: error.message
+      message: error.message || 'Server error'
     });
   }
 });
 
 /**
- * GET /api/categories/:id
- * Get category by ID
- */
-router.get('/:id', async (req, res) => {
-  try {
-    const category = await Category.findById(req.params.id);
-    
-    if (!category) {
-      return res.status(404).json({
-        success: false,
-        message: 'Category not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: category
-    });
-  } catch (error) {
-    console.error('Error fetching category:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching category',
-      error: error.message
-    });
-  }
-});
-
-/**
- * POST /api/categories
- * Create a new category
+ * @route   POST /api/categories
+ * @desc    Create a new category
+ * @access  Private (should be protected, but allowing for now)
  */
 router.post('/', async (req, res) => {
   try {
-    const categoryData = {
-      name: req.body.name,
-      description: req.body.description,
-      icon: req.body.icon
-    };
+    const { name, description, icon } = req.body;
 
-    if (!categoryData.name) {
+    if (!name) {
       return res.status(400).json({
         success: false,
         message: 'Category name is required'
       });
     }
 
-    const category = await Category.create(categoryData);
-    
+    const category = await Category.create({
+      name,
+      description,
+      icon: icon || '📦'
+    });
+
     res.status(201).json({
       success: true,
       message: 'Category created successfully',
       data: category
     });
   } catch (error) {
-    console.error('Error creating category:', error);
+    console.error('Create category error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error creating category',
-      error: error.message
+      message: error.message || 'Server error'
     });
   }
 });
 
 export default router;
+

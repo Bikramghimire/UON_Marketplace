@@ -1,228 +1,315 @@
-// Mock product data - Replace with actual API calls later
-const mockProducts = [
-  {
-    id: 1,
-    title: "Calculus Textbook - 3rd Edition",
-    price: 45.99,
-    category: "Textbooks",
-    description: "Used but in excellent condition. No highlighting or notes.",
-    image: "📚",
-    seller: "John D.",
-    location: "Campus Dorm",
-    datePosted: "2 days ago",
-    condition: "Excellent"
-  },
-  {
-    id: 2,
-    title: "MacBook Pro 13 inch 2020",
-    price: 899.99,
-    category: "Electronics",
-    description: "M1 chip, 256GB SSD, 8GB RAM. Great condition, barely used.",
-    image: "💻",
-    seller: "Sarah M.",
-    location: "Off-Campus",
-    datePosted: "1 week ago",
-    condition: "Like New"
-  },
-  {
-    id: 3,
-    title: "Nike Air Max Sneakers Size 10",
-    price: 65.00,
-    category: "Clothing",
-    description: "Gently worn, still in great shape. Original box included.",
-    image: "👟",
-    seller: "Mike T.",
-    location: "Student Union",
-    datePosted: "3 days ago",
-    condition: "Good"
-  },
-  {
-    id: 4,
-    title: "Desk Chair - Office Style",
-    price: 35.00,
-    category: "Furniture",
-    description: "Comfortable office chair. Adjustable height, good condition.",
-    image: "🪑",
-    seller: "Emily R.",
-    location: "Campus Dorm",
-    datePosted: "5 days ago",
-    condition: "Good"
-  },
-  {
-    id: 5,
-    title: "iPhone 12 - 128GB",
-    price: 450.00,
-    category: "Electronics",
-    description: "Unlocked, works perfectly. Minor scratches on screen. Includes charger.",
-    image: "📱",
-    seller: "David L.",
-    location: "Off-Campus",
-    datePosted: "1 day ago",
-    condition: "Fair"
-  },
-  {
-    id: 6,
-    title: "Organic Chemistry Textbook Set",
-    price: 85.00,
-    category: "Textbooks",
-    description: "Complete set with study guide. Barely used, like new condition.",
-    image: "📖",
-    seller: "Lisa K.",
-    location: "Library",
-    datePosted: "4 days ago",
-    condition: "Excellent"
-  },
-  {
-    id: 7,
-    title: "Winter Jacket - Medium",
-    price: 40.00,
-    category: "Clothing",
-    description: "North Face jacket, warm and waterproof. Perfect for winter.",
-    image: "🧥",
-    seller: "Tom W.",
-    location: "Campus Dorm",
-    datePosted: "6 days ago",
-    condition: "Good"
-  },
-  {
-    id: 8,
-    title: "Study Desk with Drawers",
-    price: 55.00,
-    category: "Furniture",
-    description: "Wooden desk with storage drawers. Easy to assemble.",
-    image: "🪑",
-    seller: "Anna B.",
-    location: "Off-Campus",
-    datePosted: "1 week ago",
-    condition: "Good"
-  },
-  {
-    id: 9,
-    title: "iPad Air 4th Gen",
-    price: 350.00,
-    category: "Electronics",
-    description: "64GB, WiFi only. Great for taking notes in class. Includes case.",
-    image: "📱",
-    seller: "Chris P.",
-    location: "Student Union",
-    datePosted: "2 days ago",
-    condition: "Excellent"
-  },
-  {
-    id: 10,
-    title: "Physics Lab Manual",
-    price: 20.00,
-    category: "Textbooks",
-    description: "Required for Physics 101. Some pages filled but still usable.",
-    image: "📘",
-    seller: "Rachel S.",
-    location: "Library",
-    datePosted: "3 days ago",
-    condition: "Fair"
-  },
-  {
-    id: 11,
-    title: "Graphing Calculator TI-84",
-    price: 60.00,
-    category: "Electronics",
-    description: "Works perfectly. Batteries included. Great for math courses.",
-    image: "🔢",
-    seller: "Kevin H.",
-    location: "Campus Dorm",
-    datePosted: "1 day ago",
-    condition: "Excellent"
-  },
-  {
-    id: 12,
-    title: "Backpack - Laptop Compatible",
-    price: 30.00,
-    category: "Clothing",
-    description: "Spacious backpack with laptop compartment. Water resistant.",
-    image: "🎒",
-    seller: "Jessica N.",
-    location: "Off-Campus",
-    datePosted: "4 days ago",
-    condition: "Good"
-  }
-];
+/**
+ * Product Service
+ * Handles all product API calls
+ */
 
-// Simulate API call delay
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Get all products
+/**
+ * Get all products with optional filters
+ */
 export const getAllProducts = async (filters = {}) => {
-  await delay(300); // Simulate network delay
-  
-  let filteredProducts = [...mockProducts];
-  
-  // Apply category filter
-  if (filters.category && filters.category !== 'All') {
-    filteredProducts = filteredProducts.filter(
-      product => product.category === filters.category
-    );
-  }
-  
-  // Apply search filter
-  if (filters.search) {
-    const searchTerm = filters.search.toLowerCase();
-    filteredProducts = filteredProducts.filter(
-      product =>
-        product.title.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm)
-    );
-  }
-  
-  // Apply price range filter
-  if (filters.minPrice !== undefined) {
-    filteredProducts = filteredProducts.filter(
-      product => product.price >= filters.minPrice
-    );
-  }
-  
-  if (filters.maxPrice !== undefined) {
-    filteredProducts = filteredProducts.filter(
-      product => product.price <= filters.maxPrice
-    );
-  }
-  
-  // Sort products
-  if (filters.sortBy) {
-    switch (filters.sortBy) {
-      case 'price-low':
-        filteredProducts.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        filteredProducts.sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        filteredProducts.sort((a, b) => {
-          const dateA = parseInt(a.datePosted);
-          const dateB = parseInt(b.datePosted);
-          return dateA - dateB;
-        });
-        break;
-      default:
-        break;
+  try {
+    // Build query string
+    const params = new URLSearchParams();
+    
+    if (filters.category) params.append('category', filters.category);
+    if (filters.search) params.append('search', filters.search);
+    if (filters.minPrice !== undefined) params.append('minPrice', filters.minPrice);
+    if (filters.maxPrice !== undefined) params.append('maxPrice', filters.maxPrice);
+    if (filters.sortBy) params.append('sortBy', filters.sortBy);
+
+    const queryString = params.toString();
+    const url = `${API_URL}/products${queryString ? `?${queryString}` : ''}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to fetch products');
     }
+
+    // Transform products to match frontend format
+    const products = data.data.map(product => {
+      // Ensure images array is properly formatted
+      let images = [];
+      if (product.images && Array.isArray(product.images)) {
+        images = product.images;
+      } else if (product.image) {
+        images = [product.image];
+      }
+
+      // Get primary image for card display
+      const primaryImage = images.find(img => img.isPrimary) || images[0] || product.image || '📦';
+      const imageUrl = typeof primaryImage === 'string' ? primaryImage : primaryImage.url || primaryImage;
+
+      return {
+        ...product,
+        id: product.id || product._id,
+        image: imageUrl,
+        images: images,
+        datePosted: formatDate(product.datePosted)
+      };
+    });
+
+    return products;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
   }
-  
-  return filteredProducts;
 };
 
-// Get product by ID
+/**
+ * Get product by ID
+ */
 export const getProductById = async (id) => {
-  await delay(200);
-  return mockProducts.find(product => product.id === parseInt(id));
+  try {
+    const response = await fetch(`${API_URL}/products/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to fetch product');
+    }
+
+    // Transform product data
+    const productData = {
+      ...data.data,
+      datePosted: formatDate(data.data.datePosted)
+    };
+
+    // Ensure images array is properly formatted
+    if (productData.images && Array.isArray(productData.images)) {
+      productData.images = productData.images.map(img => {
+        if (typeof img === 'string') return img;
+        if (img.url) return img;
+        return { url: img.image || img, isPrimary: false };
+      });
+    } else if (productData.image) {
+      productData.images = [productData.image];
+    }
+
+    return productData;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    throw error;
+  }
 };
 
-// Get unique categories
-export const getCategories = () => {
-  const categories = [...new Set(mockProducts.map(product => product.category))];
-  return categories;
+/**
+ * Get user's own products
+ */
+export const getUserProducts = async () => {
+  try {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('You must be logged in to view your products');
+    }
+
+    const response = await fetch(`${API_URL}/products/my`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to fetch your products');
+    }
+
+    // Transform products to match frontend format
+    const products = data.data.map(product => {
+      // Ensure images array is properly formatted
+      let images = [];
+      if (product.images && Array.isArray(product.images)) {
+        images = product.images;
+      } else if (product.image) {
+        images = [product.image];
+      }
+
+      // Get primary image for card display
+      const primaryImage = images.find(img => img.isPrimary) || images[0] || product.image || '📦';
+      const imageUrl = typeof primaryImage === 'string' ? primaryImage : primaryImage.url || primaryImage;
+
+      return {
+        ...product,
+        id: product.id || product._id,
+        image: imageUrl,
+        images: images,
+        datePosted: formatDate(product.datePosted)
+      };
+    });
+
+    return products;
+  } catch (error) {
+    console.error('Error fetching user products:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get all categories
+ */
+export const getCategories = async () => {
+  try {
+    const response = await fetch(`${API_URL}/categories`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to fetch categories');
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    // Return empty array on error instead of throwing
+    return [];
+  }
+};
+
+/**
+ * Create a new product
+ */
+export const createProduct = async (productData) => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      throw new Error('You must be logged in to create a product');
+    }
+
+    const response = await fetch(`${API_URL}/products`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(productData)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create product');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error creating product:', error);
+    throw error;
+  }
+};
+
+/**
+ * Format date to relative time string
+ */
+const formatDate = (dateString) => {
+  if (!dateString) return 'Recently';
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+  
+  if (diffInSeconds < 60) return 'Just now';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)} weeks ago`;
+  return `${Math.floor(diffInSeconds / 2592000)} months ago`;
+};
+
+/**
+ * Update product status (mark as sold, etc.)
+ */
+export const updateProductStatus = async (productId, status) => {
+  try {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('You must be logged in to update product status');
+    }
+
+    const response = await fetch(`${API_URL}/products/${productId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update product status');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error updating product status:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete product
+ */
+export const deleteProduct = async (productId) => {
+  try {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('You must be logged in to delete products');
+    }
+
+    const response = await fetch(`${API_URL}/products/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to delete product');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    throw error;
+  }
 };
 
 export default {
   getAllProducts,
   getProductById,
-  getCategories
+  getCategories,
+  createProduct,
+  getUserProducts,
+  updateProductStatus,
+  deleteProduct
 };

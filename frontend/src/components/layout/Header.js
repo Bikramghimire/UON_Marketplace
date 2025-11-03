@@ -38,8 +38,26 @@ const Header = () => {
                 Products
               </Link>
             </li>
-            <li><a href="#categories" className="nav-link">Categories</a></li>
-            <li><a href="#about" className="nav-link">About</a></li>
+            {isAuthenticated && user?.role === 'admin' && (
+              <li>
+                <Link 
+                  to="/admin" 
+                  className={`nav-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+                >
+                  Admin
+                </Link>
+              </li>
+            )}
+            {isAuthenticated && (
+              <li>
+                <Link 
+                  to="/my-products" 
+                  className={`nav-link ${location.pathname === '/my-products' ? 'active' : ''}`}
+                >
+                  My Products
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
         
@@ -47,7 +65,7 @@ const Header = () => {
           {isAuthenticated ? (
             <>
               <span className="user-greeting">
-                Hi, {user?.first_name || user?.username || 'User'}!
+                Hi, {user?.firstName || user?.username || 'User'}!
               </span>
               <button 
                 className="btn btn-outline"

@@ -3,8 +3,15 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import HomePage from './pages/Home/HomePage';
 import ProductsPage from './pages/Products/ProductsPage';
+import ProductDetail from './pages/Products/ProductDetail';
+import MyProducts from './pages/MyProducts/MyProducts';
 import LoginPage from './pages/Auth/LoginPage';
 import SignUpPage from './pages/Auth/SignUpPage';
+import SellProduct from './pages/Sell/SellProduct';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import UserManagement from './pages/Admin/UserManagement';
+import ProductManagement from './pages/Admin/ProductManagement';
+import CategoryManagement from './pages/Admin/CategoryManagement';
 import './App.css';
 
 function App() {
@@ -15,8 +22,15 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/my-products" element={<MyProducts />} />
+            <Route path="/sell" element={<SellProduct />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<UserManagement />} />
+            <Route path="/admin/products" element={<ProductManagement />} />
+            <Route path="/admin/categories" element={<CategoryManagement />} />
           </Routes>
         </div>
       </Router>

@@ -1,16 +1,51 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
+
   const handleViewDetails = () => {
-    // Navigate to product details page (to be implemented)
-    console.log('View details for product:', product.id);
+    navigate(`/products/${product.id || product._id}`);
   };
+
+  // Get primary image or first image
+  const getPrimaryImage = () => {
+    if (product.images && Array.isArray(product.images)) {
+      const primaryImage = product.images.find(img => img.isPrimary);
+      if (primaryImage) return primaryImage.url || primaryImage;
+      if (product.images.length > 0) {
+        return typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url || product.images[0];
+      }
+    }
+    return product.image || '📦';
+  };
+
+  const displayImage = getPrimaryImage();
+  const isUrl = displayImage && (displayImage.startsWith('http://') || displayImage.startsWith('https://') || displayImage.startsWith('//'));
 
   return (
     <div className="product-card" onClick={handleViewDetails}>
       <div className="product-image">
-        <span className="product-emoji">{product.image}</span>
+        {isUrl ? (
+          <img 
+            src={displayImage} 
+            alt={product.title}
+            className="product-image-img"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <span className="product-emoji" style={{ display: isUrl ? 'none' : 'flex' }}>
+          {displayImage}
+        </span>
+        {isUrl && (
+          <span className="product-emoji-fallback" style={{ display: 'none' }}>
+            📦
+          </span>
+        )}
       </div>
       <div className="product-info">
         <div className="product-category">{product.category}</div>

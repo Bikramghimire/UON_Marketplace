@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import './HomePage.css';
 
 const HomePage = () => {
+  const { isAuthenticated } = useAuth();
   return (
     <div className="home-page">
       <Header />
@@ -18,10 +20,14 @@ const HomePage = () => {
               Discover amazing products from students and local vendors. 
               Buy, sell, and trade with your university community.
             </p>
-            <div className="hero-buttons">
-              <Link to="/products" className="btn btn-primary">Browse Products</Link>
-              <Link to="/signup" className="btn btn-secondary">Sell Something</Link>
-            </div>
+                <div className="hero-buttons">
+                  <Link to="/products" className="btn btn-primary">Browse Products</Link>
+                  {isAuthenticated ? (
+                    <Link to="/sell" className="btn btn-secondary">Sell Something</Link>
+                  ) : (
+                    <Link to="/signup" className="btn btn-secondary">Sell Something</Link>
+                  )}
+                </div>
           </div>
         </section>
 

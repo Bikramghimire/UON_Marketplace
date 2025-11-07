@@ -53,6 +53,32 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('user', 'admin'),
     defaultValue: 'user',
     allowNull: false
+  },
+  emailVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+    field: 'email_verified'
+  },
+  verificationCode: {
+    type: DataTypes.STRING(6),
+    allowNull: true,
+    field: 'verification_code'
+  },
+  verificationCodeExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'verification_code_expiry'
+  },
+  verificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'verification_token'
+  },
+  verificationTokenExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'verification_token_expiry'
   }
 }, {
   tableName: 'users',

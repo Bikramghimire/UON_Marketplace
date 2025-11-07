@@ -24,10 +24,10 @@ export const register = async (userData) => {
       throw new Error(data.message || 'Registration failed');
     }
 
-    // Store token in localStorage
-    if (data.data && data.data.token) {
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data.user));
+    // Don't store token/user after signup - user must verify email first
+    // Only store email for verification page
+    if (data.data && data.data.user) {
+      localStorage.setItem('pendingVerificationEmail', data.data.user.email);
     }
 
     return data;
@@ -53,6 +53,13 @@ export const login = async (credentials) => {
     const data = await response.json();
 
     if (!response.ok) {
+      // Check if it's a verification error
+      if (data.requiresVerification) {
+        const error = new Error(data.message || 'Please verify your email before logging in');
+        error.requiresVerification = true;
+        error.email = data.email;
+        throw error;
+      }
       throw new Error(data.message || 'Login failed');
     }
 

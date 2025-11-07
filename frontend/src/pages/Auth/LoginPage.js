@@ -42,18 +42,72 @@ const LoginPage = () => {
       return;
     }
 
+    // Trim inputs
+    const emailOrUsernameTrimmed = formData.emailOrUsername.trim();
+    const passwordTrimmed = formData.password.trim();
+
+    if (!emailOrUsernameTrimmed || !passwordTrimmed) {
+      setFormError('Please fill in all fields');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate email format if it's an email
+    const isEmail = emailOrUsernameTrimmed.includes('@');
+    if (isEmail) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailOrUsernameTrimmed)) {
+        setFormError('Please enter a valid email address');
+        setIsSubmitting(false);
+        return;
+      }
+    } else {
+      // Validate username format
+      if (emailOrUsernameTrimmed.length < 3) {
+        setFormError('Username must be at least 3 characters');
+        setIsSubmitting(false);
+        return;
+      }
+      if (emailOrUsernameTrimmed.length > 30) {
+        setFormError('Username must be less than 30 characters');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    // Password validation
+    if (passwordTrimmed.length < 6) {
+      setFormError('Password must be at least 6 characters');
+      setIsSubmitting(false);
+      return;
+    }
+
     // Determine if input is email or username
-    const isEmail = formData.emailOrUsername.includes('@');
     const loginData = {
-      [isEmail ? 'email' : 'username']: formData.emailOrUsername,
-      password: formData.password
+      [isEmail ? 'email' : 'username']: isEmail ? emailOrUsernameTrimmed.toLowerCase() : emailOrUsernameTrimmed,
+      password: passwordTrimmed
     };
 
     try {
       await login(loginData);
+      // Check if user email is verified
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      if (currentUser && !currentUser.emailVerified) {
+        navigate('/verify-email');
+        return;
+      }
       navigate('/products');
     } catch (error) {
-      setFormError(error.message || 'Login failed. Please check your credentials.');
+      // Check if error is due to unverified email
+      if (error.requiresVerification) {
+        setFormError(error.message);
+        // Redirect to verification page after showing error
+        setTimeout(() => {
+          navigate('/verify-email');
+        }, 2000);
+      } else {
+        setFormError(error.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -78,14 +132,14 @@ const LoginPage = () => {
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
-                <label htmlFor="emailOrUsername">Email or Username</label>
+                <label htmlFor="emailOrUsername">Email</label>
                 <input
                   type="text"
                   id="emailOrUsername"
                   name="emailOrUsername"
                   value={formData.emailOrUsername}
                   onChange={handleChange}
-                  placeholder="Enter your email or username"
+                  placeholder="Enter your email"
                   required
                   disabled={isSubmitting}
                 />

@@ -21,9 +21,9 @@ const SignUpPage = () => {
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Redirect if already logged in
+  // Redirect if already logged in and verified
   useEffect(() => {
-    if (user) {
+    if (user && user.emailVerified) {
       navigate('/products');
     }
   }, [user, navigate]);
@@ -48,31 +48,90 @@ const SignUpPage = () => {
       return;
     }
 
+    // Username validation
+    const usernameTrimmed = formData.username.trim();
+    if (usernameTrimmed.length < 3) {
+      setFormError('Username must be at least 3 characters');
+      setIsSubmitting(false);
+      return;
+    }
+    if (usernameTrimmed.length > 30) {
+      setFormError('Username must be less than 30 characters');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(usernameTrimmed)) {
+      setFormError('Username can only contain letters, numbers, and underscores');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Email validation
+    const emailTrimmed = formData.email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailTrimmed)) {
+      setFormError('Please enter a valid email address');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Password validation
+    if (formData.password.length < 6) {
+      setFormError('Password must be at least 6 characters');
+      setIsSubmitting(false);
+      return;
+    }
+    if (formData.password.length > 255) {
+      setFormError('Password must be less than 255 characters');
+      setIsSubmitting(false);
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       setFormError('Passwords do not match');
       setIsSubmitting(false);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setFormError('Password must be at least 6 characters');
+    // Phone validation (if provided)
+    if (formData.phone && formData.phone.trim()) {
+      const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+      if (!phoneRegex.test(formData.phone.trim())) {
+        setFormError('Please enter a valid phone number');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    // First name and last name validation (if provided)
+    if (formData.first_name && formData.first_name.trim().length > 255) {
+      setFormError('First name must be less than 255 characters');
+      setIsSubmitting(false);
+      return;
+    }
+    if (formData.last_name && formData.last_name.trim().length > 255) {
+      setFormError('Last name must be less than 255 characters');
       setIsSubmitting(false);
       return;
     }
 
     try {
       const userData = {
-        username: formData.username,
-        email: formData.email,
+        username: usernameTrimmed,
+        email: emailTrimmed,
         password: formData.password,
-        first_name: formData.first_name || undefined,
-        last_name: formData.last_name || undefined,
-        phone: formData.phone || undefined,
-        location: formData.location || undefined,
+        firstName: formData.first_name?.trim() || undefined,
+        lastName: formData.last_name?.trim() || undefined,
+        phone: formData.phone?.trim() || undefined,
+        location: formData.location?.trim() || undefined,
       };
 
       await register(userData);
-      navigate('/products');
+      // Clear any existing tokens/user before redirect
+      // This ensures no auto-login happens
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      // Redirect to verification page after signup
+      navigate('/verify-email');
     } catch (error) {
       setFormError(error.message || 'Registration failed. Please try again.');
     } finally {

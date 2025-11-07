@@ -8,6 +8,7 @@ import MyProducts from './pages/MyProducts/MyProducts';
 import Messages from './pages/Messages/Messages';
 import LoginPage from './pages/Auth/LoginPage';
 import SignUpPage from './pages/Auth/SignUpPage';
+import VerifyEmail from './pages/Auth/VerifyEmail';
 import SellProduct from './pages/Sell/SellProduct';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import UserManagement from './pages/Admin/UserManagement';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/sell" element={<SellProduct />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<UserManagement />} />
             <Route path="/admin/products" element={<ProductManagement />} />

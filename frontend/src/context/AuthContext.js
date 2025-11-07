@@ -30,7 +30,14 @@ export const AuthProvider = ({ children }) => {
           // Try to get current user
           try {
             const userData = await authService.getCurrentUser();
-            setUser(userData.data);
+            // Only set user if email is verified
+            if (userData.data && userData.data.emailVerified) {
+              setUser(userData.data);
+            } else {
+              // Email not verified, clear token and logout
+              authService.logout();
+              setUser(null);
+            }
           } catch (error) {
             // Token might be invalid, clear it
             authService.logout();
@@ -55,8 +62,15 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       setLoading(true);
+      // Clear any existing tokens/user BEFORE registration to prevent auto-login
+      authService.logout();
+      setUser(null);
+      
       const response = await authService.register(userData);
-      setUser(response.data.user);
+      // Don't set user after signup - they must verify email first
+      // User will be set after they login
+      // Ensure user is still null
+      setUser(null);
       return response;
     } catch (error) {
       setError(error.message || 'Registration failed');
@@ -74,7 +88,15 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       setLoading(true);
       const response = await authService.login(credentials);
-      setUser(response.data.user);
+      const userData = response.data.user;
+      
+      // Check if email is verified
+      if (!userData.emailVerified) {
+        setError('Please verify your email before logging in.');
+        throw new Error('Email not verified');
+      }
+      
+      setUser(userData);
       return response;
     } catch (error) {
       setError(error.message || 'Login failed');

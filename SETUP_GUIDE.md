@@ -67,6 +67,11 @@ sudo systemctl enable postgresql
 
 5. **Update `.env` with your PostgreSQL credentials:**
    ```env
+   # Server Configuration
+   PORT=5000
+   NODE_ENV=development
+   FRONTEND_URL=http://localhost:3000
+   
    # PostgreSQL Configuration
    DB_HOST=localhost
    DB_PORT=5432
@@ -76,9 +81,24 @@ sudo systemctl enable postgresql
    
    # JWT Secret
    JWT_SECRET=your-secret-key-change-this-in-production
+   
+   # Email Configuration (Optional - for email verification)
+   # For Gmail: Use EMAIL_SERVICE=gmail and EMAIL_USER/EMAIL_PASSWORD
+   # For SMTP: Use EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD
+   # For Development: Leave empty to log emails to console
+   EMAIL_SERVICE=gmail
+   EMAIL_HOST=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_SECURE=false
+   EMAIL_USER=your-email@gmail.com
+   EMAIL_PASSWORD=your-app-password
+   EMAIL_FROM="UON Marketplace <your-email@gmail.com>"
    ```
    
-   **Important:** Replace `your-actual-postgres-password` with the password you set during PostgreSQL installation.
+   **Important:** 
+   - Replace `your-actual-postgres-password` with the password you set during PostgreSQL installation
+   - For Gmail, you need to use an **App Password** (not your regular password). Go to Google Account → Security → 2-Step Verification → App Passwords
+   - If email config is not set, emails will be logged to console instead of being sent (useful for development)
 
 6. **Run database migration** (creates all tables):
    ```bash
@@ -110,8 +130,30 @@ sudo systemctl enable postgresql
    Creates admin account:
    - Email: `admin@uon.edu`
    - Password: `admin123`
+   
+   **Note:** Admin account will need email verification before login.
 
-9. **Start the backend server:**
+9. **Fix user passwords** (if needed):
+   ```bash
+   npm run fix-passwords
+   ```
+   
+   This script hashes any plain-text passwords in the database.
+
+10. **Database management scripts:**
+    ```bash
+    # Truncate all tables (delete data, keep structure)
+    npm run drop-db
+    
+    # Drop all tables completely (delete everything)
+    npm run drop-db:all
+    
+    # Force drop (no confirmation)
+    npm run drop-db:force
+    npm run drop-db:all:force
+    ```
+
+11. **Start the backend server:**
    ```bash
    npm run dev
    ```
@@ -155,11 +197,86 @@ sudo systemctl enable postgresql
 
 After running `npm run seed`, you can use these test accounts:
 
-- **Email:** `admin@uon.edu` | **Password:** `admin123` (Admin account)
-- **Email:** `john@example.com` | **Password:** `password123`
-- **Email:** `sarah@example.com` | **Password:** `password123`
-- **Email:** `mike@example.com` | **Password:** `password123`
-- **Email:** `emily@example.com` | **Password:** `password123`
+- **Email:** `admin@uon.edu` | **Password:** `password123` | **Username:** `admin` (Admin account)
+- **Email:** `john@example.com` | **Password:** `password123` | **Username:** `johndoe`
+- **Email:** `sarah@example.com` | **Password:** `password123` | **Username:** `sarahm`
+- **Email:** `mike@example.com` | **Password:** `password123` | **Username:** `miket`
+- **Email:** `emily@example.com` | **Password:** `password123` | **Username:** `emilyr`
+
+**Note:** 
+- You can login with either **email** or **username**
+- These accounts are created with `emailVerified: false` by default
+- You'll need to verify the email or update the database to set `email_verified = true` for testing
+- To verify: Check your email/console for the 6-digit verification code, or update in database:
+  ```sql
+  UPDATE users SET email_verified = true WHERE email = 'admin@uon.edu';
+  ```
+
+## 📧 Email Verification Setup
+
+### Gmail Setup (Recommended for Testing)
+
+1. **Enable 2-Step Verification:**
+   - Go to [Google Account Security](https://myaccount.google.com/security)
+   - Enable 2-Step Verification
+
+2. **Generate App Password:**
+   - Go to [App Passwords](https://myaccount.google.com/apppasswords)
+   - Select "Mail" and "Other (Custom name)"
+   - Enter "UON Marketplace"
+   - Copy the 16-character password
+
+3. **Update `.env` file:**
+   ```env
+   EMAIL_SERVICE=gmail
+   EMAIL_USER=your-email@gmail.com
+   EMAIL_PASSWORD=your-16-character-app-password
+   EMAIL_FROM="UON Marketplace <your-email@gmail.com>"
+   ```
+
+### Development Mode (No Email Setup)
+
+If you don't configure email settings, the system will:
+- Log verification codes to the console instead of sending emails
+- Show emails in the backend terminal when users register
+- Perfect for development and testing
+
+**Example console output:**
+```
+═══════════════════════════════════════════════════
+📧 EMAIL (Development Mode - Not Sent)
+═══════════════════════════════════════════════════
+To: user@example.com
+Subject: Verify Your Email - UON Marketplace
+
+Body:
+Verification Code: 123456
+...
+═══════════════════════════════════════════════════
+```
+
+## 🔐 Authentication Flow
+
+1. **User Registration:**
+   - User signs up with email, username, and password
+   - System generates 6-digit verification code
+   - Verification code sent via email (or logged to console)
+   - User is **NOT** logged in after signup
+   - User redirected to verification page
+
+2. **Email Verification:**
+   - User enters email and 6-digit code
+   - Code expires in 15 minutes
+   - After verification, user redirected to login page
+
+3. **Login:**
+   - User can login with **email** or **username**
+   - System checks if email is verified
+   - Only verified users can login
+   - JWT token generated after successful login
+
+4. **Access App:**
+   - User can now browse, list products, and message
 
 ## 🔧 Troubleshooting
 
@@ -317,9 +434,11 @@ uon_marketplace/
 ## 🔐 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
+- `POST /api/auth/register` - Register new user (no token returned)
+- `POST /api/auth/login` - Login user (requires email verification)
 - `GET /api/auth/me` - Get current user (protected)
+- `POST /api/auth/verify-email` - Verify email with code
+- `POST /api/auth/resend-verification` - Resend verification code (protected)
 
 ### Products
 - `GET /api/products` - Get all products (supports filters)
@@ -373,6 +492,9 @@ npm install                         # Install dependencies
 npm run migrate                     # Create database tables
 npm run seed                        # Seed sample data
 npm run create-admin                # Create admin user
+npm run fix-passwords               # Fix plain-text passwords
+npm run drop-db                     # Truncate all tables
+npm run drop-db:all                 # Drop all tables
 npm run dev                         # Start development server
 npm start                           # Start production server
 ```

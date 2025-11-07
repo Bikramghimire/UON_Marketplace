@@ -1,5 +1,6 @@
 import express from 'express';
-import Product from '../models/Product.js';
+import { Op } from 'sequelize';
+import { Product, Category, User } from '../models/index.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -20,16 +21,16 @@ router.get('/', async (req, res) => {
       status = 'active'
     } = req.query;
 
-    // Build query
-    let query = { status };
+    // Build where clause
+    const where = { status };
 
     // Category filter
+    let categoryId = null;
     if (category && category !== 'All') {
-      // Find category by name
-      const Category = (await import('../models/Category.js')).default;
-      const categoryDoc = await Category.findOne({ name: category });
+      const categoryDoc = await Category.findOne({ where: { name: category } });
       if (categoryDoc) {
-        query.category = categoryDoc._id;
+        categoryId = categoryDoc.id;
+        where.categoryId = categoryId;
       } else {
         return res.json({
           success: true,
@@ -40,68 +41,70 @@ router.get('/', async (req, res) => {
 
     // Price filter
     if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+      where.price = {};
+      if (minPrice) where.price[Op.gte] = Number(minPrice);
+      if (maxPrice) where.price[Op.lte] = Number(maxPrice);
     }
 
     // Search filter
     if (search) {
-      query.$text = { $search: search };
+      where[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } }
+      ];
     }
 
-    // Build sort
-    let sort = {};
+    // Build order
+    let order = [];
     switch (sortBy) {
       case 'price-low':
-        sort.price = 1;
+        order = [['price', 'ASC']];
         break;
       case 'price-high':
-        sort.price = -1;
+        order = [['price', 'DESC']];
         break;
       case 'newest':
       default:
-        sort.createdAt = -1;
+        order = [['createdAt', 'DESC']];
         break;
     }
 
     // Execute query
-    let productsQuery = Product.find(query)
-      .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name')
-      .sort(sort);
-
-    // If search without text index, use regex
-    if (search && !query.$text) {
-      productsQuery = Product.find({
-        ...query,
-        $or: [
-          { title: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } }
-        ]
-      })
-        .populate('user', 'username email firstName lastName location')
-        .populate('category', 'name')
-        .sort(sort);
-    }
-
-    const products = await productsQuery;
+    const products = await Product.findAll({
+      where,
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'location']
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name']
+        }
+      ],
+      order
+    });
 
     // Transform products to match frontend format
-    const transformedProducts = products.map(product => ({
-      id: product._id,
-      title: product.title,
-      price: product.price,
-      category: product.category?.name || 'Uncategorized',
-      description: product.description,
-      image: product.images?.find(img => img.isPrimary)?.url || product.images?.[0]?.url || '📦',
-      seller: product.user?.username || 'Unknown',
-      location: product.location || product.user?.location || 'N/A',
-      datePosted: product.createdAt,
-      condition: product.condition,
-      status: product.status,
-      views: product.views
-    }));
+    const transformedProducts = products.map(product => {
+      const images = product.images || [];
+      return {
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.price),
+        category: product.category?.name || 'Uncategorized',
+        description: product.description,
+        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '📦',
+        seller: product.user?.username || 'Unknown',
+        location: product.location || product.user?.location || 'N/A',
+        datePosted: product.createdAt,
+        condition: product.condition,
+        status: product.status,
+        views: product.views
+      };
+    });
 
     res.json({
       success: true,
@@ -123,28 +126,43 @@ router.get('/', async (req, res) => {
  */
 router.get('/my', protect, async (req, res) => {
   try {
-    const products = await Product.find({ user: req.user._id })
-      .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name')
-      .sort({ createdAt: -1 });
+    const products = await Product.findAll({
+      where: { userId: req.user.id },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'location']
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name']
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
 
     // Transform products to match frontend format
-    const transformedProducts = products.map(product => ({
-      id: product._id,
-      title: product.title,
-      price: product.price,
-      category: product.category?.name || 'Uncategorized',
-      description: product.description,
-      image: product.images?.find(img => img.isPrimary)?.url || product.images?.[0]?.url || '📦',
-      seller: product.user?.username || 'Unknown',
-      location: product.location || product.user?.location || 'N/A',
-      datePosted: product.createdAt,
-      condition: product.condition,
-      status: product.status,
-      views: product.views,
-      images: product.images,
-      user: product.user
-    }));
+    const transformedProducts = products.map(product => {
+      const images = product.images || [];
+      return {
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.price),
+        category: product.category?.name || 'Uncategorized',
+        description: product.description,
+        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '📦',
+        seller: product.user?.username || 'Unknown',
+        location: product.location || product.user?.location || 'N/A',
+        datePosted: product.createdAt,
+        condition: product.condition,
+        status: product.status,
+        views: product.views,
+        images: product.images,
+        user: product.user
+      };
+    });
 
     res.json({
       success: true,
@@ -166,9 +184,20 @@ router.get('/my', protect, async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id)
-      .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name');
+    const product = await Product.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'location']
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
 
     if (!product) {
       return res.status(404).json({
@@ -182,13 +211,14 @@ router.get('/:id', async (req, res) => {
     await product.save();
 
     // Transform product
+    const images = product.images || [];
     const transformedProduct = {
-      id: product._id,
+      id: product.id,
       title: product.title,
-      price: product.price,
+      price: parseFloat(product.price),
       category: product.category?.name || 'Uncategorized',
       description: product.description,
-      image: product.images?.find(img => img.isPrimary)?.url || product.images?.[0]?.url || '📦',
+      image: images.find(img => img.isPrimary)?.url || images[0]?.url || '📦',
       seller: product.user?.username || 'Unknown',
       location: product.location || product.user?.location || 'N/A',
       datePosted: product.createdAt,
@@ -238,8 +268,7 @@ router.post('/', protect, async (req, res) => {
     }
 
     // Find category
-    const Category = (await import('../models/Category.js')).default;
-    const categoryDoc = await Category.findOne({ name: category });
+    const categoryDoc = await Category.findOne({ where: { name: category } });
     
     if (!categoryDoc) {
       return res.status(400).json({
@@ -257,29 +286,40 @@ router.post('/', protect, async (req, res) => {
       })).filter(img => img.url); // Remove empty images
     }
 
-        // If no images provided, use default emoji
-        if (processedImages.length === 0) {
-          processedImages = [{
-            url: '📦',
-            isPrimary: true
-          }];
-        }
+    // If no images provided, use default emoji
+    if (processedImages.length === 0) {
+      processedImages = [{
+        url: '📦',
+        isPrimary: true
+      }];
+    }
 
     // Create product
     const product = await Product.create({
       title,
       description,
       price: Number(price),
-      category: categoryDoc._id,
+      categoryId: categoryDoc.id,
       condition: condition || 'Good',
       location,
-      user: req.user._id,
+      userId: req.user.id,
       images: processedImages
     });
 
-    const populatedProduct = await Product.findById(product._id)
-      .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name');
+    const populatedProduct = await Product.findByPk(product.id, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'location']
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
 
     res.status(201).json({
       success: true,
@@ -311,7 +351,7 @@ router.put('/:id/status', protect, async (req, res) => {
       });
     }
 
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -321,7 +361,7 @@ router.put('/:id/status', protect, async (req, res) => {
     }
 
     // Check if user owns the product
-    if (product.user.toString() !== req.user._id.toString()) {
+    if (product.userId !== req.user.id) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to update this product'
@@ -347,9 +387,20 @@ router.put('/:id/status', protect, async (req, res) => {
     product.status = status;
     await product.save();
 
-    const populatedProduct = await Product.findById(product._id)
-      .populate('user', 'username email firstName lastName location')
-      .populate('category', 'name');
+    const populatedProduct = await Product.findByPk(product.id, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'location']
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
 
     res.json({
       success: true,
@@ -372,7 +423,7 @@ router.put('/:id/status', protect, async (req, res) => {
  */
 router.delete('/:id', protect, async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -382,7 +433,7 @@ router.delete('/:id', protect, async (req, res) => {
     }
 
     // Check if user owns the product
-    if (product.user.toString() !== req.user._id.toString()) {
+    if (product.userId !== req.user.id) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to delete this product'
@@ -397,7 +448,7 @@ router.delete('/:id', protect, async (req, res) => {
       });
     }
 
-    await Product.findByIdAndDelete(req.params.id);
+    await product.destroy();
 
     res.json({
       success: true,
@@ -413,4 +464,3 @@ router.delete('/:id', protect, async (req, res) => {
 });
 
 export default router;
-

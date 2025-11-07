@@ -14,7 +14,7 @@ import messagesRoutes from './routes/messages.js';
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
+// Connect to PostgreSQL
 connectDB();
 
 const app = express();
@@ -41,7 +41,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     message: 'Marketplace API is running',
-    database: 'MongoDB'
+    database: 'PostgreSQL'
   });
 });
 
@@ -50,7 +50,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 API available at http://localhost:${PORT}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
-  console.log(`💾 Database: MongoDB`);
+  console.log(`💾 Database: PostgreSQL`);
 });
 
 export default app;

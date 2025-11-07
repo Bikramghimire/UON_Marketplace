@@ -1,5 +1,6 @@
 import express from 'express';
-import User from '../models/User.js';
+import { Op } from 'sequelize';
+import { User } from '../models/index.js';
 import { generateToken } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -23,7 +24,9 @@ router.post('/register', async (req, res) => {
 
     // Check if user already exists
     const userExists = await User.findOne({
-      $or: [{ email }, { username }]
+      where: {
+        [Op.or]: [{ email }, { username }]
+      }
     });
 
     if (userExists) {
@@ -45,7 +48,7 @@ router.post('/register', async (req, res) => {
     });
 
     // Generate token
-    const token = generateToken(user._id);
+    const token = generateToken(user.id);
 
     res.status(201).json({
       success: true,
@@ -53,7 +56,7 @@ router.post('/register', async (req, res) => {
       data: {
         token,
         user: {
-          _id: user._id,
+          id: user.id,
           username: user.username,
           email: user.email,
           firstName: user.firstName,
@@ -92,7 +95,10 @@ router.post('/login', async (req, res) => {
     }
 
     // Check if user exists and get password
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ 
+      where: { email },
+      attributes: { include: ['password'] }
+    });
 
     if (!user) {
       return res.status(401).json({
@@ -112,7 +118,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate token
-    const token = generateToken(user._id);
+    const token = generateToken(user.id);
 
     res.json({
       success: true,
@@ -120,7 +126,7 @@ router.post('/login', async (req, res) => {
       data: {
         token,
         user: {
-          _id: user._id,
+          id: user.id,
           username: user.username,
           email: user.email,
           firstName: user.firstName,
@@ -163,7 +169,9 @@ router.get('/me', async (req, res) => {
 
     const jwt = (await import('jsonwebtoken')).default;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await User.findByPk(decoded.id, {
+      attributes: { exclude: ['password'] }
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -175,7 +183,7 @@ router.get('/me', async (req, res) => {
     res.json({
       success: true,
       data: {
-        _id: user._id,
+        id: user.id,
         username: user.username,
         email: user.email,
         firstName: user.firstName,
@@ -196,4 +204,3 @@ router.get('/me', async (req, res) => {
 });
 
 export default router;
-

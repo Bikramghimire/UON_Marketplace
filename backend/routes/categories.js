@@ -1,5 +1,5 @@
 import express from 'express';
-import Category from '../models/Category.js';
+import { Category } from '../models/index.js';
 
 const router = express.Router();
 
@@ -10,7 +10,9 @@ const router = express.Router();
  */
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.find().sort({ name: 1 });
+    const categories = await Category.findAll({
+      order: [['name', 'ASC']]
+    });
 
     res.json({
       success: true,
@@ -61,4 +63,3 @@ router.post('/', async (req, res) => {
 });
 
 export default router;
-

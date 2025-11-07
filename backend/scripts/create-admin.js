@@ -3,9 +3,9 @@
  * Creates an admin user or promotes existing user to admin
  */
 
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import User from '../models/User.js';
+import { Op } from 'sequelize';
+import { User } from '../models/index.js';
 import { connectDB } from '../config/database.js';
 
 dotenv.config();
@@ -28,7 +28,9 @@ const createAdmin = async () => {
 
     // Check if admin user already exists
     let adminUser = await User.findOne({ 
-      $or: [{ email }, { username }, { role: 'admin' }] 
+      where: {
+        [Op.or]: [{ email }, { username }, { role: 'admin' }]
+      }
     });
 
     if (adminUser) {
@@ -39,7 +41,7 @@ const createAdmin = async () => {
         adminUser.username = username;
         adminUser.firstName = firstName;
         adminUser.lastName = lastName;
-        adminUser.password = password; // Will be hashed by pre-save middleware
+        adminUser.password = password; // Will be hashed by hook
         await adminUser.save();
         console.log('✅ Existing user promoted to admin');
       } else {
@@ -81,4 +83,3 @@ const createAdmin = async () => {
 
 // Run script
 createAdmin();
-

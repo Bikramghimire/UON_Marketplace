@@ -1,70 +1,102 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
-const productSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Product must belong to a user']
+const Product = sequelize.define('Product', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
   },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: [true, 'Product must belong to a category']
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id'
+    },
+    field: 'user_id'
+  },
+  categoryId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'categories',
+      key: 'id'
+    },
+    field: 'category_id'
   },
   title: {
-    type: String,
-    required: [true, 'Product title is required'],
-    trim: true,
-    maxlength: [200, 'Title cannot exceed 200 characters']
+    type: DataTypes.STRING(200),
+    allowNull: false,
+    validate: {
+      len: [1, 200]
+    }
   },
   description: {
-    type: String,
-    required: [true, 'Product description is required'],
-    trim: true
+    type: DataTypes.TEXT,
+    allowNull: false
   },
   price: {
-    type: Number,
-    required: [true, 'Product price is required'],
-    min: [0, 'Price cannot be negative']
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    validate: {
+      min: 0
+    }
   },
   condition: {
-    type: String,
-    enum: ['New', 'Like New', 'Excellent', 'Good', 'Fair'],
-    default: 'Good'
+    type: DataTypes.ENUM('New', 'Like New', 'Excellent', 'Good', 'Fair'),
+    defaultValue: 'Good',
+    allowNull: false
   },
   location: {
-    type: String,
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: true
   },
   status: {
-    type: String,
-    enum: ['active', 'sold', 'inactive'],
-    default: 'active'
+    type: DataTypes.ENUM('active', 'sold', 'inactive'),
+    defaultValue: 'active',
+    allowNull: false
   },
-  images: [{
-    url: {
-      type: String,
-      required: true
-    },
-    isPrimary: {
-      type: Boolean,
-      default: false
-    }
-  }],
+  images: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: []
+  },
   views: {
-    type: Number,
-    default: 0
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false
   }
 }, {
-  timestamps: true
+  tableName: 'products',
+  timestamps: true,
+  underscored: true,
+  indexes: [
+    {
+      fields: ['status', 'created_at']
+    },
+    {
+      fields: ['category_id', 'status']
+    },
+    {
+      fields: ['user_id']
+    }
+  ]
 });
 
-// Index for search functionality
-productSchema.index({ title: 'text', description: 'text' });
-productSchema.index({ status: 1, createdAt: -1 });
-productSchema.index({ category: 1, status: 1 });
-
-const Product = mongoose.model('Product', productSchema);
+Product.associate = (models) => {
+  Product.belongsTo(models.User, {
+    foreignKey: 'userId',
+    as: 'user'
+  });
+  Product.belongsTo(models.Category, {
+    foreignKey: 'categoryId',
+    as: 'category'
+  });
+  Product.hasMany(models.Message, {
+    foreignKey: 'productId',
+    as: 'messages'
+  });
+};
 
 export default Product;
-

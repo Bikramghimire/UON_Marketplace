@@ -1,70 +1,114 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
-const messageSchema = new mongoose.Schema({
-  sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Message must have a sender']
+const Message = sequelize.define('Message', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
   },
-  recipient: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Message must have a recipient']
+  senderId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id'
+    },
+    field: 'sender_id'
   },
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: false // Optional - message can be about a product or general
+  recipientId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id'
+    },
+    field: 'recipient_id'
+  },
+  productId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'products',
+      key: 'id'
+    },
+    field: 'product_id'
   },
   subject: {
-    type: String,
-    trim: true,
-    maxlength: [200, 'Subject cannot exceed 200 characters']
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    trim: true
   },
   content: {
-    type: String,
-    required: [true, 'Message content is required'],
-    trim: true
+    type: DataTypes.TEXT,
+    allowNull: false
   },
-  // Meeting details (optional)
   meetingDate: {
-    type: Date
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'meeting_date'
   },
   meetingTime: {
-    type: String, // Store time as string (e.g., "14:30")
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'meeting_time'
   },
-  meetingLocation: {
-    name: {
-      type: String, // Address or location name
-      trim: true
-    },
-    coordinates: {
-      lat: {
-        type: Number
-      },
-      lng: {
-        type: Number
-      }
-    }
+  meetingLocationName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'meeting_location_name'
+  },
+  meetingLocationLat: {
+    type: DataTypes.DECIMAL(10, 8),
+    allowNull: true,
+    field: 'meeting_location_lat'
+  },
+  meetingLocationLng: {
+    type: DataTypes.DECIMAL(11, 8),
+    allowNull: true,
+    field: 'meeting_location_lng'
   },
   read: {
-    type: Boolean,
-    default: false
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
   },
   readAt: {
-    type: Date
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'read_at'
   }
 }, {
-  timestamps: true
+  tableName: 'messages',
+  timestamps: true,
+  underscored: true,
+  indexes: [
+    {
+      fields: ['sender_id', 'recipient_id', 'created_at']
+    },
+    {
+      fields: ['recipient_id', 'read', 'created_at']
+    },
+    {
+      fields: ['product_id']
+    }
+  ]
 });
 
-// Index for efficient queries
-messageSchema.index({ sender: 1, recipient: 1, createdAt: -1 });
-messageSchema.index({ recipient: 1, read: 1, createdAt: -1 });
-messageSchema.index({ product: 1 });
-
-const Message = mongoose.model('Message', messageSchema);
+// Define associations
+Message.associate = (models) => {
+  Message.belongsTo(models.User, {
+    foreignKey: 'senderId',
+    as: 'sender'
+  });
+  Message.belongsTo(models.User, {
+    foreignKey: 'recipientId',
+    as: 'recipient'
+  });
+  Message.belongsTo(models.Product, {
+    foreignKey: 'productId',
+    as: 'product'
+  });
+};
 
 export default Message;
-

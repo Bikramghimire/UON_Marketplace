@@ -5,10 +5,9 @@
  */
 
 import express from 'express';
+import { Op } from 'sequelize';
 import { protect, admin } from '../middleware/auth.js';
-import Product from '../models/Product.js';
-import User from '../models/User.js';
-import Category from '../models/Category.js';
+import { Product, User, Category } from '../models/index.js';
 
 const router = express.Router();
 
@@ -22,23 +21,30 @@ router.use(admin);
  */
 router.get('/dashboard', async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
-    const totalProducts = await Product.countDocuments();
-    const activeProducts = await Product.countDocuments({ status: 'active' });
-    const soldProducts = await Product.countDocuments({ status: 'sold' });
-    const totalCategories = await Category.countDocuments();
+    const totalUsers = await User.count();
+    const totalProducts = await Product.count();
+    const activeProducts = await Product.count({ where: { status: 'active' } });
+    const soldProducts = await Product.count({ where: { status: 'sold' } });
+    const totalCategories = await Category.count();
     
     // Revenue calculation (sold products)
-    const soldProductsData = await Product.find({ status: 'sold' }).select('price');
-    const totalRevenue = soldProductsData.reduce((sum, product) => sum + product.price, 0);
+    const soldProductsData = await Product.findAll({ 
+      where: { status: 'sold' },
+      attributes: ['price']
+    });
+    const totalRevenue = soldProductsData.reduce((sum, product) => sum + parseFloat(product.price || 0), 0);
     
     // Recent users (last 7 days)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const recentUsers = await User.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+    const recentUsers = await User.count({ 
+      where: { createdAt: { [Op.gte]: sevenDaysAgo } }
+    });
     
     // Recent products (last 7 days)
-    const recentProducts = await Product.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+    const recentProducts = await Product.count({ 
+      where: { createdAt: { [Op.gte]: sevenDaysAgo } }
+    });
 
     res.json({
       success: true,
@@ -79,31 +85,31 @@ router.get('/users', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
     const search = req.query.search || '';
     const role = req.query.role || '';
 
-    // Build query
-    let query = {};
+    // Build where clause
+    const where = {};
     if (search) {
-      query.$or = [
-        { username: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } }
+      where[Op.or] = [
+        { username: { [Op.iLike]: `%${search}%` } },
+        { email: { [Op.iLike]: `%${search}%` } },
+        { firstName: { [Op.iLike]: `%${search}%` } },
+        { lastName: { [Op.iLike]: `%${search}%` } }
       ];
     }
     if (role) {
-      query.role = role;
+      where.role = role;
     }
 
-    const users = await User.find(query)
-      .select('-password')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const total = await User.countDocuments(query);
+    const { count, rows: users } = await User.findAndCountAll({
+      where,
+      attributes: { exclude: ['password'] },
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset
+    });
 
     res.json({
       success: true,
@@ -111,8 +117,8 @@ router.get('/users', async (req, res) => {
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit)
+        total: count,
+        pages: Math.ceil(count / limit)
       }
     });
   } catch (error) {
@@ -131,7 +137,9 @@ router.get('/users', async (req, res) => {
  */
 router.get('/users/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findByPk(req.params.id, {
+      attributes: { exclude: ['password'] }
+    });
     
     if (!user) {
       return res.status(404).json({
@@ -141,7 +149,14 @@ router.get('/users/:id', async (req, res) => {
     }
 
     // Get user's products
-    const products = await Product.find({ user: user._id }).populate('category', 'name');
+    const products = await Product.findAll({
+      where: { userId: user.id },
+      include: [{
+        model: Category,
+        as: 'category',
+        attributes: ['id', 'name']
+      }]
+    });
 
     res.json({
       success: true,
@@ -171,7 +186,7 @@ router.put('/users/:id', async (req, res) => {
   try {
     const { role, firstName, lastName, phone, location } = req.body;
 
-    const user = await User.findById(req.params.id);
+    const user = await User.findByPk(req.params.id);
 
     if (!user) {
       return res.status(404).json({
@@ -210,7 +225,7 @@ router.put('/users/:id', async (req, res) => {
  */
 router.delete('/users/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findByPk(req.params.id);
 
     if (!user) {
       return res.status(404).json({
@@ -220,18 +235,18 @@ router.delete('/users/:id', async (req, res) => {
     }
 
     // Check if trying to delete yourself
-    if (user._id.toString() === req.user._id.toString()) {
+    if (user.id === req.user.id) {
       return res.status(400).json({
         success: false,
         message: 'You cannot delete your own account'
       });
     }
 
-    // Delete user's products first
-    await Product.deleteMany({ user: user._id });
+    // Delete user's products first (cascade should handle this, but explicit for clarity)
+    await Product.destroy({ where: { userId: user.id } });
 
     // Delete user
-    await User.findByIdAndDelete(req.params.id);
+    await user.destroy();
 
     res.json({
       success: true,
@@ -255,30 +270,40 @@ router.get('/products', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
     const status = req.query.status || '';
     const search = req.query.search || '';
 
-    // Build query
-    let query = {};
+    // Build where clause
+    const where = {};
     if (status) {
-      query.status = status;
+      where.status = status;
     }
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+      where[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
-    const products = await Product.find(query)
-      .populate('user', 'username email firstName lastName')
-      .populate('category', 'name')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const total = await Product.countDocuments(query);
+    const { count, rows: products } = await Product.findAndCountAll({
+      where,
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'email', 'firstName', 'lastName']
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name']
+        }
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset
+    });
 
     res.json({
       success: true,
@@ -286,8 +311,8 @@ router.get('/products', async (req, res) => {
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit)
+        total: count,
+        pages: Math.ceil(count / limit)
       }
     });
   } catch (error) {
@@ -306,9 +331,20 @@ router.get('/products', async (req, res) => {
  */
 router.get('/products/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id)
-      .populate('user', 'username email firstName lastName phone location')
-      .populate('category', 'name description');
+    const product = await Product.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'phone', 'location']
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name', 'description']
+        }
+      ]
+    });
 
     if (!product) {
       return res.status(404).json({
@@ -339,7 +375,7 @@ router.put('/products/:id', async (req, res) => {
   try {
     const { status, title, description, price, condition, location } = req.body;
 
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -379,7 +415,7 @@ router.put('/products/:id', async (req, res) => {
  */
 router.delete('/products/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -388,7 +424,7 @@ router.delete('/products/:id', async (req, res) => {
       });
     }
 
-    await Product.findByIdAndDelete(req.params.id);
+    await product.destroy();
 
     res.json({
       success: true,
@@ -410,7 +446,9 @@ router.delete('/products/:id', async (req, res) => {
  */
 router.get('/categories', async (req, res) => {
   try {
-    const categories = await Category.find().sort({ name: 1 });
+    const categories = await Category.findAll({
+      order: [['name', 'ASC']]
+    });
 
     res.json({
       success: true,
@@ -432,7 +470,7 @@ router.get('/categories', async (req, res) => {
  */
 router.get('/categories/:id', async (req, res) => {
   try {
-    const category = await Category.findById(req.params.id);
+    const category = await Category.findByPk(req.params.id);
 
     if (!category) {
       return res.status(404).json({
@@ -473,7 +511,7 @@ router.post('/categories', async (req, res) => {
 
     // Check if category already exists
     const existingCategory = await Category.findOne({ 
-      name: { $regex: new RegExp(`^${name}$`, 'i') } 
+      where: { name: { [Op.iLike]: name.trim() } }
     });
 
     if (existingCategory) {
@@ -495,15 +533,6 @@ router.post('/categories', async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating category:', error);
-    
-    // Handle duplicate key error
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: 'Category with this name already exists'
-      });
-    }
-
     res.status(500).json({
       success: false,
       message: 'Error creating category',
@@ -520,7 +549,7 @@ router.put('/categories/:id', async (req, res) => {
   try {
     const { name, description } = req.body;
 
-    const category = await Category.findById(req.params.id);
+    const category = await Category.findByPk(req.params.id);
 
     if (!category) {
       return res.status(404).json({
@@ -532,8 +561,10 @@ router.put('/categories/:id', async (req, res) => {
     // Check if name is being changed and if it conflicts
     if (name && name.trim() !== category.name) {
       const existingCategory = await Category.findOne({ 
-        name: { $regex: new RegExp(`^${name.trim()}$`, 'i') },
-        _id: { $ne: category._id }
+        where: { 
+          name: { [Op.iLike]: name.trim() },
+          id: { [Op.ne]: category.id }
+        }
       });
 
       if (existingCategory) {
@@ -557,15 +588,6 @@ router.put('/categories/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating category:', error);
-    
-    // Handle duplicate key error
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: 'Category with this name already exists'
-      });
-    }
-
     res.status(500).json({
       success: false,
       message: 'Error updating category',
@@ -580,7 +602,7 @@ router.put('/categories/:id', async (req, res) => {
  */
 router.delete('/categories/:id', async (req, res) => {
   try {
-    const category = await Category.findById(req.params.id);
+    const category = await Category.findByPk(req.params.id);
 
     if (!category) {
       return res.status(404).json({
@@ -590,7 +612,7 @@ router.delete('/categories/:id', async (req, res) => {
     }
 
     // Check if category is being used by any products
-    const productsCount = await Product.countDocuments({ category: category._id });
+    const productsCount = await Product.count({ where: { categoryId: category.id } });
 
     if (productsCount > 0) {
       return res.status(400).json({
@@ -599,7 +621,7 @@ router.delete('/categories/:id', async (req, res) => {
       });
     }
 
-    await Category.findByIdAndDelete(req.params.id);
+    await category.destroy();
 
     res.json({
       success: true,

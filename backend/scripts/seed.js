@@ -1,10 +1,7 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
-import User from '../models/User.js';
-import Category from '../models/Category.js';
-import Product from '../models/Product.js';
+import { User, Category, Product, Message } from '../models/index.js';
 import { connectDB } from '../config/database.js';
+import sequelize from '../config/database.js';
 
 dotenv.config();
 
@@ -18,34 +15,29 @@ const seedDatabase = async () => {
     // Connect to database
     await connectDB();
 
-    // Clear existing data
-    await User.deleteMany({});
-    await Category.deleteMany({});
-    await Product.deleteMany({});
+    // Clear existing data using TRUNCATE CASCADE to handle foreign key constraints
+    await sequelize.query('TRUNCATE TABLE messages, products, categories, users RESTART IDENTITY CASCADE');
     console.log('✅ Cleared existing data\n');
 
     // Create categories
     console.log('📦 Creating categories...');
-    const categories = await Category.insertMany([
-      { name: 'Textbooks', description: 'Academic textbooks and course materials', icon: '📚' },
-      { name: 'Electronics', description: 'Laptops, phones, tablets, and more', icon: '💻' },
-      { name: 'Clothing', description: 'Apparel and accessories', icon: '👕' },
-      { name: 'Furniture', description: 'Desks, chairs, and room essentials', icon: '🪑' }
+    const categories = await Category.bulkCreate([
+      { name: 'Textbooks', description: 'Academic textbooks and course materials' },
+      { name: 'Electronics', description: 'Laptops, phones, tablets, and more' },
+      { name: 'Clothing', description: 'Apparel and accessories' },
+      { name: 'Furniture', description: 'Desks, chairs, and room essentials' }
     ]);
     console.log(`✅ Created ${categories.length} categories\n`);
 
-    // Create users with hashed passwords
-    // Note: insertMany bypasses Mongoose middleware, so we need to hash passwords manually
+    // Create users
     console.log('👤 Creating users...');
-    const password = 'password123';
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const password = 'password123'; // Will be hashed by hooks
 
-    const users = await User.insertMany([
+    const users = await User.bulkCreate([
       {
         username: 'admin',
         email: 'admin@uon.edu',
-        password: hashedPassword,
+        password: password,
         firstName: 'Admin',
         lastName: 'User',
         location: 'Admin Office',
@@ -54,7 +46,7 @@ const seedDatabase = async () => {
       {
         username: 'johndoe',
         email: 'john@example.com',
-        password: hashedPassword,
+        password: password,
         firstName: 'John',
         lastName: 'Doe',
         location: 'Campus Dorm'
@@ -62,7 +54,7 @@ const seedDatabase = async () => {
       {
         username: 'sarahm',
         email: 'sarah@example.com',
-        password: hashedPassword,
+        password: password,
         firstName: 'Sarah',
         lastName: 'Miller',
         location: 'Off-Campus'
@@ -70,7 +62,7 @@ const seedDatabase = async () => {
       {
         username: 'miket',
         email: 'mike@example.com',
-        password: hashedPassword,
+        password: password,
         firstName: 'Mike',
         lastName: 'Taylor',
         location: 'Student Union'
@@ -78,7 +70,7 @@ const seedDatabase = async () => {
       {
         username: 'emilyr',
         email: 'emily@example.com',
-        password: hashedPassword,
+        password: password,
         firstName: 'Emily',
         lastName: 'Roberts',
         location: 'Campus Dorm'
@@ -88,15 +80,15 @@ const seedDatabase = async () => {
 
     // Create products
     console.log('🛍️  Creating products...');
-    const products = await Product.insertMany([
+    const products = await Product.bulkCreate([
       {
         title: 'Calculus Textbook - 3rd Edition',
         description: 'Used but in excellent condition. No highlighting or notes.',
         price: 45.99,
         condition: 'Excellent',
         location: 'Campus Dorm',
-        category: categories[0]._id,
-        user: users[0]._id,
+        categoryId: categories[0].id,
+        userId: users[0].id,
         images: [{ url: '📚', isPrimary: true }]
       },
       {
@@ -105,8 +97,8 @@ const seedDatabase = async () => {
         price: 899.99,
         condition: 'Like New',
         location: 'Off-Campus',
-        category: categories[1]._id,
-        user: users[1]._id,
+        categoryId: categories[1].id,
+        userId: users[1].id,
         images: [{ url: '💻', isPrimary: true }]
       },
       {
@@ -115,8 +107,8 @@ const seedDatabase = async () => {
         price: 65.00,
         condition: 'Good',
         location: 'Student Union',
-        category: categories[2]._id,
-        user: users[2]._id,
+        categoryId: categories[2].id,
+        userId: users[2].id,
         images: [{ url: '👟', isPrimary: true }]
       },
       {
@@ -125,8 +117,8 @@ const seedDatabase = async () => {
         price: 35.00,
         condition: 'Good',
         location: 'Campus Dorm',
-        category: categories[3]._id,
-        user: users[3]._id,
+        categoryId: categories[3].id,
+        userId: users[3].id,
         images: [{ url: '🪑', isPrimary: true }]
       },
       {
@@ -135,8 +127,8 @@ const seedDatabase = async () => {
         price: 450.00,
         condition: 'Fair',
         location: 'Off-Campus',
-        category: categories[1]._id,
-        user: users[0]._id,
+        categoryId: categories[1].id,
+        userId: users[0].id,
         images: [{ url: '📱', isPrimary: true }]
       },
       {
@@ -145,8 +137,8 @@ const seedDatabase = async () => {
         price: 85.00,
         condition: 'Excellent',
         location: 'Library',
-        category: categories[0]._id,
-        user: users[1]._id,
+        categoryId: categories[0].id,
+        userId: users[1].id,
         images: [{ url: '📖', isPrimary: true }]
       },
       {
@@ -155,8 +147,8 @@ const seedDatabase = async () => {
         price: 40.00,
         condition: 'Good',
         location: 'Campus Dorm',
-        category: categories[2]._id,
-        user: users[2]._id,
+        categoryId: categories[2].id,
+        userId: users[2].id,
         images: [{ url: '🧥', isPrimary: true }]
       },
       {
@@ -165,8 +157,8 @@ const seedDatabase = async () => {
         price: 55.00,
         condition: 'Good',
         location: 'Off-Campus',
-        category: categories[3]._id,
-        user: users[3]._id,
+        categoryId: categories[3].id,
+        userId: users[3].id,
         images: [{ url: '🪑', isPrimary: true }]
       }
     ]);
@@ -193,4 +185,3 @@ const seedDatabase = async () => {
 
 // Run seeding
 seedDatabase();
-

@@ -94,7 +94,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
           </div>
         </div>
         <div className="product-footer">
-          <div className="product-price">${product.price?.toFixed(2) || '0.00'}</div>
+          <div className="product-price">${parseFloat(product.price || 0).toFixed(2)}</div>
           <div className="product-date">{product.datePosted}</div>
         </div>
         <div className="product-actions">

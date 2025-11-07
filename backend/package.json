@@ -11,6 +11,7 @@
     "create-admin": "node scripts/create-admin.js",
     "migrate": "node scripts/migrate.js",
     "fix-passwords": "node scripts/fix-passwords.js",
+    "fix-admin": "node scripts/fix-admin-password.js",
     "drop-db": "node scripts/drop-database.js",
     "drop-db:all": "node scripts/drop-database.js --drop-all",
     "drop-db:force": "node scripts/drop-database.js --force",

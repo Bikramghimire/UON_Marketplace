@@ -42,6 +42,7 @@ const createAdmin = async () => {
         adminUser.firstName = firstName;
         adminUser.lastName = lastName;
         adminUser.password = password; // Will be hashed by hook
+        adminUser.emailVerified = true; // Admin users don't need email verification
         await adminUser.save();
         console.log('✅ Existing user promoted to admin');
       } else {
@@ -49,6 +50,7 @@ const createAdmin = async () => {
         adminUser.password = password;
         adminUser.firstName = firstName;
         adminUser.lastName = lastName;
+        adminUser.emailVerified = true; // Ensure admin is verified
         await adminUser.save();
         console.log('✅ Admin user password updated');
       }
@@ -61,7 +63,8 @@ const createAdmin = async () => {
         firstName,
         lastName,
         location: 'Admin Office',
-        role: 'admin'
+        role: 'admin',
+        emailVerified: true // Admin users don't need email verification
       });
       console.log('✅ New admin user created');
     }

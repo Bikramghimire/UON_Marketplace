@@ -303,8 +303,8 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!user.emailVerified) {
+    // Check if email is verified (skip for admin users)
+    if (!user.emailVerified && user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Please verify your email before logging in. Check your email for the verification code.',

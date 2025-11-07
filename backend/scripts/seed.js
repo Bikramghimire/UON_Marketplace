@@ -32,16 +32,18 @@ const seedDatabase = async () => {
     // Create users
     console.log('👤 Creating users...');
     const password = 'password123'; // Will be hashed by hooks
+    const adminPassword = 'admin123'; // Admin password
 
     const users = await User.bulkCreate([
       {
         username: 'admin',
         email: 'admin@uon.edu',
-        password: password,
+        password: adminPassword, // Admin uses different password
         firstName: 'Admin',
         lastName: 'User',
         location: 'Admin Office',
-        role: 'admin'
+        role: 'admin',
+        emailVerified: true // Admin users don't need email verification
       },
       {
         username: 'johndoe',
@@ -49,7 +51,8 @@ const seedDatabase = async () => {
         password: password,
         firstName: 'John',
         lastName: 'Doe',
-        location: 'Campus Dorm'
+        location: 'Campus Dorm',
+        emailVerified: true // Seed users don't need email verification
       },
       {
         username: 'sarahm',
@@ -57,7 +60,8 @@ const seedDatabase = async () => {
         password: password,
         firstName: 'Sarah',
         lastName: 'Miller',
-        location: 'Off-Campus'
+        location: 'Off-Campus',
+        emailVerified: true // Seed users don't need email verification
       },
       {
         username: 'miket',
@@ -65,7 +69,8 @@ const seedDatabase = async () => {
         password: password,
         firstName: 'Mike',
         lastName: 'Taylor',
-        location: 'Student Union'
+        location: 'Student Union',
+        emailVerified: true // Seed users don't need email verification
       },
       {
         username: 'emilyr',
@@ -73,7 +78,8 @@ const seedDatabase = async () => {
         password: password,
         firstName: 'Emily',
         lastName: 'Roberts',
-        location: 'Campus Dorm'
+        location: 'Campus Dorm',
+        emailVerified: true // Seed users don't need email verification
       }
     ], {
       individualHooks: true // This ensures beforeCreate hooks run to hash passwords
@@ -173,10 +179,12 @@ const seedDatabase = async () => {
     console.log(`   - Categories: ${categories.length}`);
     console.log(`   - Users: ${users.length}`);
     console.log(`   - Products: ${products.length}\n`);
-    console.log('💡 Test accounts (password: password123):');
-    console.log(`   👑 Admin: admin@uon.edu`);
-    console.log(`   - john@example.com`);
-    console.log(`   - sarah@example.com\n`);
+    console.log('💡 Test accounts:');
+    console.log(`   👑 Admin: admin@uon.edu (password: admin123)`);
+    console.log(`   - john@example.com (password: password123)`);
+    console.log(`   - sarah@example.com (password: password123)`);
+    console.log(`   - mike@example.com (password: password123)`);
+    console.log(`   - emily@example.com (password: password123)\n`);
 
     process.exit(0);
   } catch (error) {

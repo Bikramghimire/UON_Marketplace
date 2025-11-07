@@ -152,7 +152,7 @@ const ProductManagement = () => {
                         <td>{product.title}</td>
                         <td>{product.user?.username || 'Unknown'}</td>
                         <td>{product.category?.name || 'N/A'}</td>
-                        <td>${product.price.toFixed(2)}</td>
+                        <td>${parseFloat(product.price || 0).toFixed(2)}</td>
                         <td>
                           <span className={`status-badge ${product.status}`}>
                             {product.status}

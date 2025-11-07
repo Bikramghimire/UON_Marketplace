@@ -98,7 +98,7 @@ const ProductDetail = () => {
                   {product.category?.name || product.category || 'Uncategorized'}
                 </div>
                 <h1 className="product-title">{product.title}</h1>
-                <div className="product-price-large">${product.price?.toFixed(2) || '0.00'}</div>
+                <div className="product-price-large">${parseFloat(product.price || 0).toFixed(2)}</div>
               </div>
 
               <div className="product-meta-info">

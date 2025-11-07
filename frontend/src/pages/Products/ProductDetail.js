@@ -148,8 +148,11 @@ const ProductDetail = () => {
 
               {/* Action Buttons */}
               <div className="product-actions">
-                {isAuthenticated && product?.user && 
-                 (product.user._id !== user?._id && product.user !== user?._id) ? (
+                {isAuthenticated && product?.user && (() => {
+                  const sellerId = product.user.id || product.user._id;
+                  const currentUserId = user?.id || user?._id;
+                  return sellerId && currentUserId && sellerId !== currentUserId;
+                })() ? (
                   <button 
                     className="btn btn-primary btn-contact"
                     onClick={() => setShowComposeMessage(true)}

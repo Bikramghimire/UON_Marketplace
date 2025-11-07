@@ -53,9 +53,31 @@ export const getConversation = async (userId, productId = null) => {
       throw new Error('You must be logged in to view messages');
     }
 
-    const url = productId 
-      ? `${API_URL}/messages/conversation/${userId}?productId=${productId}`
-      : `${API_URL}/messages/conversation/${userId}`;
+    // Extract userId - ensure it's a string
+    let extractedUserId = userId;
+    if (typeof userId === 'object' && userId !== null) {
+      extractedUserId = userId.id || userId._id || null;
+    }
+    
+    if (!extractedUserId || typeof extractedUserId !== 'string') {
+      throw new Error('Invalid user ID');
+    }
+
+    // Extract productId - ensure it's a string or null
+    let extractedProductId = productId;
+    if (productId) {
+      if (typeof productId === 'object' && productId !== null) {
+        extractedProductId = productId.id || productId._id || null;
+      }
+      // Only include productId in URL if it's a valid string
+      if (!extractedProductId || typeof extractedProductId !== 'string') {
+        extractedProductId = null;
+      }
+    }
+
+    const url = extractedProductId 
+      ? `${API_URL}/messages/conversation/${extractedUserId}?productId=${extractedProductId}`
+      : `${API_URL}/messages/conversation/${extractedUserId}`;
 
     const response = await fetch(url, {
       method: 'GET',

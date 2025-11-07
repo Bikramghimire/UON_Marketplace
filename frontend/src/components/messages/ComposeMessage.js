@@ -50,10 +50,33 @@ const ComposeMessage = ({ recipient, product, onClose, onSent }) => {
         };
       }
 
+      // Extract recipient ID - ensure it's a string, not an object
+      let recipientId = null;
+      if (typeof recipient === 'string') {
+        recipientId = recipient;
+      } else if (recipient && typeof recipient === 'object') {
+        recipientId = recipient.id || recipient._id || null;
+      }
+
+      if (!recipientId) {
+        setError('Invalid recipient. Please try again.');
+        return;
+      }
+
+      // Extract product ID - ensure it's a string or null
+      let productId = null;
+      if (product) {
+        if (typeof product === 'string') {
+          productId = product;
+        } else if (typeof product === 'object') {
+          productId = product.id || product._id || null;
+        }
+      }
+
       const messageData = {
-        recipient: recipient._id || recipient,
+        recipient: recipientId,
         content: content.trim(),
-        product: product?._id || product?.id || null,
+        product: productId,
         subject: subject.trim() || `Inquiry about: ${product?.title || 'Product'}`,
         ...meetingDetails
       };

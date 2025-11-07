@@ -108,6 +108,22 @@ router.get('/conversation/:userId', protect, async (req, res) => {
     const { productId } = req.query;
     const currentUserId = req.user.id;
 
+    // Validate userId is a valid UUID string
+    if (!userId || typeof userId !== 'string' || userId === '[object Object]') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format'
+      });
+    }
+
+    // Validate productId if provided
+    if (productId && (typeof productId !== 'string' || productId === '[object Object]')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID format'
+      });
+    }
+
     // Build query
     const whereClause = {
       [Op.or]: [
@@ -206,8 +222,28 @@ router.post('/', protect, async (req, res) => {
       });
     }
 
+    // Extract recipient ID if it's an object
+    let recipientId = recipient;
+    if (typeof recipient === 'object' && recipient !== null) {
+      recipientId = recipient.id || recipient._id || null;
+      if (!recipientId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid recipient format. Expected UUID string.'
+        });
+      }
+    }
+
+    // Ensure recipient is a string
+    if (typeof recipientId !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: 'Recipient must be a valid UUID string'
+      });
+    }
+
     // Prevent sending message to yourself
-    if (recipient === senderId) {
+    if (recipientId === senderId) {
       return res.status(400).json({
         success: false,
         message: 'You cannot send a message to yourself'
@@ -215,7 +251,7 @@ router.post('/', protect, async (req, res) => {
     }
 
     // Verify recipient exists
-    const recipientUser = await User.findByPk(recipient);
+    const recipientUser = await User.findByPk(recipientId);
     if (!recipientUser) {
       return res.status(404).json({
         success: false,
@@ -229,7 +265,27 @@ router.post('/', protect, async (req, res) => {
     let productIdValue = null;
     
     if (product) {
-      productDoc = await Product.findByPk(product);
+      // Extract product ID if it's an object
+      let extractedProductId = product;
+      if (typeof product === 'object' && product !== null) {
+        extractedProductId = product.id || product._id || null;
+        if (!extractedProductId) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid product format. Expected UUID string.'
+          });
+        }
+      }
+
+      // Ensure product is a string
+      if (typeof extractedProductId !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: 'Product must be a valid UUID string'
+        });
+      }
+
+      productDoc = await Product.findByPk(extractedProductId);
       if (!productDoc) {
         return res.status(404).json({
           success: false,
@@ -240,13 +296,13 @@ router.post('/', protect, async (req, res) => {
       if (!messageSubject) {
         messageSubject = `Inquiry about: ${productDoc.title}`;
       }
-      productIdValue = product;
+      productIdValue = extractedProductId;
     }
 
     // Prepare message data
     const messageData = {
       senderId: senderId,
-      recipientId: recipient,
+      recipientId: recipientId,
       productId: productIdValue,
       subject: messageSubject || 'New Message',
       content: content

@@ -18,7 +18,18 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
   const [meetingTime, setMeetingTime] = useState('');
   const [meetingLocation, setMeetingLocation] = useState(null);
   const messagesEndRef = useRef(null);
-  const productId = conversation.lastMessage?.product?._id || conversation.lastMessage?.product;
+  
+  // Extract product ID properly - handle both object and string
+  const getProductId = () => {
+    const product = conversation.lastMessage?.product;
+    if (!product) return null;
+    if (typeof product === 'string') return product;
+    if (typeof product === 'object') {
+      return product.id || product._id || null;
+    }
+    return null;
+  };
+  const productId = getProductId();
 
   const otherUser = conversation.otherUser?.[0] || conversation.otherUser;
 
@@ -40,7 +51,20 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
     try {
       setLoading(true);
       setError(null);
-      const otherUserId = otherUser._id || otherUser;
+      
+      // Extract other user ID properly - handle both object and string
+      let otherUserId = null;
+      if (typeof otherUser === 'string') {
+        otherUserId = otherUser;
+      } else if (otherUser && typeof otherUser === 'object') {
+        otherUserId = otherUser.id || otherUser._id || null;
+      }
+      
+      if (!otherUserId) {
+        setError('Invalid user ID. Please try again.');
+        return;
+      }
+      
       const data = await getConversation(otherUserId, productId);
       setMessages(data);
     } catch (error) {
@@ -63,7 +87,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
       let productIdValue = null;
       if (productId) {
         if (typeof productId === 'object') {
-          productIdValue = productId._id || productId.id || null;
+          productIdValue = productId.id || productId._id || null;
         } else {
           productIdValue = productId;
         }
@@ -84,7 +108,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
       }
 
       const messageData = {
-        recipient: otherUser._id || otherUser,
+        recipient: otherUser.id || otherUser._id || otherUser,
         content: newMessage.trim(),
         product: productIdValue,
         subject: conversation.lastMessage?.product?.title 
@@ -182,9 +206,10 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
         ) : (
           <div className="messages-list">
             {messages.map((message) => {
-              const senderId = message.sender?._id || message.sender;
-              const isSender = senderId === user?._id || 
-                              (typeof senderId === 'string' && senderId === (user?._id || user?.id));
+              const senderId = message.sender?.id || message.sender?._id || message.sender;
+              const currentUserId = user?.id || user?._id;
+              const isSender = senderId === currentUserId || 
+                              (typeof senderId === 'string' && senderId === currentUserId);
               
               return (
                 <div

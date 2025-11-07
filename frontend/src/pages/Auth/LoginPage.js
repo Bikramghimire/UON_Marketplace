@@ -9,7 +9,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login, user, loading, error } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
+    emailOrUsername: '',
     password: '',
   });
   const [formError, setFormError] = useState('');
@@ -36,14 +36,21 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     // Basic validation
-    if (!formData.email || !formData.password) {
+    if (!formData.emailOrUsername || !formData.password) {
       setFormError('Please fill in all fields');
       setIsSubmitting(false);
       return;
     }
 
+    // Determine if input is email or username
+    const isEmail = formData.emailOrUsername.includes('@');
+    const loginData = {
+      [isEmail ? 'email' : 'username']: formData.emailOrUsername,
+      password: formData.password
+    };
+
     try {
-      await login(formData);
+      await login(loginData);
       navigate('/products');
     } catch (error) {
       setFormError(error.message || 'Login failed. Please check your credentials.');
@@ -71,14 +78,14 @@ const LoginPage = () => {
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="emailOrUsername">Email or Username</label>
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  id="emailOrUsername"
+                  name="emailOrUsername"
+                  value={formData.emailOrUsername}
                   onChange={handleChange}
-                  placeholder="Enter your email"
+                  placeholder="Enter your email or username"
                   required
                   disabled={isSubmitting}
                 />

@@ -75,7 +75,9 @@ const seedDatabase = async () => {
         lastName: 'Roberts',
         location: 'Campus Dorm'
       }
-    ]);
+    ], {
+      individualHooks: true // This ensures beforeCreate hooks run to hash passwords
+    });
     console.log(`✅ Created ${users.length} users\n`);
 
     // Create products

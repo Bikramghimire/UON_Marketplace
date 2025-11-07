@@ -84,31 +84,62 @@ router.post('/register', async (req, res) => {
  */
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, username, password } = req.body;
 
-    // Validation
-    if (!email || !password) {
+    // Trim whitespace from email and username
+    if (email) email = email.trim();
+    if (username) username = username.trim();
+    if (password) password = password.trim();
+
+    console.log('Login attempt:', { email, username, hasPassword: !!password });
+
+    // Validation - accept either email or username
+    if ((!email && !username) || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password'
+        message: 'Please provide email or username, and password'
       });
     }
 
+    // Build where clause to search by email or username
+    const whereClause = {};
+    if (email) {
+      whereClause.email = email;
+    } else if (username) {
+      whereClause.username = username;
+    }
+
+    console.log('Searching for user with:', whereClause);
+
     // Check if user exists and get password
     const user = await User.findOne({ 
-      where: { email },
+      where: whereClause,
       attributes: { include: ['password'] }
     });
 
     if (!user) {
+      console.log('User not found for:', whereClause);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
 
+    console.log('User found:', { id: user.id, username: user.username, email: user.email });
+    console.log('Stored password hash:', user.password ? user.password.substring(0, 20) + '...' : 'null');
+    console.log('Password length:', user.password ? user.password.length : 0);
+
     // Check password
     const isMatch = await user.matchPassword(password);
+
+    console.log('Password match:', isMatch);
+    if (!isMatch) {
+      console.log('Password comparison failed');
+      // For debugging: check if password is plain text
+      if (user.password === password) {
+        console.log('WARNING: Password stored as plain text! It should be hashed.');
+      }
+    }
 
     if (!isMatch) {
       return res.status(401).json({

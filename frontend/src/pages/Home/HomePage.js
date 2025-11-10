@@ -1,34 +1,42 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
-import './HomePage.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import "./HomePage.css";
 
 const HomePage = () => {
   const { isAuthenticated } = useAuth();
   return (
     <div className="home-page">
       <Header />
-      
+
       <main className="main-content">
         {/* Hero Section */}
         <section className="hero-section">
           <div className="hero-content">
             <h1 className="hero-title">Welcome to UON Marketplace</h1>
             <p className="hero-subtitle">
-              Discover amazing products from students and local vendors. 
-              Buy, sell, and trade with your university community.
+              Discover amazing products from students and local vendors. Buy,
+              sell, and trade with your university community.
             </p>
-                <div className="hero-buttons">
-                  <Link to="/products" className="btn btn-primary">Browse Products</Link>
-                  <Link to="/student-essentials" className="btn btn-secondary">Student Essentials</Link>
-                  {isAuthenticated ? (
-                    <Link to="/sell" className="btn btn-secondary">Sell Something</Link>
-                  ) : (
-                    <Link to="/signup" className="btn btn-secondary">Sell Something</Link>
-                  )}
-                </div>
+            <div className="hero-buttons">
+              <Link to="/products" className="btn btn-primary">
+                Browse Products
+              </Link>
+              <Link to="/student-essentials" className="btn btn-secondary">
+                Student Essentials
+              </Link>
+              {isAuthenticated ? (
+                <Link to="/sell" className="btn btn-secondary">
+                  Sell
+                </Link>
+              ) : (
+                <Link to="/signup" className="btn btn-secondary">
+                  Sell
+                </Link>
+              )}
+            </div>
           </div>
         </section>
 
@@ -40,22 +48,34 @@ const HomePage = () => {
               <div className="feature-card">
                 <div className="feature-icon">🛍️</div>
                 <h3>Easy Buying</h3>
-                <p>Find great deals on textbooks, electronics, and more from fellow students.</p>
+                <p>
+                  Find great deals on textbooks, electronics, and more from
+                  fellow students.
+                </p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">💰</div>
                 <h3>Quick Selling</h3>
-                <p>Turn your unused items into cash with our simple selling process.</p>
+                <p>
+                  Turn your unused items into cash with our simple selling
+                  process.
+                </p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">🏫</div>
                 <h3>Campus Community</h3>
-                <p>Connect with your university community in a safe, trusted environment.</p>
+                <p>
+                  Connect with your university community in a safe, trusted
+                  environment.
+                </p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">🎁</div>
                 <h3>Student Essentials</h3>
-                <p>Get free items from fellow students - textbooks, furniture, and more!</p>
+                <p>
+                  Get free items from fellow students - textbooks, furniture,
+                  and more!
+                </p>
               </div>
             </div>
           </div>
@@ -65,7 +85,9 @@ const HomePage = () => {
         <section className="student-essentials-section">
           <div className="container">
             <h2 className="section-title">Student Essentials</h2>
-            <p className="section-subtitle">Free items shared by your fellow students</p>
+            <p className="section-subtitle">
+              Free items shared by your fellow students
+            </p>
             <div className="essentials-features">
               <div className="essentials-feature">
                 <div className="essentials-icon">🎁</div>
@@ -84,11 +106,17 @@ const HomePage = () => {
               </div>
             </div>
             <div className="essentials-cta">
-              <Link to="/student-essentials" className="btn btn-primary">Browse Free Items</Link>
+              <Link to="/student-essentials" className="btn btn-primary">
+                Browse Free Items
+              </Link>
               {isAuthenticated ? (
-                <Link to="/add-student-essential" className="btn btn-secondary">Give Away for Free</Link>
+                <Link to="/add-student-essential" className="btn btn-secondary">
+                  Give Away for Free
+                </Link>
               ) : (
-                <Link to="/signup" className="btn btn-secondary">Sign Up to Share</Link>
+                <Link to="/signup" className="btn btn-secondary">
+                  Sign Up to Share
+                </Link>
               )}
             </div>
           </div>

@@ -14,6 +14,9 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import UserManagement from './pages/Admin/UserManagement';
 import ProductManagement from './pages/Admin/ProductManagement';
 import CategoryManagement from './pages/Admin/CategoryManagement';
+import StudentEssentialsPage from './pages/StudentEssentials/StudentEssentialsPage';
+import StudentEssentialDetail from './pages/StudentEssentials/StudentEssentialDetail';
+import AddStudentEssential from './pages/StudentEssentials/AddStudentEssential';
 import './App.css';
 
 function App() {
@@ -35,6 +38,9 @@ function App() {
             <Route path="/admin/users" element={<UserManagement />} />
             <Route path="/admin/products" element={<ProductManagement />} />
             <Route path="/admin/categories" element={<CategoryManagement />} />
+            <Route path="/student-essentials" element={<StudentEssentialsPage />} />
+            <Route path="/student-essentials/:id" element={<StudentEssentialDetail />} />
+            <Route path="/add-student-essential" element={<AddStudentEssential />} />
           </Routes>
         </div>
       </Router>

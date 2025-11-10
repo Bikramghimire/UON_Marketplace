@@ -72,6 +72,26 @@
   color: #721c24;
 }
 
+.status-claimed {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* Free Badge */
+.free-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #28a745;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
 .product-info {
   padding: 1.5rem;
   display: flex;
@@ -167,6 +187,12 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #1295D8;
+}
+
+.product-price.free {
+  color: #28a745;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .product-date {

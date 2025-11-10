@@ -22,6 +22,7 @@ const HomePage = () => {
             </p>
                 <div className="hero-buttons">
                   <Link to="/products" className="btn btn-primary">Browse Products</Link>
+                  <Link to="/student-essentials" className="btn btn-secondary">Student Essentials</Link>
                   {isAuthenticated ? (
                     <Link to="/sell" className="btn btn-secondary">Sell Something</Link>
                   ) : (
@@ -51,6 +52,44 @@ const HomePage = () => {
                 <h3>Campus Community</h3>
                 <p>Connect with your university community in a safe, trusted environment.</p>
               </div>
+              <div className="feature-card">
+                <div className="feature-icon">🎁</div>
+                <h3>Student Essentials</h3>
+                <p>Get free items from fellow students - textbooks, furniture, and more!</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Student Essentials Section */}
+        <section className="student-essentials-section">
+          <div className="container">
+            <h2 className="section-title">Student Essentials</h2>
+            <p className="section-subtitle">Free items shared by your fellow students</p>
+            <div className="essentials-features">
+              <div className="essentials-feature">
+                <div className="essentials-icon">🎁</div>
+                <h3>Completely Free</h3>
+                <p>All items are given away for free - no cost to you!</p>
+              </div>
+              <div className="essentials-feature">
+                <div className="essentials-icon">🤝</div>
+                <h3>Community Sharing</h3>
+                <p>Students helping students - share what you don't need!</p>
+              </div>
+              <div className="essentials-feature">
+                <div className="essentials-icon">♻️</div>
+                <h3>Reduce Waste</h3>
+                <p>Give items a second life and help the environment!</p>
+              </div>
+            </div>
+            <div className="essentials-cta">
+              <Link to="/student-essentials" className="btn btn-primary">Browse Free Items</Link>
+              {isAuthenticated ? (
+                <Link to="/add-student-essential" className="btn btn-secondary">Give Away for Free</Link>
+              ) : (
+                <Link to="/signup" className="btn btn-secondary">Sign Up to Share</Link>
+              )}
             </div>
           </div>
         </section>

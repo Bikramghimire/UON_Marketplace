@@ -72,6 +72,14 @@ const Header = () => {
                 Products
               </Link>
             </li>
+            <li>
+              <Link 
+                to="/student-essentials" 
+                className={`nav-link ${location.pathname === '/student-essentials' || location.pathname.startsWith('/student-essentials/') ? 'active' : ''}`}
+              >
+                Student Essentials
+              </Link>
+            </li>
             {isAuthenticated && user?.role === 'admin' && (
               <li>
                 <Link 

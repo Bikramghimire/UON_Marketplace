@@ -5,12 +5,14 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import MyProductCard from '../../components/common/MyProductCard';
 import { getUserProducts, updateProductStatus, deleteProduct } from '../../services/productService';
+import { getUserStudentEssentials, updateStudentEssentialStatus, deleteStudentEssential } from '../../services/studentEssentialService';
 import './MyProducts.css';
 
 const MyProducts = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [products, setProducts] = useState([]);
+  const [essentials, setEssentials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -28,51 +30,62 @@ const MyProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getUserProducts();
-      setProducts(data);
+      const [productsData, essentialsData] = await Promise.all([
+        getUserProducts(),
+        getUserStudentEssentials()
+      ]);
+      setProducts(productsData);
+      setEssentials(essentialsData);
     } catch (error) {
-      setError(error.message || 'Failed to load your products');
-      console.error('Error loading products:', error);
+      setError(error.message || 'Failed to load your items');
+      console.error('Error loading items:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleStatusUpdate = async (productId, status) => {
+  const handleStatusUpdate = async (itemId, status, isEssential = false) => {
     try {
-      setActionLoading(productId);
+      setActionLoading(itemId);
       setError(null);
       setSuccess(null);
       
-      await updateProductStatus(productId, status);
+      if (isEssential) {
+        await updateStudentEssentialStatus(itemId, status);
+        setSuccess(`Item ${status === 'claimed' ? 'marked as claimed' : 'marked as active'} successfully!`);
+      } else {
+        await updateProductStatus(itemId, status);
+        setSuccess(`Product ${status === 'sold' ? 'marked as sold' : 'marked as active'} successfully!`);
+      }
       
-      setSuccess(`Product ${status === 'sold' ? 'marked as sold' : 'marked as active'} successfully!`);
-      
-      // Reload products to reflect changes
+      // Reload items to reflect changes
       await loadMyProducts();
     } catch (error) {
-      setError(error.message || 'Failed to update product status');
-      console.error('Error updating product status:', error);
+      setError(error.message || 'Failed to update item status');
+      console.error('Error updating item status:', error);
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleDelete = async (productId) => {
+  const handleDelete = async (itemId, isEssential = false) => {
     try {
-      setActionLoading(productId);
+      setActionLoading(itemId);
       setError(null);
       setSuccess(null);
       
-      await deleteProduct(productId);
-      
-      setSuccess('Product deleted successfully!');
-      
-      // Remove product from list immediately
-      setProducts(products.filter(p => (p.id || p._id) !== productId));
+      if (isEssential) {
+        await deleteStudentEssential(itemId);
+        setEssentials(essentials.filter(e => (e.id || e._id) !== itemId));
+        setSuccess('Student essential deleted successfully!');
+      } else {
+        await deleteProduct(itemId);
+        setProducts(products.filter(p => (p.id || p._id) !== itemId));
+        setSuccess('Product deleted successfully!');
+      }
     } catch (error) {
-      setError(error.message || 'Failed to delete product');
-      console.error('Error deleting product:', error);
+      setError(error.message || 'Failed to delete item');
+      console.error('Error deleting item:', error);
     } finally {
       setActionLoading(null);
     }
@@ -90,7 +103,7 @@ const MyProducts = () => {
         <section className="my-products-header">
           <div className="container">
             <h1 className="page-title">My Products</h1>
-            <p className="page-subtitle">Manage and review all your listed products</p>
+            <p className="page-subtitle">Manage and review all your listed products and free items</p>
           </div>
         </section>
 
@@ -100,6 +113,9 @@ const MyProducts = () => {
             <div className="my-products-actions">
               <Link to="/sell" className="btn btn-primary">
                 + List New Product
+              </Link>
+              <Link to="/add-student-essential" className="btn btn-secondary">
+                🎁 Give Away for Free
               </Link>
             </div>
 
@@ -120,10 +136,10 @@ const MyProducts = () => {
                 <div className="loading-spinner"></div>
                 <p>Loading your products...</p>
               </div>
-            ) : products.length > 0 ? (
+            ) : (products.length > 0 || essentials.length > 0) ? (
               <>
                 <div className="products-count">
-                  <p>You have {products.length} product{products.length !== 1 ? 's' : ''} listed</p>
+                  <p>You have {products.length + essentials.length} item{(products.length + essentials.length) !== 1 ? 's' : ''} listed ({products.length} product{products.length !== 1 ? 's' : ''}, {essentials.length} free item{essentials.length !== 1 ? 's' : ''})</p>
                 </div>
                 <div className="products-grid">
                   {products.map(product => (
@@ -133,6 +149,15 @@ const MyProducts = () => {
                       onStatusUpdate={handleStatusUpdate}
                       onDelete={handleDelete}
                       isActionLoading={actionLoading === (product.id || product._id)}
+                    />
+                  ))}
+                  {essentials.map(essential => (
+                    <MyProductCard
+                      key={essential.id || essential._id}
+                      product={{ ...essential, isStudentEssential: true }}
+                      onStatusUpdate={(id, status) => handleStatusUpdate(id, status, true)}
+                      onDelete={(id) => handleDelete(id, true)}
+                      isActionLoading={actionLoading === (essential.id || essential._id)}
                     />
                   ))}
                 </div>

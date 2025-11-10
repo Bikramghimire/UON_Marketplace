@@ -1,16 +1,15 @@
-/* My Products Page Styles */
-.my-products-page {
+.essentials-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.my-products-main {
+.essentials-main {
   flex: 1;
 }
 
 /* Page Header */
-.my-products-header {
+.essentials-header {
   background: linear-gradient(135deg, #1295D8 0%, #0f7bb8 100%);
   color: white;
   padding: 60px 20px;
@@ -28,93 +27,87 @@
   opacity: 0.9;
 }
 
-/* Products Section */
-.my-products-section {
-  padding: 3rem 0;
+/* Filters Section */
+.filters-section {
   background-color: #f8f9fa;
+  padding: 2rem 0;
+  border-bottom: 1px solid #e6e6e6;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.my-products-actions {
-  margin-bottom: 2rem;
+.filters-container {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
+  align-items: flex-end;
 }
 
-.my-products-actions .btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
+.filter-group {
+  flex: 1;
+  min-width: 200px;
 }
 
-.my-products-actions .btn-primary {
-  background-color: #1295D8;
-  color: white;
-}
-
-.my-products-actions .btn-primary:hover {
-  background-color: #0f7bb8;
-  transform: translateY(-2px);
-}
-
-.my-products-actions .btn-secondary {
-  background-color: #28a745;
-  color: white;
-}
-
-.my-products-actions .btn-secondary:hover {
-  background-color: #218838;
-  transform: translateY(-2px);
-}
-
-.products-count {
-  margin-bottom: 2rem;
-}
-
-.products-count p {
-  color: #666;
+.filter-group label {
+  display: block;
   font-size: 0.9rem;
   font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
 }
 
-.products-grid {
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e6e6e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1295D8;
+  box-shadow: 0 0 0 3px rgba(18, 149, 216, 0.1);
+}
+
+.filter-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e6e6e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #1295D8;
+  box-shadow: 0 0 0 3px rgba(18, 149, 216, 0.1);
+}
+
+/* Essentials Section */
+.essentials-section {
+  padding: 3rem 0;
+  background-color: white;
+}
+
+.essentials-count {
+  margin-bottom: 2rem;
+}
+
+.essentials-count p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.essentials-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 1rem;
-}
-
-/* Error Message */
-.error-message {
-  background: #fee;
-  color: #c33;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  border: 1px solid #fcc;
-}
-
-/* Success Message */
-.success-message {
-  background: #d4edda;
-  color: #155724;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  border: 1px solid #c3e6cb;
 }
 
 /* Loading State */
@@ -148,39 +141,35 @@
   font-size: 1rem;
 }
 
-/* No Products State */
-.no-products {
+/* No Essentials State */
+.no-essentials {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 4rem 0;
   text-align: center;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.no-products-icon {
-  font-size: 5rem;
-  margin-bottom: 1.5rem;
+.no-essentials-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
 }
 
-.no-products h2 {
+.no-essentials h2 {
   font-size: 1.5rem;
   color: #333;
   margin-bottom: 0.5rem;
 }
 
-.no-products p {
+.no-essentials p {
   color: #666;
   font-size: 1rem;
-  margin-bottom: 2rem;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .my-products-header {
+  .essentials-header {
     padding: 40px 20px;
   }
   
@@ -188,7 +177,15 @@
     font-size: 2rem;
   }
   
-  .products-grid {
+  .filters-container {
+    flex-direction: column;
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .essentials-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
@@ -203,7 +200,11 @@
     font-size: 1rem;
   }
   
-  .my-products-section {
+  .filters-section {
+    padding: 1.5rem 0;
+  }
+  
+  .essentials-section {
     padding: 2rem 0;
   }
 }

@@ -54,25 +54,33 @@ SYNC_DB=false  # Set to 'true' in development for auto-sync
 
 ### Database Structure
 
-The database consists of **4 main tables**:
+The database consists of **5 main tables**:
 
 1. **users** - User accounts and authentication
 2. **categories** - Product categories
 3. **products** - Product listings
-4. **messages** - User messaging system
+4. **student_essentials** - Free items shared by students
+5. **messages** - User messaging system
 
 ### Entity Relationship Diagram
 
 ```
 users
   ├── hasMany products (user_id)
+  ├── hasMany student_essentials (user_id)
   ├── hasMany messages as sender (sender_id)
   └── hasMany messages as recipient (recipient_id)
 
 categories
-  └── hasMany products (category_id)
+  ├── hasMany products (category_id)
+  └── hasMany student_essentials (category_id)
 
 products
+  ├── belongsTo users (user_id)
+  ├── belongsTo categories (category_id)
+  └── hasMany messages (product_id)
+
+student_essentials
   ├── belongsTo users (user_id)
   ├── belongsTo categories (category_id)
   └── hasMany messages (product_id)
@@ -80,7 +88,7 @@ products
 messages
   ├── belongsTo users as sender (sender_id)
   ├── belongsTo users as recipient (recipient_id)
-  └── belongsTo products (product_id) [optional]
+  └── belongsTo products/student_essentials (product_id) [optional]
 ```
 
 ## 📋 Table Structures
@@ -195,7 +203,62 @@ messages
 
 ---
 
-### 4. Messages Table (`messages`)
+### 4. Student Essentials Table (`student_essentials`)
+
+**Purpose:** Stores free items shared by students (similar to products but without price).
+
+| Column Name | Data Type | Constraints | Description |
+|------------|-----------|-------------|-------------|
+| `id` | UUID | PRIMARY KEY, NOT NULL | Unique student essential identifier |
+| `user_id` | UUID | FOREIGN KEY, NOT NULL | Owner user ID (references users.id) |
+| `category_id` | UUID | FOREIGN KEY, NOT NULL | Category ID (references categories.id) |
+| `title` | VARCHAR(200) | NOT NULL | Item title (1-200 chars) |
+| `description` | TEXT | NOT NULL | Item description |
+| `condition` | ENUM | NOT NULL, DEFAULT 'Good' | Item condition: 'New', 'Like New', 'Excellent', 'Good', 'Fair' |
+| `location` | VARCHAR(255) | NULL | Item location |
+| `status` | ENUM | NOT NULL, DEFAULT 'active' | Status: 'active', 'claimed', 'inactive' |
+| `images` | JSONB | NULL, DEFAULT [] | Array of image objects |
+| `views` | INTEGER | NOT NULL, DEFAULT 0 | View count |
+| `created_at` | TIMESTAMP | NOT NULL | Creation timestamp |
+| `updated_at` | TIMESTAMP | NOT NULL | Last update timestamp |
+
+**Indexes:**
+- Primary key on `id`
+- Index on `(status, created_at)` - For filtering active items
+- Index on `(category_id, status)` - For category filtering
+- Index on `user_id` - For user's student essentials
+
+**Foreign Keys:**
+- `user_id` → `users.id` (CASCADE on delete)
+- `category_id` → `categories.id` (RESTRICT on delete)
+
+**Relationships:**
+- `belongsTo` User
+- `belongsTo` Category
+- `hasMany` Messages
+
+**JSONB Structure (images):**
+```json
+[
+  {
+    "url": "https://example.com/image.jpg",
+    "isPrimary": true
+  },
+  {
+    "url": "https://example.com/image2.jpg",
+    "isPrimary": false
+  }
+]
+```
+
+**Key Differences from Products:**
+- No `price` field (all items are free)
+- Status uses `'claimed'` instead of `'sold'`
+- Otherwise identical structure to products table
+
+---
+
+### 5. Messages Table (`messages`)
 
 **Purpose:** Stores messages between users, including meeting scheduling.
 
@@ -259,6 +322,18 @@ messages
    - One product can have many messages
    - Foreign key: `messages.product_id` → `products.id`
 
+6. **User → Student Essentials**
+   - One user can have many student essentials
+   - Foreign key: `student_essentials.user_id` → `users.id`
+
+7. **Category → Student Essentials**
+   - One category can have many student essentials
+   - Foreign key: `student_essentials.category_id` → `categories.id`
+
+8. **Student Essential → Messages**
+   - One student essential can have many messages
+   - Foreign key: `messages.product_id` → `student_essentials.id` (when referencing student essential)
+
 ### Many-to-One Relationships
 
 1. **Product → User**
@@ -280,6 +355,18 @@ messages
 5. **Message → Product**
    - Many messages can reference one product
    - Foreign key: `messages.product_id` → `products.id` (optional)
+
+6. **Student Essential → User**
+   - Many student essentials belong to one user
+   - Foreign key: `student_essentials.user_id` → `users.id`
+
+7. **Student Essential → Category**
+   - Many student essentials belong to one category
+   - Foreign key: `student_essentials.category_id` → `categories.id`
+
+8. **Message → Student Essential**
+   - Many messages can reference one student essential
+   - Foreign key: `messages.product_id` → `student_essentials.id` (optional, when referencing student essential)
 
 ---
 
@@ -320,7 +407,8 @@ Used for `products.images` to store:
 
 1. **User Role:** `'user'`, `'admin'`
 2. **Product Status:** `'active'`, `'sold'`, `'inactive'`
-3. **Product Condition:** `'New'`, `'Like New'`, `'Excellent'`, `'Good'`, `'Fair'`
+3. **Student Essential Status:** `'active'`, `'claimed'`, `'inactive'`
+4. **Product/Student Essential Condition:** `'New'`, `'Like New'`, `'Excellent'`, `'Good'`, `'Fair'`
 
 ---
 
@@ -341,13 +429,19 @@ Indexes are created to optimize common queries:
    - Index on `(category_id, status)` - Category filtering
    - Index on `user_id` - User's products
 
-3. **Messages Table:**
+3. **Student Essentials Table:**
+   - Primary key on `id`
+   - Index on `(status, created_at)` - Active items sorted by date
+   - Index on `(category_id, status)` - Category filtering
+   - Index on `user_id` - User's student essentials
+
+4. **Messages Table:**
    - Primary key on `id`
    - Index on `(sender_id, recipient_id, created_at)` - Conversation queries
    - Index on `(recipient_id, read, created_at)` - Unread messages
-   - Index on `product_id` - Product-related messages
+   - Index on `product_id` - Product/Student Essential-related messages
 
-4. **Categories Table:**
+5. **Categories Table:**
    - Primary key on `id`
    - Unique index on `name`
 
@@ -370,9 +464,9 @@ Indexes are created to optimize common queries:
 ### Foreign Key Constraints
 
 All foreign keys have appropriate constraints:
-- **CASCADE:** Deleting a user deletes their products and messages
-- **RESTRICT:** Cannot delete a category with products
-- **SET NULL:** Deleting a product sets `product_id` to NULL in messages
+- **CASCADE:** Deleting a user deletes their products, student essentials, and messages
+- **RESTRICT:** Cannot delete a category with products or student essentials
+- **SET NULL:** Deleting a product or student essential sets `product_id` to NULL in messages
 
 ---
 
@@ -410,6 +504,7 @@ Creates:
 - 4 categories
 - 5 test users (password: `password123`)
 - 8 sample products
+- 3 sample student essentials
 
 ### Database Management
 
@@ -475,6 +570,30 @@ const products = await Product.findAll({
 });
 ```
 
+#### Get Active Student Essentials
+```javascript
+const essentials = await StudentEssential.findAll({
+  where: { status: 'active' },
+  include: [
+    { model: User, as: 'user' },
+    { model: Category, as: 'category' }
+  ],
+  order: [['createdAt', 'DESC']]
+});
+```
+
+#### Get User's Student Essentials
+```javascript
+const essentials = await StudentEssential.findAll({
+  where: { userId: userId },
+  include: [
+    { model: User, as: 'user' },
+    { model: Category, as: 'category' }
+  ],
+  order: [['createdAt', 'DESC']]
+});
+```
+
 ---
 
 ## 🔄 Timestamps
@@ -491,7 +610,7 @@ These are managed by Sequelize automatically.
 
 ### Table Names
 - Plural, lowercase, snake_case
-- Examples: `users`, `products`, `categories`, `messages`
+- Examples: `users`, `products`, `categories`, `student_essentials`, `messages`
 
 ### Column Names
 - Singular, lowercase, snake_case
@@ -499,7 +618,7 @@ These are managed by Sequelize automatically.
 
 ### Model Names
 - Singular, PascalCase
-- Examples: `User`, `Product`, `Category`, `Message`
+- Examples: `User`, `Product`, `Category`, `StudentEssential`, `Message`
 
 ### Field Mapping
 Sequelize maps camelCase model properties to snake_case database columns:
@@ -576,5 +695,6 @@ For database-related issues:
 
 **Last Updated:** 2025-01-07  
 **Database Version:** PostgreSQL 12+  
-**ORM Version:** Sequelize 6.35.2
+**ORM Version:** Sequelize 6.35.2  
+**Total Tables:** 5 (users, categories, products, student_essentials, messages)
 

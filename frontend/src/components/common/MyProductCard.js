@@ -51,17 +51,34 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
     }
   };
 
-  const getStatusBadge = () => {
-    switch (product.status) {
+  // Helper function to get status display
+  const getStatusDisplay = (status) => {
+    if (!status) return { text: 'Active', class: 'status-active' };
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
+      case 'active':
+        return { text: 'Active', class: 'status-active' };
       case 'sold':
-        return <span className="status-badge status-sold">Sold</span>;
+        return { text: 'Sold', class: 'status-sold' };
       case 'claimed':
-        return <span className="status-badge status-claimed">Claimed</span>;
+        return { text: 'Claimed', class: 'status-claimed' };
       case 'inactive':
-        return <span className="status-badge status-inactive">Inactive</span>;
+        return { text: 'Inactive', class: 'status-inactive' };
       default:
-        return <span className="status-badge status-active">Active</span>;
+        return { text: 'Active', class: 'status-active' };
     }
+  };
+
+  const getStatusBadge = () => {
+    const statusInfo = getStatusDisplay(product.status);
+    return (
+      <span 
+        className={`status-badge ${statusInfo.class}`} 
+        title={`Product status: ${statusInfo.text}`}
+      >
+        {statusInfo.text}
+      </span>
+    );
   };
   
   const getFreeBadge = () => {

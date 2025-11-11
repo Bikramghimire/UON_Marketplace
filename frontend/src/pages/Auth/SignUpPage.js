@@ -76,13 +76,43 @@ const SignUpPage = () => {
     }
 
     // Password validation
-    if (formData.password.length < 6) {
-      setFormError('Password must be at least 6 characters');
+    if (formData.password.length < 8) {
+      setFormError('Password must be at least 8 characters long');
       setIsSubmitting(false);
       return;
     }
     if (formData.password.length > 255) {
       setFormError('Password must be less than 255 characters');
+      setIsSubmitting(false);
+      return;
+    }
+    // Check for spaces
+    if (/\s/.test(formData.password)) {
+      setFormError('Password should not contain spaces');
+      setIsSubmitting(false);
+      return;
+    }
+    // Check for at least one uppercase letter
+    if (!/[A-Z]/.test(formData.password)) {
+      setFormError('Password must include at least one uppercase letter (A-Z)');
+      setIsSubmitting(false);
+      return;
+    }
+    // Check for at least one lowercase letter
+    if (!/[a-z]/.test(formData.password)) {
+      setFormError('Password must include at least one lowercase letter (a-z)');
+      setIsSubmitting(false);
+      return;
+    }
+    // Check for at least one digit
+    if (!/[0-9]/.test(formData.password)) {
+      setFormError('Password must include at least one digit (0-9)');
+      setIsSubmitting(false);
+      return;
+    }
+    // Check for at least one special character
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password)) {
+      setFormError('Password must include at least one special character (e.g., !@#$%^&*() etc.)');
       setIsSubmitting(false);
       return;
     }
@@ -252,7 +282,7 @@ const SignUpPage = () => {
                   placeholder="Create a password"
                   required
                   disabled={isSubmitting}
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
 
@@ -267,7 +297,7 @@ const SignUpPage = () => {
                   placeholder="Confirm your password"
                   required
                   disabled={isSubmitting}
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
 

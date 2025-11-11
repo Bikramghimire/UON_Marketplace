@@ -68,16 +68,51 @@ router.post('/register', async (req, res) => {
     }
 
     // Password validation
-    if (password.length < 6) {
+    if (password.length < 8) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 6 characters'
+        message: 'Password must be at least 8 characters long'
       });
     }
     if (password.length > 255) {
       return res.status(400).json({
         success: false,
         message: 'Password must be less than 255 characters'
+      });
+    }
+    // Check for spaces
+    if (/\s/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password should not contain spaces'
+      });
+    }
+    // Check for at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must include at least one uppercase letter (A-Z)'
+      });
+    }
+    // Check for at least one lowercase letter
+    if (!/[a-z]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must include at least one lowercase letter (a-z)'
+      });
+    }
+    // Check for at least one digit
+    if (!/[0-9]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must include at least one digit (0-9)'
+      });
+    }
+    // Check for at least one special character
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must include at least one special character (e.g., !@#$%^&*() etc.)'
       });
     }
 

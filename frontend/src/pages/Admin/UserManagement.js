@@ -54,7 +54,7 @@ const UserManagement = () => {
 
   const handleUpdate = async () => {
     try {
-      await updateUser(editingUser._id, editForm);
+      await updateUser(editingUser.id, editForm);
       await loadUsers();
       setEditingUser(null);
       setEditForm({ role: '', firstName: '', lastName: '' });
@@ -145,7 +145,7 @@ const UserManagement = () => {
                   </thead>
                   <tbody>
                     {users.map((u) => (
-                      <tr key={u._id}>
+                      <tr key={u.id}>
                         <td>{u.username}</td>
                         <td>{u.email}</td>
                         <td>{u.firstName || ''} {u.lastName || ''}</td>
@@ -165,7 +165,7 @@ const UserManagement = () => {
                             </button>
                             <button
                               className="btn-delete"
-                              onClick={() => handleDelete(u._id, u.username)}
+                              onClick={() => handleDelete(u.id, u.username)}
                             >
                               Delete
                             </button>

@@ -54,7 +54,7 @@ const ProductManagement = () => {
 
   const handleUpdate = async () => {
     try {
-      await updateProductAdmin(editingProduct._id, editForm);
+      await updateProductAdmin(editingProduct.id, editForm);
       await loadProducts();
       setEditingProduct(null);
       setEditForm({ status: '', title: '', price: '' });
@@ -71,6 +71,22 @@ const ProductManagement = () => {
       } catch (error) {
         setError(error.message || 'Failed to delete product');
       }
+    }
+  };
+
+  // Helper function to get status display
+  const getStatusDisplay = (status) => {
+    if (!status) return { text: 'Inactive', class: 'inactive' };
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
+      case 'active':
+        return { text: 'Active', class: 'active' };
+      case 'sold':
+        return { text: 'Sold', class: 'sold' };
+      case 'inactive':
+        return { text: 'Inactive', class: 'inactive' };
+      default:
+        return { text: 'Inactive', class: 'inactive' };
     }
   };
 
@@ -148,15 +164,20 @@ const ProductManagement = () => {
                   </thead>
                   <tbody>
                     {products.map((product) => (
-                      <tr key={product._id}>
+                      <tr key={product.id}>
                         <td>{product.title}</td>
                         <td>{product.user?.username || 'Unknown'}</td>
                         <td>{product.category?.name || 'N/A'}</td>
                         <td>${parseFloat(product.price || 0).toFixed(2)}</td>
                         <td>
-                          <span className={`status-badge ${product.status}`}>
-                            {product.status}
-                          </span>
+                          {(() => {
+                            const statusInfo = getStatusDisplay(product.status);
+                            return (
+                              <span className={`status-badge ${statusInfo.class}`} title={`Product status: ${statusInfo.text}`}>
+                                {statusInfo.text}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td>{product.views || 0}</td>
                         <td>{new Date(product.createdAt).toLocaleDateString()}</td>
@@ -170,7 +191,7 @@ const ProductManagement = () => {
                             </button>
                             <button
                               className="btn-delete"
-                              onClick={() => handleDelete(product._id, product.title)}
+                              onClick={() => handleDelete(product.id, product.title)}
                             >
                               Delete
                             </button>

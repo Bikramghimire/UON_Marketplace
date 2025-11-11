@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import Header from "../../components/layout/Header";
-import Footer from "../../components/layout/Footer";
-import { getCategories, createProduct } from "../../services/productService";
-import { uploadImages } from "../../services/uploadService";
-import "./SellProduct.css";
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
+import { getCategories, createStudentEssential } from '../../services/studentEssentialService';
+import { uploadImages } from '../../services/uploadService';
+import './AddStudentEssential.css';
 
-const SellProduct = () => {
+const AddStudentEssential = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [categories, setCategories] = useState([]);
@@ -19,21 +19,20 @@ const SellProduct = () => {
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    price: "",
-    category: "",
-    condition: "Good",
-    location: "",
-    imageFiles: [], // Store File objects (multiple images)
+    title: '',
+    description: '',
+    category: '',
+    condition: 'Good',
+    location: '',
+    imageFiles: [] // Store File objects (multiple images)
   });
-
+  
   const [previewUrls, setPreviewUrls] = useState([]); // Store preview URLs for uploaded files
 
   useEffect(() => {
     // Redirect to login if not authenticated
     if (!isAuthenticated) {
-      navigate("/login");
+      navigate('/login');
       return;
     }
 
@@ -46,8 +45,8 @@ const SellProduct = () => {
       const categoriesData = await getCategories();
       setCategories(categoriesData);
     } catch (error) {
-      setError(error.message || "Failed to load categories");
-      console.error("Error loading categories:", error);
+      setError(error.message || 'Failed to load categories');
+      console.error('Error loading categories:', error);
     } finally {
       setLoading(false);
     }
@@ -55,9 +54,9 @@ const SellProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -71,7 +70,7 @@ const SellProduct = () => {
 
     files.forEach((file, index) => {
       // Validate file type
-      if (!file.type.startsWith("image/")) {
+      if (!file.type.startsWith('image/')) {
         errors.push(`${file.name}: Not an image file`);
         return;
       }
@@ -86,28 +85,26 @@ const SellProduct = () => {
     });
 
     if (errors.length > 0) {
-      setError(errors.join(", "));
+      setError(errors.join(', '));
       return;
     }
 
     // Limit to 10 images
     const totalFiles = formData.imageFiles.length + validFiles.length;
     if (totalFiles > 10) {
-      setError(
-        `Maximum 10 images allowed. You already have ${formData.imageFiles.length} image(s) and trying to add ${validFiles.length}. Please remove some images first.`
-      );
+      setError(`Maximum 10 images allowed. You already have ${formData.imageFiles.length} image(s) and trying to add ${validFiles.length}. Please remove some images first.`);
       return;
     }
 
     // Create preview URLs
-    const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
-
-    setFormData((prev) => ({
+    const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
+    
+    setFormData(prev => ({
       ...prev,
-      imageFiles: [...prev.imageFiles, ...validFiles],
+      imageFiles: [...prev.imageFiles, ...validFiles]
     }));
-
-    setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+    
+    setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
     setError(null);
   };
 
@@ -116,13 +113,13 @@ const SellProduct = () => {
     if (previewUrls[index]) {
       URL.revokeObjectURL(previewUrls[index]);
     }
-
-    setFormData((prev) => ({
+    
+    setFormData(prev => ({
       ...prev,
-      imageFiles: prev.imageFiles.filter((_, i) => i !== index),
+      imageFiles: prev.imageFiles.filter((_, i) => i !== index)
     }));
-
-    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+    
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -133,19 +130,8 @@ const SellProduct = () => {
     setUploading(false);
 
     // Validation
-    if (
-      !formData.title ||
-      !formData.description ||
-      !formData.price ||
-      !formData.category
-    ) {
-      setError("Please fill in all required fields");
-      setSubmitting(false);
-      return;
-    }
-
-    if (isNaN(formData.price) || parseFloat(formData.price) < 0) {
-      setError("Price must be a valid positive number");
+    if (!formData.title || !formData.description || !formData.category) {
+      setError('Please fill in all required fields');
       setSubmitting(false);
       return;
     }
@@ -161,10 +147,10 @@ const SellProduct = () => {
           processedImages = uploadResult.data.images.map((img, index) => ({
             url: img.url,
             public_id: img.public_id,
-            isPrimary: index === 0,
+            isPrimary: index === 0
           }));
         } catch (uploadError) {
-          setError(uploadError.message || "Failed to upload images");
+          setError(uploadError.message || 'Failed to upload images');
           setUploading(false);
           setSubmitting(false);
           return;
@@ -174,12 +160,10 @@ const SellProduct = () => {
 
       // If no images, use default emoji
       if (processedImages.length === 0) {
-        processedImages = [
-          {
-            url: "📦",
-            isPrimary: true,
-          },
-        ];
+        processedImages = [{
+          url: '🎁',
+          isPrimary: true
+        }];
       }
 
       // Mark first image as primary
@@ -187,42 +171,41 @@ const SellProduct = () => {
         processedImages[0].isPrimary = true;
       }
 
-      const productData = {
+      const essentialData = {
         title: formData.title,
         description: formData.description,
-        price: parseFloat(formData.price),
         category: formData.category,
         condition: formData.condition,
-        location: formData.location || user?.location || "",
-        images: processedImages,
+        location: formData.location || user?.location || '',
+        images: processedImages
       };
 
-      await createProduct(productData);
-
-      setSuccess("Product listed successfully!");
-
+      await createStudentEssential(essentialData);
+      
+      setSuccess('Student essential listed successfully!');
+      
       // Clean up preview URLs
-      previewUrls.forEach((url) => URL.revokeObjectURL(url));
-
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+      
       // Reset form
       setFormData({
-        title: "",
-        description: "",
-        price: "",
-        category: "",
-        condition: "Good",
-        location: "",
-        imageFiles: [],
+        title: '',
+        description: '',
+        category: '',
+        condition: 'Good',
+        location: '',
+        imageFiles: []
       });
       setPreviewUrls([]);
 
       // Redirect after 2 seconds
       setTimeout(() => {
-        navigate("/products");
+        navigate('/my-products');
       }, 2000);
+
     } catch (error) {
-      setError(error.message || "Failed to create product listing");
-      console.error("Error creating product:", error);
+      setError(error.message || 'Failed to create student essential listing');
+      console.error('Error creating student essential:', error);
     } finally {
       setSubmitting(false);
       setUploading(false);
@@ -235,10 +218,10 @@ const SellProduct = () => {
 
   if (loading) {
     return (
-      <div className="sell-product-page">
+      <div className="add-essential-page">
         <Header />
-        <main className="sell-main">
-          <div className="sell-container">
+        <main className="add-essential-main">
+          <div className="add-essential-container">
             <div className="loading-container">
               <div className="loading-spinner"></div>
               <p>Loading form...</p>
@@ -251,41 +234,43 @@ const SellProduct = () => {
   }
 
   return (
-    <div className="sell-product-page">
+    <div className="add-essential-page">
       <Header />
-      <main className="sell-main">
-        <div className="sell-container">
-          <div className="sell-header">
-            <h1>Sell Something</h1>
-            <p>List your item on UON Marketplace</p>
+      <main className="add-essential-main">
+        <div className="add-essential-container">
+          <div className="add-essential-header">
+            <h1>Give Away for Free</h1>
+            <p>Share something with your fellow students - completely free!</p>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
 
           {success && (
             <div className="success-message">
               {success}
-              <p className="redirect-message">
-                Redirecting to products page...
-              </p>
+              <p className="redirect-message">Redirecting to my products page...</p>
             </div>
           )}
 
-          <div className="sell-form-container">
-            <form onSubmit={handleSubmit} className="sell-form">
+          <div className="add-essential-form-container">
+            <form onSubmit={handleSubmit} className="add-essential-form">
               {/* Basic Information */}
               <div className="form-section">
-                <h2>Product Details</h2>
-
+                <h2>Item Details</h2>
+                
                 <div className="form-group">
-                  <label htmlFor="title">Product Title *</label>
+                  <label htmlFor="title">Item Title *</label>
                   <input
                     type="text"
                     id="title"
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    placeholder="e.g., MacBook Pro 13 inch 2020"
+                    placeholder="e.g., Old Textbooks, Furniture, etc."
                     required
                     disabled={submitting}
                     maxLength={200}
@@ -299,7 +284,7 @@ const SellProduct = () => {
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    placeholder="Describe your product in detail..."
+                    placeholder="Describe your item in detail..."
                     rows="6"
                     required
                     disabled={submitting}
@@ -307,22 +292,6 @@ const SellProduct = () => {
                 </div>
 
                 <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="price">Price ($) *</label>
-                    <input
-                      type="number"
-                      id="price"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleChange}
-                      placeholder="0.00"
-                      step="0.01"
-                      min="0"
-                      required
-                      disabled={submitting}
-                    />
-                  </div>
-
                   <div className="form-group">
                     <label htmlFor="category">Category *</label>
                     <select
@@ -333,17 +302,15 @@ const SellProduct = () => {
                       required
                       disabled={submitting}
                     >
-                      <option value="">Select category</option>
-                      {categories.map((cat) => (
-                        <option key={cat._id || cat.name} value={cat.name}>
-                          {cat.name}
-                        </option>
-                      ))}
+                        <option value="">Select category</option>
+                        {categories.map(cat => (
+                          <option key={cat._id || cat.name} value={cat.name}>
+                            {cat.name}
+                          </option>
+                        ))}
                     </select>
                   </div>
-                </div>
 
-                <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="condition">Condition *</label>
                     <select
@@ -361,42 +328,39 @@ const SellProduct = () => {
                       <option value="Fair">Fair</option>
                     </select>
                   </div>
+                </div>
 
-                  <div className="form-group">
-                    <label htmlFor="location">Location</label>
-                    <input
-                      type="text"
-                      id="location"
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      placeholder={
-                        user?.location || "e.g., Campus Dorm, Off-Campus"
-                      }
-                      disabled={submitting}
-                    />
-                    <small>Leave empty to use your profile location</small>
-                  </div>
+                <div className="form-group">
+                  <label htmlFor="location">Location</label>
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    placeholder={user?.location || "e.g., Campus Dorm, Off-Campus"}
+                    disabled={submitting}
+                  />
+                  <small>Leave empty to use your profile location</small>
                 </div>
               </div>
 
               {/* Images */}
               <div className="form-section">
-                <h2>Product Images</h2>
+                <h2>Item Images</h2>
                 <p className="section-description">
-                  Upload multiple images from your device. You can select up to
-                  10 images at once. The first image will be the primary image.
+                  Upload multiple images from your device. You can select up to 10 images at once. The first image will be the primary image.
                 </p>
-
+                
                 {/* Multiple File Upload */}
                 <div className="image-upload-section">
                   <input
                     type="file"
-                    id="product-images"
+                    id="essential-images"
                     accept="image/*"
                     onChange={handleFileChange}
                     disabled={submitting || uploading}
-                    style={{ display: "none" }}
+                    style={{ display: 'none' }}
                     multiple
                     ref={fileInputRef}
                   />
@@ -421,8 +385,8 @@ const SellProduct = () => {
                       {previewUrls.map((url, index) => (
                         <div key={index} className="preview-item">
                           <div className="preview-image-wrapper">
-                            <img
-                              src={url}
+                            <img 
+                              src={url} 
                               alt={`Preview ${index + 1}`}
                               className="preview-image"
                             />
@@ -440,17 +404,11 @@ const SellProduct = () => {
                           </div>
                           <div className="preview-info">
                             <span className="preview-name">
-                              {formData.imageFiles[index]?.name ||
-                                `Image ${index + 1}`}
+                              {formData.imageFiles[index]?.name || `Image ${index + 1}`}
                             </span>
                             {formData.imageFiles[index] && (
                               <span className="preview-size">
-                                {(
-                                  formData.imageFiles[index].size /
-                                  1024 /
-                                  1024
-                                ).toFixed(2)}{" "}
-                                MB
+                                {(formData.imageFiles[index].size / 1024 / 1024).toFixed(2)} MB
                               </span>
                             )}
                           </div>
@@ -459,14 +417,11 @@ const SellProduct = () => {
                     </div>
                   </div>
                 )}
-
+                
                 {uploading && (
                   <div className="upload-progress">
                     <div className="loading-spinner"></div>
-                    <p>
-                      Uploading {formData.imageFiles.length} image(s) to
-                      Cloudinary...
-                    </p>
+                    <p>Uploading {formData.imageFiles.length} image(s) to Cloudinary...</p>
                   </div>
                 )}
               </div>
@@ -475,7 +430,7 @@ const SellProduct = () => {
               <div className="form-actions">
                 <button
                   type="button"
-                  onClick={() => navigate("/products")}
+                  onClick={() => navigate('/student-essentials')}
                   className="btn btn-outline"
                   disabled={submitting}
                 >
@@ -486,11 +441,7 @@ const SellProduct = () => {
                   className="btn btn-primary"
                   disabled={submitting || uploading}
                 >
-                  {uploading
-                    ? "Uploading Images..."
-                    : submitting
-                    ? "Listing Product..."
-                    : "List Product"}
+                  {uploading ? 'Uploading Images...' : submitting ? 'Listing Item...' : 'List Item for Free'}
                 </button>
               </div>
             </form>
@@ -502,4 +453,5 @@ const SellProduct = () => {
   );
 };
 
-export default SellProduct;
+export default AddStudentEssential;
+

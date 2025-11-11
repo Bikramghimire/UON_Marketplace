@@ -35,9 +35,9 @@ const ProductManagement = () => {
       const response = await getAllProductsAdmin({ page, limit: 10, status: statusFilter, search });
       setProducts(response.data);
       setTotalPages(response.pagination.pages);
-    } catch (error) {
-      setError(error.message || 'Failed to load products');
-      console.error('Error loading products:', error);
+    } catch (err) {
+      setError(err.message || 'Something went wrong');
+      console.error('Error loading products:', err);
     } finally {
       setLoading(false);
     }
@@ -54,24 +54,32 @@ const ProductManagement = () => {
 
   const handleUpdate = async () => {
     try {
-      await updateProductAdmin(editingProduct._id, editForm);
+      await updateProductAdmin(editingProduct.id, editForm);
       await loadProducts();
       setEditingProduct(null);
       setEditForm({ status: '', title: '', price: '' });
-    } catch (error) {
-      setError(error.message || 'Failed to update product');
+    } catch (err) {
+      setError(err.message || 'Couldn\'t update product');
     }
   };
 
   const handleDelete = async (productId, title) => {
-    if (window.confirm(`Are you sure you want to delete product "${title}"? This action cannot be undone.`)) {
-      try {
-        await deleteProductAdmin(productId);
-        await loadProducts();
-      } catch (error) {
-        setError(error.message || 'Failed to delete product');
-      }
+    if (!window.confirm(`Delete "${title}"? This can't be undone.`)) return;
+    
+    try {
+      await deleteProductAdmin(productId);
+      loadProducts();
+    } catch (err) {
+      setError(err.message || 'Delete failed');
     }
+  };
+
+  const getStatusDisplay = (status) => {
+    if (!status) return { text: 'Inactive', class: 'inactive' };
+    const s = status.toLowerCase();
+    if (s === 'active') return { text: 'Active', class: 'active' };
+    if (s === 'sold') return { text: 'Sold', class: 'sold' };
+    return { text: 'Inactive', class: 'inactive' };
   };
 
   if (!isAuthenticated || !user || user.role !== 'admin') {
@@ -94,7 +102,6 @@ const ProductManagement = () => {
             </div>
           )}
 
-          {/* Filters */}
           <div className="admin-filters">
             <input
               type="text"
@@ -124,7 +131,6 @@ const ProductManagement = () => {
             </button>
           </div>
 
-          {/* Products Table */}
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -147,42 +153,44 @@ const ProductManagement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((product) => (
-                      <tr key={product._id}>
-                        <td>{product.title}</td>
-                        <td>{product.user?.username || 'Unknown'}</td>
-                        <td>{product.category?.name || 'N/A'}</td>
-                        <td>${product.price.toFixed(2)}</td>
-                        <td>
-                          <span className={`status-badge ${product.status}`}>
-                            {product.status}
-                          </span>
-                        </td>
-                        <td>{product.views || 0}</td>
-                        <td>{new Date(product.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          <div className="action-buttons">
-                            <button
-                              className="btn-edit"
-                              onClick={() => handleEdit(product)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="btn-delete"
-                              onClick={() => handleDelete(product._id, product.title)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    {products.map((product) => {
+                      const statusInfo = getStatusDisplay(product.status);
+                      return (
+                        <tr key={product.id}>
+                          <td>{product.title}</td>
+                          <td>{product.user?.username || 'Unknown'}</td>
+                          <td>{product.category?.name || 'N/A'}</td>
+                          <td>${parseFloat(product.price || 0).toFixed(2)}</td>
+                          <td>
+                            <span className={`status-badge ${statusInfo.class}`}>
+                              {statusInfo.text}
+                            </span>
+                          </td>
+                          <td>{product.views || 0}</td>
+                          <td>{new Date(product.createdAt).toLocaleDateString()}</td>
+                          <td>
+                            <div className="action-buttons">
+                              <button
+                                className="btn-edit"
+                                onClick={() => handleEdit(product)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="btn-delete"
+                                onClick={() => handleDelete(product.id, product.title)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
 
-              {/* Pagination */}
               <div className="pagination">
                 <button
                   onClick={() => setPage(page - 1)}
@@ -203,7 +211,6 @@ const ProductManagement = () => {
             </>
           )}
 
-          {/* Edit Modal */}
           {editingProduct && (
             <div className="modal-overlay" onClick={() => setEditingProduct(null)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>

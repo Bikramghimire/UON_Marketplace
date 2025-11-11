@@ -4,9 +4,15 @@ import './MyProductCard.css';
 
 const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) => {
   const navigate = useNavigate();
+  
+  const isStudentEssential = product.isStudentEssential || product.price === 0;
 
   const handleViewDetails = () => {
-    navigate(`/products/${product.id || product._id}`);
+    if (isStudentEssential) {
+      navigate(`/student-essentials/${product.id || product._id}`);
+    } else {
+      navigate(`/products/${product.id || product._id}`);
+    }
   };
 
   // Get primary image or first image
@@ -26,8 +32,10 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
 
   const handleMarkAsSold = (e) => {
     e.stopPropagation();
-    if (window.confirm('Mark this product as sold?')) {
-      onStatusUpdate(product.id || product._id, 'sold');
+    const status = isStudentEssential ? 'claimed' : 'sold';
+    const message = isStudentEssential ? 'Mark this item as claimed?' : 'Mark this product as sold?';
+    if (window.confirm(message)) {
+      onStatusUpdate(product.id || product._id, status);
     }
   };
 
@@ -43,15 +51,41 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
     }
   };
 
-  const getStatusBadge = () => {
-    switch (product.status) {
+  // Helper function to get status display
+  const getStatusDisplay = (status) => {
+    if (!status) return { text: 'Active', class: 'status-active' };
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
+      case 'active':
+        return { text: 'Active', class: 'status-active' };
       case 'sold':
-        return <span className="status-badge status-sold">Sold</span>;
+        return { text: 'Sold', class: 'status-sold' };
+      case 'claimed':
+        return { text: 'Claimed', class: 'status-claimed' };
       case 'inactive':
-        return <span className="status-badge status-inactive">Inactive</span>;
+        return { text: 'Inactive', class: 'status-inactive' };
       default:
-        return <span className="status-badge status-active">Active</span>;
+        return { text: 'Active', class: 'status-active' };
     }
+  };
+
+  const getStatusBadge = () => {
+    const statusInfo = getStatusDisplay(product.status);
+    return (
+      <span 
+        className={`status-badge ${statusInfo.class}`} 
+        title={`Product status: ${statusInfo.text}`}
+      >
+        {statusInfo.text}
+      </span>
+    );
+  };
+  
+  const getFreeBadge = () => {
+    if (isStudentEssential) {
+      return <span className="free-badge">FREE</span>;
+    }
+    return null;
   };
 
   return (
@@ -77,6 +111,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
           </span>
         )}
         {getStatusBadge()}
+        {getFreeBadge()}
       </div>
       <div className="product-info">
         <div className="product-header-row">
@@ -94,7 +129,9 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
           </div>
         </div>
         <div className="product-footer">
-          <div className="product-price">${product.price?.toFixed(2) || '0.00'}</div>
+          <div className={isStudentEssential ? "product-price free" : "product-price"}>
+            {isStudentEssential ? 'FREE' : `$${parseFloat(product.price || 0).toFixed(2)}`}
+          </div>
           <div className="product-date">{product.datePosted}</div>
         </div>
         <div className="product-actions">
@@ -106,9 +143,9 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
                   onClick={handleMarkAsSold}
                   disabled={isActionLoading}
                 >
-                  {isActionLoading ? 'Updating...' : 'Mark as Sold'}
+                  {isActionLoading ? 'Updating...' : isStudentEssential ? 'Mark as Claimed' : 'Mark as Sold'}
                 </button>
-              ) : product.status === 'sold' ? (
+              ) : (product.status === 'sold' || product.status === 'claimed') ? (
                 // Only show "Mark as Active" for sold products (not inactive ones set by admin)
                 <button
                   className="btn-action btn-mark-active"

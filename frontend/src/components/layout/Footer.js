@@ -6,7 +6,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-content">
-          <div className="footer-section">
+          {/* <div className="footer-section">
             <h3>UON Marketplace</h3>
             <p>Connecting students and local vendors in a trusted marketplace environment.</p>
             <div className="social-links">
@@ -43,7 +43,7 @@ const Footer = () => {
               <p>📞 +1 (555) 123-4567</p>
               <p>📍 University of North Campus</p>
             </div>
-          </div>
+          </div> */}
         </div>
         
         <div className="footer-bottom">

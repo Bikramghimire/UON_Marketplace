@@ -43,7 +43,7 @@ const CategoryManagement = () => {
       // Count products per category
       const counts = {};
       categoriesData.forEach(cat => {
-        counts[cat._id] = productsData.filter(p => p.category?._id === cat._id || p.category === cat._id).length;
+        counts[cat.id] = productsData.filter(p => p.category?.id === cat.id || p.categoryId === cat.id || p.category === cat.id).length;
       });
       
       setCategories(categoriesData);
@@ -101,7 +101,7 @@ const CategoryManagement = () => {
     try {
       setSubmitting(true);
       setError(null);
-      await updateCategory(editingCategory._id, editForm);
+      await updateCategory(editingCategory.id, editForm);
       await loadCategories();
       setEditingCategory(null);
       setEditForm({ name: '', description: '' });
@@ -231,11 +231,11 @@ const CategoryManagement = () => {
                     </tr>
                   ) : (
                     categories.map((category) => (
-                      <tr key={category._id}>
+                      <tr key={category.id}>
                         <td style={{ fontWeight: '600' }}>{category.name}</td>
                         <td>{category.description || '-'}</td>
                         <td style={{ fontWeight: '600', color: '#1295D8' }}>
-                          {productCounts[category._id] || 0}
+                          {productCounts[category.id] || 0}
                         </td>
                         <td>{new Date(category.createdAt).toLocaleDateString()}</td>
                         <td>
@@ -249,7 +249,7 @@ const CategoryManagement = () => {
                             </button>
                             <button
                               className="btn-delete"
-                              onClick={() => handleDelete(category._id, category.name)}
+                              onClick={() => handleDelete(category.id, category.name)}
                               disabled={submitting}
                             >
                               Delete

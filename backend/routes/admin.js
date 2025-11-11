@@ -137,7 +137,17 @@ router.get('/users', async (req, res) => {
  */
 router.get('/users/:id', async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id, {
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID'
+      });
+    }
+
+    const user = await User.findByPk(id, {
       attributes: { exclude: ['password'] }
     });
     
@@ -184,9 +194,19 @@ router.get('/users/:id', async (req, res) => {
  */
 router.put('/users/:id', async (req, res) => {
   try {
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID'
+      });
+    }
+
     const { role, firstName, lastName, phone, location } = req.body;
 
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findByPk(id);
 
     if (!user) {
       return res.status(404).json({
@@ -225,7 +245,17 @@ router.put('/users/:id', async (req, res) => {
  */
 router.delete('/users/:id', async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID'
+      });
+    }
+
+    const user = await User.findByPk(id);
 
     if (!user) {
       return res.status(404).json({
@@ -331,7 +361,17 @@ router.get('/products', async (req, res) => {
  */
 router.get('/products/:id', async (req, res) => {
   try {
-    const product = await Product.findByPk(req.params.id, {
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID'
+      });
+    }
+
+    const product = await Product.findByPk(id, {
       include: [
         {
           model: User,
@@ -373,9 +413,19 @@ router.get('/products/:id', async (req, res) => {
  */
 router.put('/products/:id', async (req, res) => {
   try {
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID'
+      });
+    }
+
     const { status, title, description, price, condition, location } = req.body;
 
-    const product = await Product.findByPk(req.params.id);
+    const product = await Product.findByPk(id);
 
     if (!product) {
       return res.status(404).json({
@@ -415,7 +465,17 @@ router.put('/products/:id', async (req, res) => {
  */
 router.delete('/products/:id', async (req, res) => {
   try {
-    const product = await Product.findByPk(req.params.id);
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid product ID'
+      });
+    }
+
+    const product = await Product.findByPk(id);
 
     if (!product) {
       return res.status(404).json({
@@ -470,7 +530,17 @@ router.get('/categories', async (req, res) => {
  */
 router.get('/categories/:id', async (req, res) => {
   try {
-    const category = await Category.findByPk(req.params.id);
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid category ID'
+      });
+    }
+
+    const category = await Category.findByPk(id);
 
     if (!category) {
       return res.status(404).json({
@@ -547,9 +617,19 @@ router.post('/categories', async (req, res) => {
  */
 router.put('/categories/:id', async (req, res) => {
   try {
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid category ID'
+      });
+    }
+
     const { name, description } = req.body;
 
-    const category = await Category.findByPk(req.params.id);
+    const category = await Category.findByPk(id);
 
     if (!category) {
       return res.status(404).json({
@@ -602,7 +682,17 @@ router.put('/categories/:id', async (req, res) => {
  */
 router.delete('/categories/:id', async (req, res) => {
   try {
-    const category = await Category.findByPk(req.params.id);
+    const { id } = req.params;
+    
+    // Validate ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid category ID'
+      });
+    }
+
+    const category = await Category.findByPk(id);
 
     if (!category) {
       return res.status(404).json({

@@ -49,27 +49,100 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.9rem;
   border-radius: 20px;
-  font-size: 1rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  text-align: center;
+  z-index: 2;
 }
 
 .status-active {
-  background: #d4edda;
-  color: #155724;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: 1px solid #1e7e34;
+}
+
+.status-active::before {
+  content: '●';
+  margin-right: 0.4rem;
+  font-size: 0.6rem;
+  animation: pulse 2s infinite;
+  vertical-align: middle;
 }
 
 .status-sold {
-  background: #fff3cd;
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
   color: #856404;
+  border: 1px solid #e0a800;
+  font-weight: 700;
+}
+
+.status-sold::before {
+  content: '✓';
+  margin-right: 0.4rem;
+  font-size: 0.8rem;
+  vertical-align: middle;
 }
 
 .status-inactive {
-  background: #f8d7da;
-  color: #721c24;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: 1px solid #bd2130;
+}
+
+.status-inactive::before {
+  content: '○';
+  margin-right: 0.4rem;
+  font-size: 0.6rem;
+  vertical-align: middle;
+}
+
+.status-claimed {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: #856404;
+  border: 1px solid #e0a800;
+  font-weight: 700;
+}
+
+.status-claimed::before {
+  content: '✓';
+  margin-right: 0.4rem;
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Free Badge */
+.free-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #28a745;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .product-info {
@@ -167,6 +240,12 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #1295D8;
+}
+
+.product-price.free {
+  color: #28a745;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .product-date {

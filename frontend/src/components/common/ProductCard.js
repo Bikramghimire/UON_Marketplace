@@ -61,7 +61,7 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
         <div className="product-footer">
-          <div className="product-price">${product.price.toFixed(2)}</div>
+          <div className="product-price">${parseFloat(product.price || 0).toFixed(2)}</div>
           <div className="product-date">{product.datePosted}</div>
         </div>
         <button className="btn-view-details">View Details</button>

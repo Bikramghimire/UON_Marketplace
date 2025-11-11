@@ -204,10 +204,18 @@
   border-bottom: 2px solid #e6e6e6;
 }
 
+.admin-table th:nth-child(5) {
+  text-align: center;
+}
+
 .admin-table td {
   padding: 1rem;
   border-bottom: 1px solid #e6e6e6;
   color: #666;
+}
+
+.admin-table td:nth-child(5) {
+  text-align: center;
 }
 
 .admin-table tbody tr:hover {
@@ -221,37 +229,86 @@
 /* Badges */
 .role-badge,
 .status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .role-badge.admin {
-  background: #D85512;
+  background: linear-gradient(135deg, #D85512 0%, #c04a0f 100%);
   color: white;
+  border: 1px solid #b8440d;
 }
 
 .role-badge.user {
-  background: #e6f4ff;
+  background: linear-gradient(135deg, #e6f4ff 0%, #cce8ff 100%);
   color: #1295D8;
+  border: 1px solid #99d6ff;
 }
 
 .status-badge.active {
-  background: #d4edda;
-  color: #155724;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: 1px solid #1e7e34;
+  min-width: 70px;
+  text-align: center;
+}
+
+.status-badge.active::before {
+  content: '●';
+  margin-right: 0.4rem;
+  font-size: 0.6rem;
+  animation: pulse 2s infinite;
+  vertical-align: middle;
 }
 
 .status-badge.sold {
-  background: #fff3cd;
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
   color: #856404;
+  border: 1px solid #e0a800;
+  font-weight: 700;
+  min-width: 70px;
+  text-align: center;
+}
+
+.status-badge.sold::before {
+  content: '✓';
+  margin-right: 0.4rem;
+  font-size: 0.8rem;
+  vertical-align: middle;
 }
 
 .status-badge.inactive {
-  background: #f8d7da;
-  color: #721c24;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: 1px solid #bd2130;
+  min-width: 70px;
+  text-align: center;
+}
+
+.status-badge.inactive::before {
+  content: '○';
+  margin-right: 0.4rem;
+  font-size: 0.6rem;
+  vertical-align: middle;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Action Buttons */

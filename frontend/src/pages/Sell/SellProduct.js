@@ -257,7 +257,7 @@ const SellProduct = () => {
         <div className="sell-container">
           <div className="sell-header">
             <h1>Sell Something</h1>
-            <p>List your item on UON Marketplace</p>
+            <p>List your item on Lifecycle Marketplace</p>
           </div>
 
           {error && <div className="error-message">{error}</div>}

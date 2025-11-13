@@ -15,7 +15,6 @@ const LoginPage = () => {
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       navigate('/products');
@@ -35,14 +34,14 @@ const LoginPage = () => {
     setFormError('');
     setIsSubmitting(true);
 
-    // Basic validation
+
     if (!formData.emailOrUsername || !formData.password) {
       setFormError('Please fill in all fields');
       setIsSubmitting(false);
       return;
     }
 
-    // Trim inputs
+
     const emailOrUsernameTrimmed = formData.emailOrUsername.trim();
     const passwordTrimmed = formData.password.trim();
 
@@ -62,7 +61,7 @@ const LoginPage = () => {
         return;
       }
     } else {
-      // Validate username format
+ 
       if (emailOrUsernameTrimmed.length < 3) {
         setFormError('Username must be at least 3 characters');
         setIsSubmitting(false);
@@ -75,14 +74,14 @@ const LoginPage = () => {
       }
     }
 
-    // Password validation
+
     if (passwordTrimmed.length < 6) {
       setFormError('Password must be at least 6 characters');
       setIsSubmitting(false);
       return;
     }
 
-    // Determine if input is email or username
+
     const loginData = {
       [isEmail ? 'email' : 'username']: isEmail ? emailOrUsernameTrimmed.toLowerCase() : emailOrUsernameTrimmed,
       password: passwordTrimmed
@@ -121,7 +120,7 @@ const LoginPage = () => {
           <div className="auth-card">
             <div className="auth-header">
               <h1>Welcome Back</h1>
-              <p>Sign in to your UON Marketplace account</p>
+              <p>Sign in to your Lifecycle Marketplace account</p>
             </div>
 
             {(error || formError) && (

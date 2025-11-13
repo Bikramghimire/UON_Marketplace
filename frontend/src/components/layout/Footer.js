@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-content">
           {/* <div className="footer-section">
-            <h3>UON Marketplace</h3>
+            <h3>Lifecycle Marketplace</h3>
             <p>Connecting students and local vendors in a trusted marketplace environment.</p>
             <div className="social-links">
               <a href="#" className="social-link">📘</a>
@@ -47,7 +47,7 @@ const Footer = () => {
         </div>
         
         <div className="footer-bottom">
-          <p>&copy; 2024 UON Marketplace. All rights reserved.</p>
+          <p>&copy; 2024 Lifecycle Marketplace. All rights reserved.</p>
         </div>
       </div>
     </footer>

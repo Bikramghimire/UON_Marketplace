@@ -177,7 +177,7 @@ const SignUpPage = () => {
           <div className="auth-card">
             <div className="auth-header">
               <h1>Create Account</h1>
-              <p>Join UON Marketplace today</p>
+              <p>Join Lifecycle Marketplace today</p>
             </div>
 
             {(error || formError) && (

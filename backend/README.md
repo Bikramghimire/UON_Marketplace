@@ -1,6 +1,6 @@
-# UON Marketplace Backend API
+# Lifecycle Marketplace Backend API
 
-Backend API for UON Marketplace built with Node.js, Express, and PostgreSQL.
+Backend API for Lifecycle Marketplace built with Node.js, Express, and PostgreSQL.
 
 ## 🚀 Quick Start
 

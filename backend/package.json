@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Backend API for UON Marketplace with PostgreSQL",
+  "description": "Backend API for Lifecycle Marketplace with PostgreSQL",
   "type": "module",
   "main": "server.js",
   "scripts": {

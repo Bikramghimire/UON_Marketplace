@@ -51,7 +51,7 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo">
-          <h1>UON Marketplace</h1>
+          <h1>Lifecycle Marketplace</h1>
         </Link>
         
         <nav className="navigation">

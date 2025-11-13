@@ -1,4 +1,4 @@
-# UON Marketplace
+# Lifecycle Marketplace
 
 A student-focused online marketplace platform for University of Newcastle (UoN) students. Buy, sell, and connect within the university community.
 
@@ -71,7 +71,7 @@ JWT_SECRET=your-secret-key
 EMAIL_SERVICE=gmail
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-app-password
-EMAIL_FROM="UON Marketplace <your-email@gmail.com>"
+EMAIL_FROM="Lifecycle Marketplace <your-email@gmail.com>"
 ```
 
 Run database migration:

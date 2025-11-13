@@ -1,6 +1,6 @@
-# UON Marketplace - Setup Guide
+# Lifecycle Marketplace - Setup Guide
 
-This guide will help you set up and run the UON Marketplace application with PostgreSQL backend.
+This guide will help you set up and run the Lifecycle Marketplace application with PostgreSQL backend.
 
 ## 🚀 Quick Start
 
@@ -92,7 +92,7 @@ sudo systemctl enable postgresql
    EMAIL_SECURE=false
    EMAIL_USER=your-email@gmail.com
    EMAIL_PASSWORD=your-app-password
-   EMAIL_FROM="UON Marketplace <your-email@gmail.com>"
+   EMAIL_FROM="Lifecycle Marketplace <your-email@gmail.com>"
    ```
    
    **Important:** 
@@ -223,7 +223,7 @@ After running `npm run seed`, you can use these test accounts:
 2. **Generate App Password:**
    - Go to [App Passwords](https://myaccount.google.com/apppasswords)
    - Select "Mail" and "Other (Custom name)"
-   - Enter "UON Marketplace"
+   - Enter "Lifecycle Marketplace"
    - Copy the 16-character password
 
 3. **Update `.env` file:**
@@ -231,7 +231,7 @@ After running `npm run seed`, you can use these test accounts:
    EMAIL_SERVICE=gmail
    EMAIL_USER=your-email@gmail.com
    EMAIL_PASSWORD=your-16-character-app-password
-   EMAIL_FROM="UON Marketplace <your-email@gmail.com>"
+   EMAIL_FROM="Lifecycle Marketplace <your-email@gmail.com>"
    ```
 
 ### Development Mode (No Email Setup)
@@ -247,7 +247,7 @@ If you don't configure email settings, the system will:
 📧 EMAIL (Development Mode - Not Sent)
 ═══════════════════════════════════════════════════
 To: user@example.com
-Subject: Verify Your Email - UON Marketplace
+Subject: Verify Your Email - Lifecycle Marketplace
 
 Body:
 Verification Code: 123456

@@ -15,7 +15,7 @@ const HomePage = () => {
         {/* Hero Section */}
         <section className="hero-section">
           <div className="hero-content">
-            <h1 className="hero-title">Welcome to UON Marketplace</h1>
+            <h1 className="hero-title">Welcome to Lifecycle Marketplace</h1>
             <p className="hero-subtitle">
               Discover amazing products from students and local vendors. Buy,
               sell, and trade with your university community.
@@ -43,7 +43,7 @@ const HomePage = () => {
         {/* Features Section */}
         <section className="features-section">
           <div className="container">
-            <h2 className="section-title">Why Choose UON Marketplace?</h2>
+            <h2 className="section-title">Why Choose Lifecycle Marketplace?</h2>
             <div className="features-grid">
               <div className="feature-card">
                 <div className="feature-icon">🛍️</div>

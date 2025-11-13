@@ -75,9 +75,9 @@ export const sendVerificationEmail = async (user, verificationCode) => {
     const verificationUrl = `${frontendUrl}/verify-email`;
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || `"UON Marketplace" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_FROM || `"Lifecycle Marketplace" <${process.env.EMAIL_USER}>`,
       to: user.email,
-      subject: 'Verify Your Email - UON Marketplace',
+      subject: 'Verify Your Email - Lifecycle Marketplace',
       html: `
         <!DOCTYPE html>
         <html>
@@ -88,12 +88,12 @@ export const sendVerificationEmail = async (user, verificationCode) => {
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">UON Marketplace</h1>
+            <h1 style="color: white; margin: 0;">Lifecycle Marketplace</h1>
           </div>
           <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
             <h2 style="color: #333; margin-top: 0;">Verify Your Email Address</h2>
             <p>Hi ${user.firstName || user.username},</p>
-            <p>Thank you for registering with UON Marketplace! Please verify your email address using the verification code below:</p>
+            <p>Thank you for registering with Lifecycle Marketplace! Please verify your email address using the verification code below:</p>
             <div style="text-align: center; margin: 30px 0;">
               <div style="background: white; border: 3px solid #667eea; border-radius: 10px; padding: 20px; display: inline-block;">
                 <div style="font-size: 36px; font-weight: bold; color: #667eea; letter-spacing: 8px; font-family: 'Courier New', monospace;">
@@ -121,18 +121,18 @@ export const sendVerificationEmail = async (user, verificationCode) => {
             </p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
             <p style="color: #999; font-size: 12px; text-align: center;">
-              © ${new Date().getFullYear()} UON Marketplace. All rights reserved.
+              © ${new Date().getFullYear()} Lifecycle Marketplace. All rights reserved.
             </p>
           </div>
         </body>
         </html>
       `,
       text: `
-        Verify Your Email - UON Marketplace
+        Verify Your Email - Lifecycle Marketplace
         
         Hi ${user.firstName || user.username},
         
-        Thank you for registering with UON Marketplace! Please verify your email address using the verification code below:
+        Thank you for registering with Lifecycle Marketplace! Please verify your email address using the verification code below:
         
         Verification Code: ${verificationCode}
         
@@ -140,7 +140,7 @@ export const sendVerificationEmail = async (user, verificationCode) => {
         
         This code will expire in 15 minutes. If you didn't create an account, please ignore this email.
         
-        © ${new Date().getFullYear()} UON Marketplace. All rights reserved.
+        © ${new Date().getFullYear()} Lifecycle Marketplace. All rights reserved.
       `
     };
 
@@ -163,9 +163,9 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || `"UON Marketplace" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_FROM || `"Lifecycle Marketplace" <${process.env.EMAIL_USER}>`,
       to: user.email,
-      subject: 'Reset Your Password - UON Marketplace',
+      subject: 'Reset Your Password - Lifecycle Marketplace',
       html: `
         <!DOCTYPE html>
         <html>
@@ -176,7 +176,7 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">UON Marketplace</h1>
+            <h1 style="color: white; margin: 0;">Lifecycle Marketplace</h1>
           </div>
           <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
             <h2 style="color: #333; margin-top: 0;">Reset Your Password</h2>
@@ -201,7 +201,7 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
             </p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
             <p style="color: #999; font-size: 12px; text-align: center;">
-              © ${new Date().getFullYear()} UON Marketplace. All rights reserved.
+              © ${new Date().getFullYear()} Lifecycle Marketplace. All rights reserved.
             </p>
           </div>
         </body>

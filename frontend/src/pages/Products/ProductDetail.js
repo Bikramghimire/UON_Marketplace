@@ -6,6 +6,8 @@ import Footer from '../../components/layout/Footer';
 import ImageCarousel from '../../components/common/ImageCarousel';
 import ComposeMessage from '../../components/messages/ComposeMessage';
 import { getProductById } from '../../services/productService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faEnvelope, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
@@ -59,7 +61,7 @@ const ProductDetail = () => {
         <main className="product-detail-main">
           <div className="product-detail-container">
             <div className="error-container">
-              <div className="error-icon">❌</div>
+              <div className="error-icon"><FontAwesomeIcon icon={faTimesCircle} /></div>
               <h2>Product Not Found</h2>
               <p>{error || 'The product you are looking for does not exist.'}</p>
               <button onClick={() => navigate('/products')} className="btn btn-primary">
@@ -108,7 +110,7 @@ const ProductDetail = () => {
                 </div>
                 <div className="meta-item">
                   <span className="meta-label">Location:</span>
-                  <span className="meta-value">📍 {product.location || product.user?.location || 'N/A'}</span>
+                  <span className="meta-value"><FontAwesomeIcon icon={faMapMarkerAlt} /> {product.location || product.user?.location || 'N/A'}</span>
                 </div>
                 <div className="meta-item">
                   <span className="meta-label">Posted:</span>
@@ -137,10 +139,10 @@ const ProductDetail = () => {
                       {product.user.firstName || product.user.lastName ? '' : product.user.username}
                     </div>
                     {product.user.email && (
-                      <div className="seller-email">📧 {product.user.email}</div>
+                      <div className="seller-email"><FontAwesomeIcon icon={faEnvelope} /> {product.user.email}</div>
                     )}
                     {product.user.location && (
-                      <div className="seller-location">📍 {product.user.location}</div>
+                      <div className="seller-location"><FontAwesomeIcon icon={faMapMarkerAlt} /> {product.user.location}</div>
                     )}
                   </div>
                 </div>

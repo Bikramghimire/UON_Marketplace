@@ -6,6 +6,8 @@ import Footer from '../../components/layout/Footer';
 import MyProductCard from '../../components/common/MyProductCard';
 import { getUserProducts, updateProductStatus, deleteProduct } from '../../services/productService';
 import { getUserStudentEssentials, updateStudentEssentialStatus, deleteStudentEssential } from '../../services/studentEssentialService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift, faBox } from '@fortawesome/free-solid-svg-icons';
 import './MyProducts.css';
 
 const MyProducts = () => {
@@ -115,7 +117,7 @@ const MyProducts = () => {
                 + List New Product
               </Link>
               <Link to="/add-student-essential" className="btn btn-secondary">
-                🎁 Give Away for Free
+                <FontAwesomeIcon icon={faGift} /> Give Away for Free
               </Link>
             </div>
 
@@ -164,7 +166,7 @@ const MyProducts = () => {
               </>
             ) : (
               <div className="no-products">
-                <div className="no-products-icon">📦</div>
+                <div className="no-products-icon"><FontAwesomeIcon icon={faBox} /></div>
                 <h2>No products yet</h2>
                 <p>Start selling by listing your first product!</p>
                 <Link to="/sell" className="btn btn-primary">

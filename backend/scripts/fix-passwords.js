@@ -11,7 +11,7 @@ dotenv.config();
  */
 const fixPasswords = async () => {
   try {
-    console.log('🔧 Fixing user passwords...\n');
+    console.log('Fixing user passwords...\n');
 
     // Connect to database
     await connectDB();
@@ -49,12 +49,12 @@ const fixPasswords = async () => {
     }
 
     console.log('\n═══════════════════════════════════════════════════');
-    console.log(`   ✅ Fixed ${fixedCount} user passwords`);
+    console.log(`   Fixed ${fixedCount} user passwords`);
     console.log('═══════════════════════════════════════════════════\n');
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error fixing passwords:', error);
+    console.error('Error fixing passwords:', error);
     process.exit(1);
   }
 };

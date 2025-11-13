@@ -5,6 +5,8 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { getCategories, createStudentEssential } from '../../services/studentEssentialService';
 import { uploadImages } from '../../services/uploadService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import './AddStudentEssential.css';
 
 const AddStudentEssential = () => {
@@ -161,7 +163,7 @@ const AddStudentEssential = () => {
       // If no images, use default emoji
       if (processedImages.length === 0) {
         processedImages = [{
-          url: '🎁',
+          url: '🎁', // This will be replaced with FontAwesome icon in display
           isPrimary: true
         }];
       }
@@ -370,7 +372,7 @@ const AddStudentEssential = () => {
                     className="btn btn-primary btn-upload"
                     disabled={submitting || uploading}
                   >
-                    📁 Select Images (Multiple)
+                    <FontAwesomeIcon icon={faFolderOpen} /> Select Images (Multiple)
                   </button>
                   <small className="upload-hint">
                     Select one or more images (max 10 images, 5MB each)

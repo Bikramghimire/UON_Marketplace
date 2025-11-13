@@ -96,7 +96,7 @@ router.get('/', async (req, res) => {
         price: parseFloat(product.price),
         category: product.category?.name || 'Uncategorized',
         description: product.description,
-        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '📦',
+        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '',
         seller: product.user?.username || 'Unknown',
         location: product.location || product.user?.location || 'N/A',
         datePosted: product.createdAt,
@@ -152,7 +152,7 @@ router.get('/my', protect, async (req, res) => {
         price: parseFloat(product.price),
         category: product.category?.name || 'Uncategorized',
         description: product.description,
-        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '📦',
+        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '',
         seller: product.user?.username || 'Unknown',
         location: product.location || product.user?.location || 'N/A',
         datePosted: product.createdAt,
@@ -218,7 +218,7 @@ router.get('/:id', async (req, res) => {
       price: parseFloat(product.price),
       category: product.category?.name || 'Uncategorized',
       description: product.description,
-      image: images.find(img => img.isPrimary)?.url || images[0]?.url || '📦',
+      image: images.find(img => img.isPrimary)?.url || images[0]?.url || '',
       seller: product.user?.username || 'Unknown',
       location: product.location || product.user?.location || 'N/A',
       datePosted: product.createdAt,
@@ -289,7 +289,7 @@ router.post('/', protect, async (req, res) => {
     // If no images provided, use default emoji
     if (processedImages.length === 0) {
       processedImages = [{
-        url: '📦',
+        url: '',
         isPrimary: true
       }];
     }

@@ -1,4 +1,7 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faPhone, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import './Footer.css';
 
 const Footer = () => {
@@ -10,9 +13,9 @@ const Footer = () => {
             <h3>Lifecycle Marketplace</h3>
             <p>Connecting students and local vendors in a trusted marketplace environment.</p>
             <div className="social-links">
-              <a href="#" className="social-link">📘</a>
-              <a href="#" className="social-link">📷</a>
-              <a href="#" className="social-link">🐦</a>
+              <a href="#" className="social-link"><FontAwesomeIcon icon={faFacebook} /></a>
+              <a href="#" className="social-link"><FontAwesomeIcon icon={faInstagram} /></a>
+              <a href="#" className="social-link"><FontAwesomeIcon icon={faTwitter} /></a>
             </div>
           </div>
           
@@ -39,9 +42,9 @@ const Footer = () => {
           <div className="footer-section">
             <h4>Contact Info</h4>
             <div className="contact-info">
-              <p>📧 info@uonmarketplace.com</p>
-              <p>📞 +1 (555) 123-4567</p>
-              <p>📍 University of North Campus</p>
+              <p><FontAwesomeIcon icon={faEnvelope} /> info@uonmarketplace.com</p>
+              <p><FontAwesomeIcon icon={faPhone} /> +1 (555) 123-4567</p>
+              <p><FontAwesomeIcon icon={faMapMarkerAlt} /> University of North Campus</p>
             </div>
           </div> */}
         </div>

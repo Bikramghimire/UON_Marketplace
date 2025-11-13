@@ -10,7 +10,7 @@ dotenv.config();
  */
 const fixAdminPassword = async () => {
   try {
-    console.log('🔧 Fixing admin password...\n');
+    console.log('Fixing admin password...\n');
 
     // Connect to database
     await connectDB();
@@ -28,7 +28,7 @@ const fixAdminPassword = async () => {
     });
 
     if (!adminUser) {
-      console.log('❌ Admin user not found. Creating new admin user...');
+      console.log('Admin user not found. Creating new admin user...');
       
       // Create admin user
       const salt = await bcrypt.genSalt(10);
@@ -45,7 +45,7 @@ const fixAdminPassword = async () => {
         emailVerified: true
       });
       
-      console.log('✅ Admin user created');
+      console.log('Admin user created');
       console.log(`   Email: ${newAdmin.email}`);
       console.log(`   Password: ${newPassword}\n`);
     } else {
@@ -61,21 +61,21 @@ const fixAdminPassword = async () => {
       adminUser.role = 'admin'; // Ensure role is admin
       await adminUser.save();
       
-      console.log('✅ Admin password updated');
+      console.log('Admin password updated');
       console.log(`   Email: ${adminUser.email}`);
       console.log(`   Password: ${newPassword}\n`);
     }
 
     console.log('═══════════════════════════════════════════════════');
-    console.log('   ✅ Admin password fixed!');
+    console.log('   Admin password fixed!');
     console.log('═══════════════════════════════════════════════════\n');
-    console.log('📧 Login Credentials:');
+    console.log('Login Credentials:');
     console.log(`   Email: ${email}`);
     console.log(`   Password: ${newPassword}\n`);
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error fixing admin password:', error);
+    console.error('Error fixing admin password:', error);
     process.exit(1);
   }
 };

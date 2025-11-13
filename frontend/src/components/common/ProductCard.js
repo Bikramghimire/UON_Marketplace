@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faBox } from '@fortawesome/free-solid-svg-icons';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
@@ -13,16 +15,21 @@ const ProductCard = ({ product }) => {
   const getPrimaryImage = () => {
     if (product.images && Array.isArray(product.images)) {
       const primaryImage = product.images.find(img => img.isPrimary);
-      if (primaryImage) return primaryImage.url || primaryImage;
+      if (primaryImage) {
+        if (typeof primaryImage === 'string') return primaryImage;
+        return primaryImage.url || '';
+      }
       if (product.images.length > 0) {
-        return typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url || product.images[0];
+        const firstImage = product.images[0];
+        if (typeof firstImage === 'string') return firstImage;
+        return firstImage.url || '';
       }
     }
-    return product.image || '📦';
+    return product.image || '';
   };
 
   const displayImage = getPrimaryImage();
-  const isUrl = displayImage && (displayImage.startsWith('http://') || displayImage.startsWith('https://') || displayImage.startsWith('//'));
+  const isUrl = displayImage && typeof displayImage === 'string' && (displayImage.startsWith('http://') || displayImage.startsWith('https://') || displayImage.startsWith('//'));
 
   return (
     <div className="product-card" onClick={handleViewDetails}>
@@ -43,7 +50,7 @@ const ProductCard = ({ product }) => {
         </span>
         {isUrl && (
           <span className="product-emoji-fallback" style={{ display: 'none' }}>
-            📦
+            <FontAwesomeIcon icon={faBox} />
           </span>
         )}
       </div>
@@ -53,7 +60,7 @@ const ProductCard = ({ product }) => {
         <p className="product-description">{product.description}</p>
         <div className="product-meta">
           <div className="product-location">
-            <span className="location-icon">📍</span>
+            <span className="location-icon"><FontAwesomeIcon icon={faMapMarkerAlt} /></span>
             {product.location}
           </div>
           <div className="product-condition">

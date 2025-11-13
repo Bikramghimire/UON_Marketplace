@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUnreadCount } from '../../services/messageService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBox, faComments, faUser } from '@fortawesome/free-solid-svg-icons';
 import './ConversationList.css';
 
 const ConversationList = ({ conversations, onSelectConversation, onRefresh }) => {
@@ -59,7 +61,7 @@ const ConversationList = ({ conversations, onSelectConversation, onRefresh }) =>
 
       {conversations.length === 0 ? (
         <div className="no-conversations">
-          <div className="no-conversations-icon">💬</div>
+          <div className="no-conversations-icon"><FontAwesomeIcon icon={faComments} /></div>
           <h3>No conversations yet</h3>
           <p>Start a conversation by contacting a seller from a product page</p>
         </div>
@@ -78,7 +80,11 @@ const ConversationList = ({ conversations, onSelectConversation, onRefresh }) =>
               >
                 <div className="conversation-avatar">
                   <span className="avatar-emoji">
-                    {otherUser?.firstName?.[0] || otherUser?.username?.[0] || '👤'}
+                    {otherUser?.firstName?.[0] || otherUser?.username?.[0] ? (
+                      otherUser?.firstName?.[0] || otherUser?.username?.[0]
+                    ) : (
+                      <FontAwesomeIcon icon={faUser} />
+                    )}
                   </span>
                 </div>
                 <div className="conversation-content">
@@ -96,7 +102,7 @@ const ConversationList = ({ conversations, onSelectConversation, onRefresh }) =>
                   </div>
                   {lastMessage?.product && (
                     <div className="conversation-product">
-                      📦 {lastMessage.product.title}
+                      <FontAwesomeIcon icon={faBox} /> {lastMessage.product.title}
                     </div>
                   )}
                   <p className="conversation-preview">

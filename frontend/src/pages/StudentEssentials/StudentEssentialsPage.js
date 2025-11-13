@@ -3,6 +3,8 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import StudentEssentialCard from '../../components/common/StudentEssentialCard';
 import { getAllStudentEssentials, getCategories } from '../../services/studentEssentialService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift } from '@fortawesome/free-solid-svg-icons';
 import './StudentEssentialsPage.css';
 
 const StudentEssentialsPage = () => {
@@ -152,7 +154,7 @@ const StudentEssentialsPage = () => {
               </>
             ) : (
               <div className="no-essentials">
-                <div className="no-essentials-icon">🎁</div>
+                <div className="no-essentials-icon"><FontAwesomeIcon icon={faGift} /></div>
                 <h2>No items found</h2>
                 <p>Try adjusting your filters or search terms</p>
               </div>

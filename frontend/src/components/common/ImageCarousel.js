@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBox } from '@fortawesome/free-solid-svg-icons';
 import './ImageCarousel.css';
 
 const ImageCarousel = ({ images }) => {
@@ -8,7 +10,7 @@ const ImageCarousel = ({ images }) => {
     return (
       <div className="image-carousel">
         <div className="carousel-placeholder">
-          <span className="placeholder-icon">📦</span>
+          <span className="placeholder-icon"><FontAwesomeIcon icon={faBox} /></span>
           <p>No images available</p>
         </div>
       </div>
@@ -30,7 +32,7 @@ const ImageCarousel = ({ images }) => {
     return (
       <div className="image-carousel">
         <div className="carousel-placeholder">
-          <span className="placeholder-icon">📦</span>
+          <span className="placeholder-icon"><FontAwesomeIcon icon={faBox} /></span>
           <p>No images available</p>
         </div>
       </div>
@@ -55,6 +57,7 @@ const ImageCarousel = ({ images }) => {
 
   // Check if image is a URL or emoji
   const isUrl = (url) => {
+    if (!url || typeof url !== 'string') return false;
     return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//');
   };
 
@@ -91,7 +94,7 @@ const ImageCarousel = ({ images }) => {
             {/* Fallback for broken images */}
             {isUrl(imageUrls[currentIndex]) && (
               <div className="carousel-emoji-fallback" style={{ display: 'none' }}>
-                <span>📦</span>
+                <span><FontAwesomeIcon icon={faBox} /></span>
               </div>
             )}
           </div>
@@ -137,7 +140,7 @@ const ImageCarousel = ({ images }) => {
                 {/* Fallback for broken thumbnails */}
                 {isUrl(url) && (
                   <span className="thumbnail-emoji-fallback" style={{ display: 'none' }}>
-                    📦
+                    <FontAwesomeIcon icon={faBox} />
                   </span>
                 )}
               </div>

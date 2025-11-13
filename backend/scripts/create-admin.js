@@ -15,7 +15,7 @@ dotenv.config();
  */
 const createAdmin = async () => {
   try {
-    console.log('🚀 Creating admin user...\n');
+    console.log('Creating admin user...\n');
 
     // Connect to database
     await connectDB();
@@ -44,7 +44,7 @@ const createAdmin = async () => {
         adminUser.password = password; // Will be hashed by hook
         adminUser.emailVerified = true; // Admin users don't need email verification
         await adminUser.save();
-        console.log('✅ Existing user promoted to admin');
+        console.log('Existing user promoted to admin');
       } else {
         // Update password if needed
         adminUser.password = password;
@@ -52,7 +52,7 @@ const createAdmin = async () => {
         adminUser.lastName = lastName;
         adminUser.emailVerified = true; // Ensure admin is verified
         await adminUser.save();
-        console.log('✅ Admin user password updated');
+        console.log('Admin user password updated');
       }
     } else {
       // Create new admin user
@@ -66,20 +66,20 @@ const createAdmin = async () => {
         role: 'admin',
         emailVerified: true // Admin users don't need email verification
       });
-      console.log('✅ New admin user created');
+      console.log('New admin user created');
     }
 
     console.log('\n═══════════════════════════════════════════════════');
-    console.log('   ✅ Admin User Ready!');
+    console.log('   Admin User Ready!');
     console.log('═══════════════════════════════════════════════════\n');
-    console.log('📧 Login Credentials:');
+    console.log('Login Credentials:');
     console.log(`   Email: ${adminUser.email}`);
     console.log(`   Password: ${password}\n`);
-    console.log('💡 You can now login at: http://localhost:3000/login\n');
+    console.log('You can now login at: http://localhost:3000/login\n');
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error creating admin user:', error);
+    console.error('Error creating admin user:', error);
     process.exit(1);
   }
 };

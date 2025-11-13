@@ -6,6 +6,8 @@ import Footer from '../../components/layout/Footer';
 import ImageCarousel from '../../components/common/ImageCarousel';
 import ComposeMessage from '../../components/messages/ComposeMessage';
 import { getStudentEssentialById } from '../../services/studentEssentialService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faEnvelope, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import './StudentEssentialDetail.css';
 
 const StudentEssentialDetail = () => {
@@ -59,7 +61,7 @@ const StudentEssentialDetail = () => {
         <main className="essential-detail-main">
           <div className="essential-detail-container">
             <div className="error-container">
-              <div className="error-icon">❌</div>
+              <div className="error-icon"><FontAwesomeIcon icon={faTimesCircle} /></div>
               <h2>Item Not Found</h2>
               <p>{error || 'The item you are looking for does not exist.'}</p>
               <button onClick={() => navigate('/student-essentials')} className="btn btn-primary">
@@ -110,7 +112,7 @@ const StudentEssentialDetail = () => {
                 </div>
                 <div className="meta-item">
                   <span className="meta-label">Location:</span>
-                  <span className="meta-value">📍 {essential.location || essential.user?.location || 'N/A'}</span>
+                  <span className="meta-value"><FontAwesomeIcon icon={faMapMarkerAlt} /> {essential.location || essential.user?.location || 'N/A'}</span>
                 </div>
                 <div className="meta-item">
                   <span className="meta-label">Posted:</span>
@@ -139,10 +141,10 @@ const StudentEssentialDetail = () => {
                       {essential.user.firstName || essential.user.lastName ? '' : essential.user.username}
                     </div>
                     {essential.user.email && (
-                      <div className="giver-email">📧 {essential.user.email}</div>
+                      <div className="giver-email"><FontAwesomeIcon icon={faEnvelope} /> {essential.user.email}</div>
                     )}
                     {essential.user.location && (
-                      <div className="giver-location">📍 {essential.user.location}</div>
+                      <div className="giver-location"><FontAwesomeIcon icon={faMapMarkerAlt} /> {essential.user.location}</div>
                     )}
                   </div>
                 </div>

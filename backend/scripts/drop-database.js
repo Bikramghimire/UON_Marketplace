@@ -10,7 +10,7 @@ dotenv.config();
  */
 const dropDatabase = async (dropAll = false) => {
   try {
-    console.log('🚀 Starting database deletion...\n');
+    console.log('Starting database deletion...\n');
 
     // Connect to database
     await connectDB();
@@ -26,7 +26,7 @@ const dropDatabase = async (dropAll = false) => {
     const tables = results.map(row => row.tablename);
 
     if (tables.length === 0) {
-      console.log('✅ No tables found in the database.\n');
+      console.log('No tables found in the database.\n');
       process.exit(0);
     }
 
@@ -38,7 +38,7 @@ const dropDatabase = async (dropAll = false) => {
 
     if (dropAll) {
       // Drop all tables with CASCADE to handle foreign keys
-      console.log('🗑️  Dropping all tables...\n');
+      console.log('Dropping all tables...\n');
       
       // Disable foreign key checks temporarily
       await sequelize.query('SET session_replication_role = replica;');
@@ -47,9 +47,9 @@ const dropDatabase = async (dropAll = false) => {
       for (const table of tables) {
         try {
           await sequelize.query(`DROP TABLE IF EXISTS "${table}" CASCADE;`);
-          console.log(`  ✅ Dropped table: ${table}`);
+          console.log(`  Dropped table: ${table}`);
         } catch (error) {
-          console.error(`  ❌ Error dropping table ${table}:`, error.message);
+          console.error(`  Error dropping table ${table}:`, error.message);
         }
       }
       
@@ -57,11 +57,11 @@ const dropDatabase = async (dropAll = false) => {
       await sequelize.query('SET session_replication_role = DEFAULT;');
       
       console.log('\n═══════════════════════════════════════════════════');
-      console.log('   ✅ All tables dropped successfully!');
+      console.log('   All tables dropped successfully!');
       console.log('═══════════════════════════════════════════════════\n');
     } else {
       // Truncate all tables (keep structure, delete data)
-      console.log('🗑️  Truncating all tables (keeping structure)...\n');
+      console.log('Truncating all tables (keeping structure)...\n');
       
       // Truncate in correct order to handle foreign keys
       const truncateOrder = ['messages', 'products', 'categories', 'users'];
@@ -71,21 +71,21 @@ const dropDatabase = async (dropAll = false) => {
       for (const table of orderedTables) {
         try {
           await sequelize.query(`TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE;`);
-          console.log(`  ✅ Truncated table: ${table}`);
+          console.log(`  Truncated table: ${table}`);
         } catch (error) {
-          console.error(`  ❌ Error truncating table ${table}:`, error.message);
+          console.error(`  Error truncating table ${table}:`, error.message);
         }
       }
       
       console.log('\n═══════════════════════════════════════════════════');
-      console.log('   ✅ All tables truncated successfully!');
+      console.log('   All tables truncated successfully!');
       console.log('   (Table structures preserved)');
       console.log('═══════════════════════════════════════════════════\n');
     }
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error deleting database:', error);
+    console.error('Error deleting database:', error);
     process.exit(1);
   }
 };
@@ -100,7 +100,7 @@ const askConfirmation = () => {
   });
 
   return new Promise((resolve) => {
-    rl.question('⚠️  This will delete all data. Are you sure? (yes/no): ', (answer) => {
+    rl.question('WARNING: This will delete all data. Are you sure? (yes/no): ', (answer) => {
       rl.close();
       resolve(answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y');
     });
@@ -116,15 +116,15 @@ const main = async () => {
   const force = args.includes('--force') || args.includes('-f');
 
   if (dropAll) {
-    console.log('⚠️  WARNING: This will DROP all tables (delete structure and data)!\n');
+    console.log('WARNING: This will DROP all tables (delete structure and data)!\n');
   } else {
-    console.log('⚠️  WARNING: This will TRUNCATE all tables (delete data, keep structure)!\n');
+    console.log('WARNING: This will TRUNCATE all tables (delete data, keep structure)!\n');
   }
 
   if (!force) {
     const confirmed = await askConfirmation();
     if (!confirmed) {
-      console.log('\n❌ Operation cancelled.\n');
+      console.log('\nOperation cancelled.\n');
       process.exit(0);
     }
   }

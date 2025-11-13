@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import './AuthPage.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
@@ -229,7 +231,7 @@ const VerifyEmail = () => {
                   textAlign: 'center',
                   marginBottom: '20px'
                 }}>
-                  ✓
+                  <FontAwesomeIcon icon={faCheck} />
                 </div>
                 <h2 style={{ color: '#4caf50', textAlign: 'center' }}>Email Verified!</h2>
                 <p style={{ textAlign: 'center', marginBottom: '30px' }}>{message}</p>
@@ -248,7 +250,7 @@ const VerifyEmail = () => {
                   textAlign: 'center',
                   marginBottom: '20px'
                 }}>
-                  ✗
+                  <FontAwesomeIcon icon={faTimes} />
                 </div>
                 <h2 style={{ color: '#f44336', textAlign: 'center' }}>Verification Failed</h2>
                 <p style={{ textAlign: 'center', marginBottom: '30px' }}>{message}</p>

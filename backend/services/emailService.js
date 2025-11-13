@@ -13,7 +13,7 @@ const createTransporter = () => {
     return {
       sendMail: async (options) => {
         console.log('\n═══════════════════════════════════════════════════');
-        console.log('📧 EMAIL (Development Mode - Not Sent)');
+        console.log('EMAIL (Development Mode - Not Sent)');
         console.log('═══════════════════════════════════════════════════');
         console.log('To:', options.to);
         console.log('Subject:', options.subject);
@@ -53,7 +53,7 @@ const createTransporter = () => {
   return {
     sendMail: async (options) => {
       console.log('\n═══════════════════════════════════════════════════');
-      console.log('📧 EMAIL (Development Mode - Not Sent)');
+      console.log('EMAIL (Development Mode - Not Sent)');
       console.log('═══════════════════════════════════════════════════');
       console.log('To:', options.to);
       console.log('Subject:', options.subject);
@@ -145,7 +145,7 @@ export const sendVerificationEmail = async (user, verificationCode) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Verification email sent to ${user.email} with code: ${verificationCode}`);
+    console.log(`Verification email sent to ${user.email} with code: ${verificationCode}`);
     return true;
   } catch (error) {
     console.error('Error sending verification email:', error);
@@ -210,7 +210,7 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Password reset email sent to ${user.email}`);
+    console.log(`Password reset email sent to ${user.email}`);
     return true;
   } catch (error) {
     console.error('Error sending password reset email:', error);

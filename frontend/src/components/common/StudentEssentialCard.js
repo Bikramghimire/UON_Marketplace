@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faGift } from '@fortawesome/free-solid-svg-icons';
 import './StudentEssentialCard.css';
 
 const StudentEssentialCard = ({ essential }) => {
@@ -13,16 +15,21 @@ const StudentEssentialCard = ({ essential }) => {
   const getPrimaryImage = () => {
     if (essential.images && Array.isArray(essential.images)) {
       const primaryImage = essential.images.find(img => img.isPrimary);
-      if (primaryImage) return primaryImage.url || primaryImage;
+      if (primaryImage) {
+        if (typeof primaryImage === 'string') return primaryImage;
+        return primaryImage.url || '';
+      }
       if (essential.images.length > 0) {
-        return typeof essential.images[0] === 'string' ? essential.images[0] : essential.images[0].url || essential.images[0];
+        const firstImage = essential.images[0];
+        if (typeof firstImage === 'string') return firstImage;
+        return firstImage.url || '';
       }
     }
-    return essential.image || '🎁';
+    return essential.image || '';
   };
 
   const displayImage = getPrimaryImage();
-  const isUrl = displayImage && (displayImage.startsWith('http://') || displayImage.startsWith('https://') || displayImage.startsWith('//'));
+  const isUrl = displayImage && typeof displayImage === 'string' && (displayImage.startsWith('http://') || displayImage.startsWith('https://') || displayImage.startsWith('//'));
 
   return (
     <div className="essential-card" onClick={handleViewDetails}>
@@ -43,7 +50,7 @@ const StudentEssentialCard = ({ essential }) => {
         </span>
         {isUrl && (
           <span className="essential-emoji-fallback" style={{ display: 'none' }}>
-            🎁
+            <FontAwesomeIcon icon={faGift} />
           </span>
         )}
         <div className="free-badge">FREE</div>
@@ -54,7 +61,7 @@ const StudentEssentialCard = ({ essential }) => {
         <p className="essential-description">{essential.description}</p>
         <div className="essential-meta">
           <div className="essential-location">
-            <span className="location-icon">📍</span>
+            <span className="location-icon"><FontAwesomeIcon icon={faMapMarkerAlt} /></span>
             {essential.location}
           </div>
           <div className="essential-condition">

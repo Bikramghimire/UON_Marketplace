@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         price: 0, // Always free
         category: essential.category?.name || 'Uncategorized',
         description: essential.description,
-        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '🎁',
+        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '',
         seller: essential.user?.username || 'Unknown',
         location: essential.location || essential.user?.location || 'N/A',
         datePosted: essential.createdAt,
@@ -137,7 +137,7 @@ router.get('/my', protect, async (req, res) => {
         price: 0, // Always free
         category: essential.category?.name || 'Uncategorized',
         description: essential.description,
-        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '🎁',
+        image: images.find(img => img.isPrimary)?.url || images[0]?.url || '',
         seller: essential.user?.username || 'Unknown',
         location: essential.location || essential.user?.location || 'N/A',
         datePosted: essential.createdAt,
@@ -203,7 +203,7 @@ router.get('/:id', async (req, res) => {
       price: 0, // Always free
       category: essential.category?.name || 'Uncategorized',
       description: essential.description,
-      image: images.find(img => img.isPrimary)?.url || images[0]?.url || '🎁',
+      image: images.find(img => img.isPrimary)?.url || images[0]?.url || '',
       seller: essential.user?.username || 'Unknown',
       location: essential.location || essential.user?.location || 'N/A',
       datePosted: essential.createdAt,
@@ -273,7 +273,7 @@ router.post('/', protect, async (req, res) => {
     // If no images provided, use default emoji
     if (processedImages.length === 0) {
       processedImages = [{
-        url: '🎁',
+        url: '',
         isPrimary: true
       }];
     }

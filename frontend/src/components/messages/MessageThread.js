@@ -4,6 +4,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { getConversation, sendMessage } from '../../services/messageService';
 import { useAuth } from '../../context/AuthContext';
 import MapPicker from './MapPicker';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBox, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import './MessageThread.css';
 
 const MessageThread = ({ conversation, onBack, onMessageSent }) => {
@@ -185,7 +187,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
         </div>
         {conversation.lastMessage?.product && (
           <div className="thread-product">
-            <span className="product-link">📦 {conversation.lastMessage.product.title}</span>
+            <span className="product-link"><FontAwesomeIcon icon={faBox} /> {conversation.lastMessage.product.title}</span>
           </div>
         )}
       </div>
@@ -244,7 +246,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
                           </div>
                           {message.meetingLocation?.name && (
                             <div className="meeting-location">
-                              📍 {message.meetingLocation.name}
+                              <FontAwesomeIcon icon={faMapMarkerAlt} /> {message.meetingLocation.name}
                             </div>
                           )}
                           {message.meetingLocation?.coordinates && (

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -123,7 +125,7 @@ const MapPicker = ({ onLocationSelect, initialLocation, initialCoordinates }) =>
           onClick={handleGetCurrentLocation}
           className="btn-get-location"
         >
-          📍 Use My Location
+          <FontAwesomeIcon icon={faMapMarkerAlt} /> Use My Location
         </button>
       </div>
 

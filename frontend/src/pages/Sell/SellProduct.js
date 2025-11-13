@@ -5,6 +5,8 @@ import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import { getCategories, createProduct } from "../../services/productService";
 import { uploadImages } from "../../services/uploadService";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBox, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import "./SellProduct.css";
 
 const SellProduct = () => {
@@ -176,7 +178,7 @@ const SellProduct = () => {
       if (processedImages.length === 0) {
         processedImages = [
           {
-            url: "📦",
+            url: "📦", // This will be replaced with FontAwesome icon in display
             isPrimary: true,
           },
         ];
@@ -406,7 +408,7 @@ const SellProduct = () => {
                     className="btn btn-primary btn-upload"
                     disabled={submitting || uploading}
                   >
-                    📁 Select Images (Multiple)
+                    <FontAwesomeIcon icon={faFolderOpen} /> Select Images (Multiple)
                   </button>
                   <small className="upload-hint">
                     Select one or more images (max 10 images, 5MB each)

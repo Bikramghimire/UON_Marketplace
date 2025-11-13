@@ -28,10 +28,8 @@ const Message = sequelize.define('Message', {
   productId: {
     type: DataTypes.UUID,
     allowNull: true,
-    references: {
-      model: 'products',
-      key: 'id'
-    },
+    // Removed foreign key reference to allow productId to reference both products and student_essentials
+    // Validation is handled in application code (routes/messages.js)
     field: 'product_id'
   },
   subject: {

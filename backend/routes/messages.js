@@ -1,7 +1,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { sequelize } from '../models/index.js';
-import { Message, User, Product } from '../models/index.js';
+import { Message, User, Product, StudentEssential } from '../models/index.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -285,13 +285,24 @@ router.post('/', protect, async (req, res) => {
         });
       }
 
+      // Check both Product and StudentEssential tables
       productDoc = await Product.findByPk(extractedProductId);
+      let isStudentEssential = false;
+      
       if (!productDoc) {
-        return res.status(404).json({
-          success: false,
-          message: 'Product not found'
-        });
+        // Try StudentEssential table
+        const studentEssential = await StudentEssential.findByPk(extractedProductId);
+        if (studentEssential) {
+          productDoc = studentEssential;
+          isStudentEssential = true;
+        } else {
+          return res.status(404).json({
+            success: false,
+            message: 'Product not found'
+          });
+        }
       }
+      
       // Auto-generate subject if not provided and product exists
       if (!messageSubject) {
         messageSubject = `Inquiry about: ${productDoc.title}`;
@@ -348,6 +359,23 @@ router.post('/', protect, async (req, res) => {
       ]
     });
 
+    // If product is not found via Product association, try StudentEssential
+    let productData = populatedMessage.product;
+    if (!productData && productIdValue) {
+      const studentEssential = await StudentEssential.findByPk(productIdValue, {
+        attributes: ['id', 'title', 'images']
+      });
+      if (studentEssential) {
+        // Transform student essential to match product format
+        productData = {
+          id: studentEssential.id,
+          title: studentEssential.title,
+          price: null, // Student essentials are free
+          images: studentEssential.images || []
+        };
+      }
+    }
+
     // Transform to match frontend expectations
     const msg = populatedMessage.toJSON();
     const transformedMessage = {
@@ -355,7 +383,7 @@ router.post('/', protect, async (req, res) => {
       _id: msg.id,
       sender: msg.sender,
       recipient: msg.recipient,
-      product: msg.product,
+      product: productData || msg.product,
       meetingLocation: msg.meetingLocationName ? {
         name: msg.meetingLocationName,
         coordinates: msg.meetingLocationLat && msg.meetingLocationLng ? {

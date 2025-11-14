@@ -1,13 +1,8 @@
-/**
- * Admin Service
- * API calls for admin operations
- */
+
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-/**
- * Get auth headers with token
- */
+
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return {
@@ -16,9 +11,7 @@ const getAuthHeaders = () => {
   };
 };
 
-/**
- * Get dashboard statistics
- */
+
 export const getDashboardStats = async () => {
   try {
     const response = await fetch(`${API_URL}/admin/dashboard`, {
@@ -34,14 +27,11 @@ export const getDashboardStats = async () => {
 
     return data;
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
     throw error;
   }
 };
 
-/**
- * Get all users (admin)
- */
+
 export const getAllUsers = async (filters = {}) => {
   try {
     const { page = 1, limit = 10, search = '', role = '' } = filters;
@@ -65,14 +55,11 @@ export const getAllUsers = async (filters = {}) => {
 
     return data;
   } catch (error) {
-    console.error('Error fetching users:', error);
     throw error;
   }
 };
 
-/**
- * Get user by ID (admin)
- */
+
 export const getUserById = async (id) => {
   try {
     const response = await fetch(`${API_URL}/admin/users/${id}`, {
@@ -88,14 +75,11 @@ export const getUserById = async (id) => {
 
     return data;
   } catch (error) {
-    console.error('Error fetching user:', error);
     throw error;
   }
 };
 
-/**
- * Update user (admin)
- */
+
 export const updateUser = async (id, userData) => {
   try {
     const response = await fetch(`${API_URL}/admin/users/${id}`, {
@@ -112,14 +96,11 @@ export const updateUser = async (id, userData) => {
 
     return data;
   } catch (error) {
-    console.error('Error updating user:', error);
     throw error;
   }
 };
 
-/**
- * Delete user (admin)
- */
+
 export const deleteUser = async (id) => {
   try {
     const response = await fetch(`${API_URL}/admin/users/${id}`, {
@@ -135,14 +116,11 @@ export const deleteUser = async (id) => {
 
     return data;
   } catch (error) {
-    console.error('Error deleting user:', error);
     throw error;
   }
 };
 
-/**
- * Get all products (admin)
- */
+
 export const getAllProductsAdmin = async (filters = {}) => {
   try {
     const { page = 1, limit = 10, status = '', search = '' } = filters;
@@ -166,14 +144,11 @@ export const getAllProductsAdmin = async (filters = {}) => {
 
     return data;
   } catch (error) {
-    console.error('Error fetching products:', error);
     throw error;
   }
 };
 
-/**
- * Get product by ID (admin)
- */
+
 export const getProductByIdAdmin = async (id) => {
   try {
     const response = await fetch(`${API_URL}/admin/products/${id}`, {
@@ -189,14 +164,11 @@ export const getProductByIdAdmin = async (id) => {
 
     return data;
   } catch (error) {
-    console.error('Error fetching product:', error);
     throw error;
   }
 };
 
-/**
- * Update product (admin)
- */
+
 export const updateProductAdmin = async (id, productData) => {
   try {
     const response = await fetch(`${API_URL}/admin/products/${id}`, {
@@ -213,14 +185,11 @@ export const updateProductAdmin = async (id, productData) => {
 
     return data;
   } catch (error) {
-    console.error('Error updating product:', error);
     throw error;
   }
 };
 
-/**
- * Delete product (admin)
- */
+
 export const deleteProductAdmin = async (id) => {
   try {
     const response = await fetch(`${API_URL}/admin/products/${id}`, {
@@ -236,14 +205,11 @@ export const deleteProductAdmin = async (id) => {
 
     return data;
   } catch (error) {
-    console.error('Error deleting product:', error);
     throw error;
   }
 };
 
-/**
- * Get all categories (admin)
- */
+
 export const getAllCategoriesAdmin = async () => {
   try {
     const response = await fetch(`${API_URL}/admin/categories`, {
@@ -259,14 +225,11 @@ export const getAllCategoriesAdmin = async () => {
 
     return data;
   } catch (error) {
-    console.error('Error fetching categories:', error);
     throw error;
   }
 };
 
-/**
- * Get category by ID (admin)
- */
+
 export const getCategoryById = async (id) => {
   try {
     const response = await fetch(`${API_URL}/admin/categories/${id}`, {
@@ -282,14 +245,11 @@ export const getCategoryById = async (id) => {
 
     return data;
   } catch (error) {
-    console.error('Error fetching category:', error);
     throw error;
   }
 };
 
-/**
- * Create category (admin)
- */
+
 export const createCategory = async (categoryData) => {
   try {
     const response = await fetch(`${API_URL}/admin/categories`, {
@@ -306,14 +266,11 @@ export const createCategory = async (categoryData) => {
 
     return data;
   } catch (error) {
-    console.error('Error creating category:', error);
     throw error;
   }
 };
 
-/**
- * Update category (admin)
- */
+
 export const updateCategory = async (id, categoryData) => {
   try {
     const response = await fetch(`${API_URL}/admin/categories/${id}`, {
@@ -330,14 +287,11 @@ export const updateCategory = async (id, categoryData) => {
 
     return data;
   } catch (error) {
-    console.error('Error updating category:', error);
     throw error;
   }
 };
 
-/**
- * Delete category (admin)
- */
+
 export const deleteCategory = async (id) => {
   try {
     const response = await fetch(`${API_URL}/admin/categories/${id}`, {
@@ -353,7 +307,6 @@ export const deleteCategory = async (id) => {
 
     return data;
   } catch (error) {
-    console.error('Error deleting category:', error);
     throw error;
   }
 };

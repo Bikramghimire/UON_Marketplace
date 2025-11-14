@@ -17,8 +17,7 @@ const ComposeMessage = ({ recipient, product, onClose, onSent }) => {
   const [meetingTime, setMeetingTime] = useState('');
   const [meetingLocation, setMeetingLocation] = useState(null);
 
-  // Auto-generate subject if product is provided
-  React.useEffect(() => {
+    React.useEffect(() => {
     if (product && !subject) {
       setSubject(`Inquiry about: ${product.title}`);
     }
@@ -35,11 +34,9 @@ const ComposeMessage = ({ recipient, product, onClose, onSent }) => {
       setSending(true);
       setError(null);
 
-      // Prepare meeting details if provided
-      let meetingDetails = null;
+            let meetingDetails = null;
       if (showMeetingDetails && meetingDate && meetingTime && meetingLocation) {
-        // Combine date and time
-        const [hours, minutes] = meetingTime.split(':');
+                const [hours, minutes] = meetingTime.split(':');
         const meetingDateTime = new Date(meetingDate);
         meetingDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
@@ -50,8 +47,7 @@ const ComposeMessage = ({ recipient, product, onClose, onSent }) => {
         };
       }
 
-      // Extract recipient ID - ensure it's a string, not an object
-      let recipientId = null;
+            let recipientId = null;
       if (typeof recipient === 'string') {
         recipientId = recipient;
       } else if (recipient && typeof recipient === 'object') {
@@ -63,8 +59,7 @@ const ComposeMessage = ({ recipient, product, onClose, onSent }) => {
         return;
       }
 
-      // Extract product ID - ensure it's a string or null
-      let productId = null;
+            let productId = null;
       if (product) {
         if (typeof product === 'string') {
           productId = product;
@@ -92,7 +87,6 @@ const ComposeMessage = ({ recipient, product, onClose, onSent }) => {
       }
     } catch (error) {
       setError(error.message || 'Failed to send message');
-      console.error('Error sending message:', error);
     } finally {
       setSending(false);
     }
@@ -155,7 +149,7 @@ const ComposeMessage = ({ recipient, product, onClose, onSent }) => {
             />
           </div>
 
-          {/* Meeting Details Section */}
+          {}
           <div className="form-group">
             <div className="meeting-details-toggle">
               <label htmlFor="showMeetingDetails" className="checkbox-label">

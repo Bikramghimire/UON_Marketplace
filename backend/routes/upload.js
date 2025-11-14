@@ -1,7 +1,4 @@
-/**
- * Upload Routes
- * Handle image uploads to Cloudinary
- */
+
 
 import express from 'express';
 import { protect } from '../middleware/auth.js';
@@ -10,11 +7,7 @@ import { uploadToCloudinary } from '../config/cloudinary.js';
 
 const router = express.Router();
 
-/**
- * POST /api/upload/images
- * Upload multiple images to Cloudinary
- * @access Private
- */
+
 router.post('/images', protect, uploadMultiple, async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
@@ -30,12 +23,10 @@ router.post('/images', protect, uploadMultiple, async (req, res) => {
 
     const uploadResults = await Promise.all(uploadPromises);
 
-    // Format response
-    const images = uploadResults.map((result, index) => ({
+        const images = uploadResults.map((result, index) => ({
       url: result.url,
       public_id: result.public_id,
-      isPrimary: index === 0, // First image is primary
-      width: result.width,
+      isPrimary: index === 0,       width: result.width,
       height: result.height,
       format: result.format
     }));
@@ -48,7 +39,6 @@ router.post('/images', protect, uploadMultiple, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Upload error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Error uploading images',
@@ -57,11 +47,7 @@ router.post('/images', protect, uploadMultiple, async (req, res) => {
   }
 });
 
-/**
- * POST /api/upload/image
- * Upload single image to Cloudinary
- * @access Private
- */
+
 router.post('/image', protect, uploadMultiple, async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
@@ -71,8 +57,7 @@ router.post('/image', protect, uploadMultiple, async (req, res) => {
       });
     }
 
-    // Upload only first file
-    const file = req.files[0];
+        const file = req.files[0];
     const result = await uploadToCloudinary(file.buffer, 'uon_marketplace/products');
 
     res.json({
@@ -87,7 +72,6 @@ router.post('/image', protect, uploadMultiple, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Upload error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Error uploading image',

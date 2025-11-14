@@ -31,7 +31,6 @@ const ProductDetail = () => {
       setProduct(productData);
     } catch (error) {
       setError(error.message || 'Failed to load product');
-      console.error('Error loading product:', error);
     } finally {
       setLoading(false);
     }
@@ -75,8 +74,7 @@ const ProductDetail = () => {
     );
   }
 
-  // Extract images array from product
-  const images = product.images || (product.image ? [product.image] : []);
+    const images = product.images || (product.image ? [product.image] : []);
 
   return (
     <div className="product-detail-page">
@@ -88,12 +86,12 @@ const ProductDetail = () => {
           </button>
 
           <div className="product-detail-content">
-            {/* Image Carousel Section */}
+            {}
             <div className="product-images-section">
               <ImageCarousel images={images} />
             </div>
 
-            {/* Product Information Section */}
+            {}
             <div className="product-info-section">
               <div className="product-header">
                 <div className="product-category">
@@ -129,7 +127,7 @@ const ProductDetail = () => {
                 <p className="product-description">{product.description || 'No description available.'}</p>
               </div>
 
-              {/* Seller Information */}
+              {}
               {product.user && (
                 <div className="seller-section">
                   <h2>Seller Information</h2>
@@ -148,7 +146,7 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Action Buttons */}
+              {}
               <div className="product-actions">
                 {isAuthenticated && product?.user && (() => {
                   const sellerId = product.user.id || product.user._id;
@@ -177,7 +175,7 @@ const ProductDetail = () => {
       </main>
       <Footer />
 
-      {/* Compose Message Modal */}
+      {}
       {showComposeMessage && product?.user && (
         <ComposeMessage
           recipient={product.user}

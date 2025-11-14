@@ -51,8 +51,7 @@ const LoginPage = () => {
       return;
     }
 
-    // Validate email format if it's an email
-    const isEmail = emailOrUsernameTrimmed.includes('@');
+        const isEmail = emailOrUsernameTrimmed.includes('@');
     if (isEmail) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(emailOrUsernameTrimmed)) {
@@ -89,19 +88,16 @@ const LoginPage = () => {
 
     try {
       await login(loginData);
-      // Check if user email is verified
-      const currentUser = JSON.parse(localStorage.getItem('user'));
+            const currentUser = JSON.parse(localStorage.getItem('user'));
       if (currentUser && !currentUser.emailVerified) {
         navigate('/verify-email');
         return;
       }
       navigate('/products');
     } catch (error) {
-      // Check if error is due to unverified email
-      if (error.requiresVerification) {
+            if (error.requiresVerification) {
         setFormError(error.message);
-        // Redirect to verification page after showing error
-        setTimeout(() => {
+                setTimeout(() => {
           navigate('/verify-email');
         }, 2000);
       } else {

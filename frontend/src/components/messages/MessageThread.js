@@ -21,8 +21,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
   const [meetingLocation, setMeetingLocation] = useState(null);
   const messagesEndRef = useRef(null);
   
-  // Extract product ID properly - handle both object and string
-  const getProductId = () => {
+    const getProductId = () => {
     const product = conversation.lastMessage?.product;
     if (!product) return null;
     if (typeof product === 'string') return product;
@@ -41,8 +40,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
 
   useEffect(() => {
     scrollToBottom();
-    // Trigger a custom event to refresh unread count in Header
-    window.dispatchEvent(new CustomEvent('messagesRead'));
+        window.dispatchEvent(new CustomEvent('messagesRead'));
   }, [messages]);
 
   const scrollToBottom = () => {
@@ -54,8 +52,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
       setLoading(true);
       setError(null);
       
-      // Extract other user ID properly - handle both object and string
-      let otherUserId = null;
+            let otherUserId = null;
       if (typeof otherUser === 'string') {
         otherUserId = otherUser;
       } else if (otherUser && typeof otherUser === 'object') {
@@ -71,7 +68,6 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
       setMessages(data);
     } catch (error) {
       setError(error.message || 'Failed to load messages');
-      console.error('Error loading messages:', error);
     } finally {
       setLoading(false);
     }
@@ -85,8 +81,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
       setSending(true);
       setError(null);
 
-      // Extract product ID properly
-      let productIdValue = null;
+            let productIdValue = null;
       if (productId) {
         if (typeof productId === 'object') {
           productIdValue = productId.id || productId._id || null;
@@ -95,8 +90,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
         }
       }
 
-      // Prepare meeting details if provided
-      let meetingDetails = null;
+            let meetingDetails = null;
       if (showMeetingDetails && meetingDate && meetingTime && meetingLocation) {
         const [hours, minutes] = meetingTime.split(':');
         const meetingDateTime = new Date(meetingDate);
@@ -132,7 +126,6 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
       }
     } catch (error) {
       setError(error.message || 'Failed to send message');
-      console.error('Error sending message:', error);
     } finally {
       setSending(false);
     }
@@ -163,7 +156,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
 
   return (
     <div className="message-thread-container">
-      {/* Thread Header */}
+      {}
       <div className="thread-header">
         <button onClick={onBack} className="back-btn">
           ← Back
@@ -192,7 +185,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
         )}
       </div>
 
-      {/* Messages Area */}
+      {}
       <div className="messages-area">
         {error && (
           <div className="error-message">
@@ -276,7 +269,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
         )}
       </div>
 
-      {/* Message Input */}
+      {}
       <form onSubmit={handleSendMessage} className="message-input-form">
         <div className="message-input-wrapper">
           <textarea
@@ -296,7 +289,7 @@ const MessageThread = ({ conversation, onBack, onMessageSent }) => {
           </button>
         </div>
 
-        {/* Meeting Details Section */}
+        {}
         <div className="meeting-details-toggle-thread">
           <label htmlFor="showMeetingDetailsThread" className="checkbox-label">
             <input

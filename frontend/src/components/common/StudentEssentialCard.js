@@ -11,8 +11,7 @@ const StudentEssentialCard = ({ essential }) => {
     navigate(`/student-essentials/${essential.id || essential._id}`);
   };
 
-  // Get primary image or first image
-  const getPrimaryImage = () => {
+    const getPrimaryImage = () => {
     if (essential.images && Array.isArray(essential.images)) {
       const primaryImage = essential.images.find(img => img.isPrimary);
       if (primaryImage) {

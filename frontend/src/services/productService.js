@@ -1,17 +1,11 @@
-/**
- * Product Service
- * Handles all product API calls
- */
+
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-/**
- * Get all products with optional filters
- */
+
 export const getAllProducts = async (filters = {}) => {
   try {
-    // Build query string
-    const params = new URLSearchParams();
+        const params = new URLSearchParams();
     
     if (filters.category) params.append('category', filters.category);
     if (filters.search) params.append('search', filters.search);
@@ -35,18 +29,15 @@ export const getAllProducts = async (filters = {}) => {
       throw new Error(data.message || 'Failed to fetch products');
     }
 
-    // Transform products to match frontend format
-    const products = data.data.map(product => {
-      // Ensure images array is properly formatted
-      let images = [];
+        const products = data.data.map(product => {
+            let images = [];
       if (product.images && Array.isArray(product.images)) {
         images = product.images;
       } else if (product.image) {
         images = [product.image];
       }
 
-      // Get primary image for card display
-      const primaryImage = images.find(img => img.isPrimary) || images[0] || product.image || '📦';
+            const primaryImage = images.find(img => img.isPrimary) || images[0] || product.image || '📦';
       const imageUrl = typeof primaryImage === 'string' ? primaryImage : primaryImage.url || primaryImage;
 
       return {
@@ -60,14 +51,11 @@ export const getAllProducts = async (filters = {}) => {
 
     return products;
   } catch (error) {
-    console.error('Error fetching products:', error);
     throw error;
   }
 };
 
-/**
- * Get product by ID
- */
+
 export const getProductById = async (id) => {
   try {
     const response = await fetch(`${API_URL}/products/${id}`, {
@@ -83,15 +71,13 @@ export const getProductById = async (id) => {
       throw new Error(data.message || 'Failed to fetch product');
     }
 
-    // Transform product data
-    const productData = {
+        const productData = {
       ...data.data,
       id: data.data.id || data.data._id,
       datePosted: formatDate(data.data.datePosted)
     };
 
-    // Ensure images array is properly formatted
-    if (productData.images && Array.isArray(productData.images)) {
+        if (productData.images && Array.isArray(productData.images)) {
       productData.images = productData.images.map(img => {
         if (typeof img === 'string') return img;
         if (img.url) return img;
@@ -103,14 +89,11 @@ export const getProductById = async (id) => {
 
     return productData;
   } catch (error) {
-    console.error('Error fetching product:', error);
     throw error;
   }
 };
 
-/**
- * Get user's own products
- */
+
 export const getUserProducts = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -133,18 +116,15 @@ export const getUserProducts = async () => {
       throw new Error(data.message || 'Failed to fetch your products');
     }
 
-    // Transform products to match frontend format
-    const products = data.data.map(product => {
-      // Ensure images array is properly formatted
-      let images = [];
+        const products = data.data.map(product => {
+            let images = [];
       if (product.images && Array.isArray(product.images)) {
         images = product.images;
       } else if (product.image) {
         images = [product.image];
       }
 
-      // Get primary image for card display
-      const primaryImage = images.find(img => img.isPrimary) || images[0] || product.image || '📦';
+            const primaryImage = images.find(img => img.isPrimary) || images[0] || product.image || '📦';
       const imageUrl = typeof primaryImage === 'string' ? primaryImage : primaryImage.url || primaryImage;
 
       return {
@@ -158,14 +138,11 @@ export const getUserProducts = async () => {
 
     return products;
   } catch (error) {
-    console.error('Error fetching user products:', error);
     throw error;
   }
 };
 
-/**
- * Get all categories
- */
+
 export const getCategories = async () => {
   try {
     const response = await fetch(`${API_URL}/categories`, {
@@ -183,15 +160,11 @@ export const getCategories = async () => {
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    // Return empty array on error instead of throwing
-    return [];
+        return [];
   }
 };
 
-/**
- * Create a new product
- */
+
 export const createProduct = async (productData) => {
   try {
     const token = localStorage.getItem('token');
@@ -217,14 +190,11 @@ export const createProduct = async (productData) => {
 
     return data;
   } catch (error) {
-    console.error('Error creating product:', error);
     throw error;
   }
 };
 
-/**
- * Format date to relative time string
- */
+
 const formatDate = (dateString) => {
   if (!dateString) return 'Recently';
   
@@ -240,9 +210,7 @@ const formatDate = (dateString) => {
   return `${Math.floor(diffInSeconds / 2592000)} months ago`;
 };
 
-/**
- * Update product status (mark as sold, etc.)
- */
+
 export const updateProductStatus = async (productId, status) => {
   try {
     const token = localStorage.getItem('token');
@@ -268,14 +236,11 @@ export const updateProductStatus = async (productId, status) => {
 
     return data;
   } catch (error) {
-    console.error('Error updating product status:', error);
     throw error;
   }
 };
 
-/**
- * Delete product
- */
+
 export const deleteProduct = async (productId) => {
   try {
     const token = localStorage.getItem('token');
@@ -300,7 +265,6 @@ export const deleteProduct = async (productId) => {
 
     return data;
   } catch (error) {
-    console.error('Error deleting product:', error);
     throw error;
   }
 };

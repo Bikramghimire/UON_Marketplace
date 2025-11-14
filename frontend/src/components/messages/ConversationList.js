@@ -9,8 +9,7 @@ const ConversationList = ({ conversations, onSelectConversation, onRefresh }) =>
 
   useEffect(() => {
     loadUnreadCount();
-    // Refresh unread count every 30 seconds
-    const interval = setInterval(loadUnreadCount, 30000);
+        const interval = setInterval(loadUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -23,7 +22,6 @@ const ConversationList = ({ conversations, onSelectConversation, onRefresh }) =>
       const data = await getUnreadCount();
       setUnreadCount(data.count);
     } catch (error) {
-      console.error('Error loading unread count:', error);
     }
   };
 

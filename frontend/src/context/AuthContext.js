@@ -1,7 +1,4 @@
-/**
- * Authentication Context
- * Provides authentication state and methods throughout the app
- */
+
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import * as authService from '../services/authService';
@@ -21,31 +18,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Check if user is logged in on mount
-  useEffect(() => {
+    useEffect(() => {
     const initAuth = async () => {
       try {
         const token = authService.getToken();
         if (token) {
-          // Try to get current user
-          try {
+                    try {
             const userData = await authService.getCurrentUser();
-            // Only set user if email is verified
-            if (userData.data && userData.data.emailVerified) {
+                        if (userData.data && userData.data.emailVerified) {
               setUser(userData.data);
             } else {
-              // Email not verified, clear token and logout
-              authService.logout();
+                            authService.logout();
               setUser(null);
             }
           } catch (error) {
-            // Token might be invalid, clear it
-            authService.logout();
+                        authService.logout();
             setUser(null);
           }
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -55,22 +46,16 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  /**
-   * Register a new user
-   */
+  
   const register = async (userData) => {
     try {
       setError(null);
       setLoading(true);
-      // Clear any existing tokens/user BEFORE registration to prevent auto-login
-      authService.logout();
+            authService.logout();
       setUser(null);
       
       const response = await authService.register(userData);
-      // Don't set user after signup - they must verify email first
-      // User will be set after they login
-      // Ensure user is still null
-      setUser(null);
+                        setUser(null);
       return response;
     } catch (error) {
       setError(error.message || 'Registration failed');
@@ -80,9 +65,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Login user
-   */
+  
   const login = async (credentials) => {
     try {
       setError(null);
@@ -90,8 +73,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.login(credentials);
       const userData = response.data.user;
       
-      // Check if email is verified
-      if (!userData.emailVerified) {
+            if (!userData.emailVerified) {
         setError('Please verify your email before logging in.');
         throw new Error('Email not verified');
       }
@@ -106,18 +88,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Logout user
-   */
+  
   const logout = () => {
     authService.logout();
     setUser(null);
     setError(null);
   };
 
-  /**
-   * Update user profile
-   */
+  
   const updateUser = (userData) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));

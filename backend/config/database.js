@@ -21,21 +21,14 @@ const sequelize = new Sequelize(
   }
 );
 
-/**
- * Connect to PostgreSQL
- */
+
 export const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('PostgreSQL Connected successfully');
-    
-    // Sync models (use carefully in production)
-    if (process.env.NODE_ENV === 'development' && process.env.SYNC_DB === 'true') {
+        if (process.env.NODE_ENV === 'development' && process.env.SYNC_DB === 'true') {
       await sequelize.sync({ alter: true });
-      console.log('Database models synchronized');
     }
   } catch (error) {
-    console.error('Error connecting to PostgreSQL:', error.message);
     process.exit(1);
   }
 };

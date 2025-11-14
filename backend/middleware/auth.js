@@ -1,15 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 
-/**
- * Protect routes - verify JWT token
- */
+
 export const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Check for token in Authorization header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     }
 
@@ -21,11 +18,9 @@ export const protect = async (req, res, next) => {
     }
 
     try {
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
-      // Get user from token
-      req.user = await User.findByPk(decoded.id, {
+            req.user = await User.findByPk(decoded.id, {
         attributes: { exclude: ['password'] }
       });
       
@@ -51,9 +46,7 @@ export const protect = async (req, res, next) => {
   }
 };
 
-/**
- * Admin only middleware - must be used after protect
- */
+
 export const admin = (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({
@@ -72,9 +65,7 @@ export const admin = (req, res, next) => {
   next();
 };
 
-/**
- * Generate JWT Token
- */
+
 export const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d'

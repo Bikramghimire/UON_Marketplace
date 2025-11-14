@@ -11,8 +11,7 @@ const ProductCard = ({ product }) => {
     navigate(`/products/${product.id || product._id}`);
   };
 
-  // Get primary image or first image
-  const getPrimaryImage = () => {
+    const getPrimaryImage = () => {
     if (product.images && Array.isArray(product.images)) {
       const primaryImage = product.images.find(img => img.isPrimary);
       if (primaryImage) {

@@ -1,8 +1,4 @@
-/**
- * Admin Routes
- * API endpoints for admin product and user management
- * All routes require admin authentication
- */
+
 
 import express from 'express';
 import { Op } from 'sequelize';
@@ -11,14 +7,10 @@ import { Product, User, Category } from '../models/index.js';
 
 const router = express.Router();
 
-// All admin routes require authentication and admin role
 router.use(protect);
 router.use(admin);
 
-/**
- * GET /api/admin/dashboard
- * Get dashboard statistics
- */
+
 router.get('/dashboard', async (req, res) => {
   try {
     const totalUsers = await User.count();
@@ -27,22 +19,19 @@ router.get('/dashboard', async (req, res) => {
     const soldProducts = await Product.count({ where: { status: 'sold' } });
     const totalCategories = await Category.count();
     
-    // Revenue calculation (sold products)
-    const soldProductsData = await Product.findAll({ 
+        const soldProductsData = await Product.findAll({ 
       where: { status: 'sold' },
       attributes: ['price']
     });
     const totalRevenue = soldProductsData.reduce((sum, product) => sum + parseFloat(product.price || 0), 0);
     
-    // Recent users (last 7 days)
-    const sevenDaysAgo = new Date();
+        const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const recentUsers = await User.count({ 
       where: { createdAt: { [Op.gte]: sevenDaysAgo } }
     });
     
-    // Recent products (last 7 days)
-    const recentProducts = await Product.count({ 
+        const recentProducts = await Product.count({ 
       where: { createdAt: { [Op.gte]: sevenDaysAgo } }
     });
 
@@ -68,7 +57,6 @@ router.get('/dashboard', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching dashboard statistics',
@@ -77,10 +65,7 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/users
- * Get all users with pagination and filters
- */
+
 router.get('/users', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -89,8 +74,7 @@ router.get('/users', async (req, res) => {
     const search = req.query.search || '';
     const role = req.query.role || '';
 
-    // Build where clause
-    const where = {};
+        const where = {};
     if (search) {
       where[Op.or] = [
         { username: { [Op.iLike]: `%${search}%` } },
@@ -122,7 +106,6 @@ router.get('/users', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching users',
@@ -131,16 +114,12 @@ router.get('/users', async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/users/:id
- * Get user by ID
- */
+
 router.get('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid user ID'
@@ -158,8 +137,7 @@ router.get('/users/:id', async (req, res) => {
       });
     }
 
-    // Get user's products
-    const products = await Product.findAll({
+        const products = await Product.findAll({
       where: { userId: user.id },
       include: [{
         model: Category,
@@ -179,7 +157,6 @@ router.get('/users/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching user:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching user',
@@ -188,16 +165,12 @@ router.get('/users/:id', async (req, res) => {
   }
 });
 
-/**
- * PUT /api/admin/users/:id
- * Update user (admin can update role, status, etc.)
- */
+
 router.put('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid user ID'
@@ -215,8 +188,7 @@ router.put('/users/:id', async (req, res) => {
       });
     }
 
-    // Update fields
-    if (role !== undefined) user.role = role;
+        if (role !== undefined) user.role = role;
     if (firstName !== undefined) user.firstName = firstName;
     if (lastName !== undefined) user.lastName = lastName;
     if (phone !== undefined) user.phone = phone;
@@ -230,7 +202,6 @@ router.put('/users/:id', async (req, res) => {
       data: user
     });
   } catch (error) {
-    console.error('Error updating user:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating user',
@@ -239,16 +210,12 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
-/**
- * DELETE /api/admin/users/:id
- * Delete user (admin can delete users)
- */
+
 router.delete('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid user ID'
@@ -264,26 +231,22 @@ router.delete('/users/:id', async (req, res) => {
       });
     }
 
-    // Check if trying to delete yourself
-    if (user.id === req.user.id) {
+        if (user.id === req.user.id) {
       return res.status(400).json({
         success: false,
         message: 'You cannot delete your own account'
       });
     }
 
-    // Delete user's products first (cascade should handle this, but explicit for clarity)
-    await Product.destroy({ where: { userId: user.id } });
+        await Product.destroy({ where: { userId: user.id } });
 
-    // Delete user
-    await user.destroy();
+        await user.destroy();
 
     res.json({
       success: true,
       message: 'User deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting user:', error);
     res.status(500).json({
       success: false,
       message: 'Error deleting user',
@@ -292,10 +255,7 @@ router.delete('/users/:id', async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/products
- * Get all products with admin filters
- */
+
 router.get('/products', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -304,8 +264,7 @@ router.get('/products', async (req, res) => {
     const status = req.query.status || '';
     const search = req.query.search || '';
 
-    // Build where clause
-    const where = {};
+        const where = {};
     if (status) {
       where.status = status;
     }
@@ -346,7 +305,6 @@ router.get('/products', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching products:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching products',
@@ -355,16 +313,12 @@ router.get('/products', async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/products/:id
- * Get product by ID with full details
- */
+
 router.get('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid product ID'
@@ -398,7 +352,6 @@ router.get('/products/:id', async (req, res) => {
       data: product
     });
   } catch (error) {
-    console.error('Error fetching product:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching product',
@@ -407,16 +360,12 @@ router.get('/products/:id', async (req, res) => {
   }
 });
 
-/**
- * PUT /api/admin/products/:id
- * Update product (admin can update status, etc.)
- */
+
 router.put('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid product ID'
@@ -434,8 +383,7 @@ router.put('/products/:id', async (req, res) => {
       });
     }
 
-    // Update fields
-    if (status !== undefined) product.status = status;
+        if (status !== undefined) product.status = status;
     if (title !== undefined) product.title = title;
     if (description !== undefined) product.description = description;
     if (price !== undefined) product.price = price;
@@ -450,7 +398,6 @@ router.put('/products/:id', async (req, res) => {
       data: product
     });
   } catch (error) {
-    console.error('Error updating product:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating product',
@@ -459,16 +406,12 @@ router.put('/products/:id', async (req, res) => {
   }
 });
 
-/**
- * DELETE /api/admin/products/:id
- * Delete product (admin can delete any product)
- */
+
 router.delete('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid product ID'
@@ -491,7 +434,6 @@ router.delete('/products/:id', async (req, res) => {
       message: 'Product deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting product:', error);
     res.status(500).json({
       success: false,
       message: 'Error deleting product',
@@ -500,10 +442,7 @@ router.delete('/products/:id', async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/categories
- * Get all categories (admin)
- */
+
 router.get('/categories', async (req, res) => {
   try {
     const categories = await Category.findAll({
@@ -515,7 +454,6 @@ router.get('/categories', async (req, res) => {
       data: categories
     });
   } catch (error) {
-    console.error('Error fetching categories:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching categories',
@@ -524,16 +462,12 @@ router.get('/categories', async (req, res) => {
   }
 });
 
-/**
- * GET /api/admin/categories/:id
- * Get category by ID (admin)
- */
+
 router.get('/categories/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid category ID'
@@ -554,7 +488,6 @@ router.get('/categories/:id', async (req, res) => {
       data: category
     });
   } catch (error) {
-    console.error('Error fetching category:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching category',
@@ -563,24 +496,19 @@ router.get('/categories/:id', async (req, res) => {
   }
 });
 
-/**
- * POST /api/admin/categories
- * Create a new category (admin)
- */
+
 router.post('/categories', async (req, res) => {
   try {
     const { name, description } = req.body;
 
-    // Validation
-    if (!name) {
+        if (!name) {
       return res.status(400).json({
         success: false,
         message: 'Category name is required'
       });
     }
 
-    // Check if category already exists
-    const existingCategory = await Category.findOne({ 
+        const existingCategory = await Category.findOne({ 
       where: { name: { [Op.iLike]: name.trim() } }
     });
 
@@ -602,7 +530,6 @@ router.post('/categories', async (req, res) => {
       data: category
     });
   } catch (error) {
-    console.error('Error creating category:', error);
     res.status(500).json({
       success: false,
       message: 'Error creating category',
@@ -611,16 +538,12 @@ router.post('/categories', async (req, res) => {
   }
 });
 
-/**
- * PUT /api/admin/categories/:id
- * Update category (admin)
- */
+
 router.put('/categories/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid category ID'
@@ -638,8 +561,7 @@ router.put('/categories/:id', async (req, res) => {
       });
     }
 
-    // Check if name is being changed and if it conflicts
-    if (name && name.trim() !== category.name) {
+        if (name && name.trim() !== category.name) {
       const existingCategory = await Category.findOne({ 
         where: { 
           name: { [Op.iLike]: name.trim() },
@@ -655,8 +577,7 @@ router.put('/categories/:id', async (req, res) => {
       }
     }
 
-    // Update fields
-    if (name !== undefined) category.name = name.trim();
+        if (name !== undefined) category.name = name.trim();
     if (description !== undefined) category.description = description.trim() || '';
 
     await category.save();
@@ -667,7 +588,6 @@ router.put('/categories/:id', async (req, res) => {
       data: category
     });
   } catch (error) {
-    console.error('Error updating category:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating category',
@@ -676,16 +596,12 @@ router.put('/categories/:id', async (req, res) => {
   }
 });
 
-/**
- * DELETE /api/admin/categories/:id
- * Delete category (admin)
- */
+
 router.delete('/categories/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate ID
-    if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null') {
       return res.status(400).json({
         success: false,
         message: 'Invalid category ID'
@@ -701,8 +617,7 @@ router.delete('/categories/:id', async (req, res) => {
       });
     }
 
-    // Check if category is being used by any products
-    const productsCount = await Product.count({ where: { categoryId: category.id } });
+        const productsCount = await Product.count({ where: { categoryId: category.id } });
 
     if (productsCount > 0) {
       return res.status(400).json({
@@ -718,7 +633,6 @@ router.delete('/categories/:id', async (req, res) => {
       message: 'Category deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting category:', error);
     res.status(500).json({
       success: false,
       message: 'Error deleting category',

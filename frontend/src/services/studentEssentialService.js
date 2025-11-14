@@ -1,17 +1,11 @@
-/**
- * Student Essential Service
- * Handles all student essential API calls
- */
+
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-/**
- * Get all student essentials with optional filters
- */
+
 export const getAllStudentEssentials = async (filters = {}) => {
   try {
-    // Build query string
-    const params = new URLSearchParams();
+        const params = new URLSearchParams();
     
     if (filters.category) params.append('category', filters.category);
     if (filters.search) params.append('search', filters.search);
@@ -33,18 +27,15 @@ export const getAllStudentEssentials = async (filters = {}) => {
       throw new Error(data.message || 'Failed to fetch student essentials');
     }
 
-    // Transform essentials to match frontend format
-    const essentials = data.data.map(essential => {
-      // Ensure images array is properly formatted
-      let images = [];
+        const essentials = data.data.map(essential => {
+            let images = [];
       if (essential.images && Array.isArray(essential.images)) {
         images = essential.images;
       } else if (essential.image) {
         images = [essential.image];
       }
 
-      // Get primary image for card display
-      const primaryImage = images.find(img => img.isPrimary) || images[0] || essential.image || '🎁';
+            const primaryImage = images.find(img => img.isPrimary) || images[0] || essential.image || '🎁';
       const imageUrl = typeof primaryImage === 'string' ? primaryImage : primaryImage.url || primaryImage;
 
       return {
@@ -53,20 +44,16 @@ export const getAllStudentEssentials = async (filters = {}) => {
         image: imageUrl,
         images: images,
         datePosted: formatDate(essential.datePosted),
-        price: 0 // Always free
-      };
+        price: 0       };
     });
 
     return essentials;
   } catch (error) {
-    console.error('Error fetching student essentials:', error);
     throw error;
   }
 };
 
-/**
- * Get student essential by ID
- */
+
 export const getStudentEssentialById = async (id) => {
   try {
     const response = await fetch(`${API_URL}/student-essentials/${id}`, {
@@ -82,16 +69,13 @@ export const getStudentEssentialById = async (id) => {
       throw new Error(data.message || 'Failed to fetch student essential');
     }
 
-    // Transform essential data
-    const essentialData = {
+        const essentialData = {
       ...data.data,
       id: data.data.id || data.data._id,
       datePosted: formatDate(data.data.datePosted),
-      price: 0 // Always free
-    };
+      price: 0     };
 
-    // Ensure images array is properly formatted
-    if (essentialData.images && Array.isArray(essentialData.images)) {
+        if (essentialData.images && Array.isArray(essentialData.images)) {
       essentialData.images = essentialData.images.map(img => {
         if (typeof img === 'string') return img;
         if (img.url) return img;
@@ -103,14 +87,11 @@ export const getStudentEssentialById = async (id) => {
 
     return essentialData;
   } catch (error) {
-    console.error('Error fetching student essential:', error);
     throw error;
   }
 };
 
-/**
- * Get user's own student essentials
- */
+
 export const getUserStudentEssentials = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -133,18 +114,15 @@ export const getUserStudentEssentials = async () => {
       throw new Error(data.message || 'Failed to fetch your student essentials');
     }
 
-    // Transform essentials to match frontend format
-    const essentials = data.data.map(essential => {
-      // Ensure images array is properly formatted
-      let images = [];
+        const essentials = data.data.map(essential => {
+            let images = [];
       if (essential.images && Array.isArray(essential.images)) {
         images = essential.images;
       } else if (essential.image) {
         images = [essential.image];
       }
 
-      // Get primary image for card display
-      const primaryImage = images.find(img => img.isPrimary) || images[0] || essential.image || '🎁';
+            const primaryImage = images.find(img => img.isPrimary) || images[0] || essential.image || '🎁';
       const imageUrl = typeof primaryImage === 'string' ? primaryImage : primaryImage.url || primaryImage;
 
       return {
@@ -153,20 +131,16 @@ export const getUserStudentEssentials = async () => {
         image: imageUrl,
         images: images,
         datePosted: formatDate(essential.datePosted),
-        price: 0 // Always free
-      };
+        price: 0       };
     });
 
     return essentials;
   } catch (error) {
-    console.error('Error fetching user student essentials:', error);
     throw error;
   }
 };
 
-/**
- * Get all categories
- */
+
 export const getCategories = async () => {
   try {
     const response = await fetch(`${API_URL}/categories`, {
@@ -184,15 +158,11 @@ export const getCategories = async () => {
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    // Return empty array on error instead of throwing
-    return [];
+        return [];
   }
 };
 
-/**
- * Create a new student essential
- */
+
 export const createStudentEssential = async (essentialData) => {
   try {
     const token = localStorage.getItem('token');
@@ -218,14 +188,11 @@ export const createStudentEssential = async (essentialData) => {
 
     return data;
   } catch (error) {
-    console.error('Error creating student essential:', error);
     throw error;
   }
 };
 
-/**
- * Format date to relative time string
- */
+
 const formatDate = (dateString) => {
   if (!dateString) return 'Recently';
   
@@ -241,9 +208,7 @@ const formatDate = (dateString) => {
   return `${Math.floor(diffInSeconds / 2592000)} months ago`;
 };
 
-/**
- * Update student essential status (mark as claimed, etc.)
- */
+
 export const updateStudentEssentialStatus = async (essentialId, status) => {
   try {
     const token = localStorage.getItem('token');
@@ -269,14 +234,11 @@ export const updateStudentEssentialStatus = async (essentialId, status) => {
 
     return data;
   } catch (error) {
-    console.error('Error updating student essential status:', error);
     throw error;
   }
 };
 
-/**
- * Delete student essential
- */
+
 export const deleteStudentEssential = async (essentialId) => {
   try {
     const token = localStorage.getItem('token');
@@ -301,7 +263,6 @@ export const deleteStudentEssential = async (essentialId) => {
 
     return data;
   } catch (error) {
-    console.error('Error deleting student essential:', error);
     throw error;
   }
 };

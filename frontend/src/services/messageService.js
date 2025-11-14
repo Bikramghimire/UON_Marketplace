@@ -1,7 +1,4 @@
-/**
- * Message Service
- * Handles all messaging API calls
- */
+
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -13,9 +10,7 @@ const getAuthHeaders = () => {
   };
 };
 
-/**
- * Get all conversations
- */
+
 export const getConversations = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -37,14 +32,11 @@ export const getConversations = async () => {
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching conversations:', error);
     throw error;
   }
 };
 
-/**
- * Get conversation with a specific user
- */
+
 export const getConversation = async (userId, productId = null) => {
   try {
     const token = localStorage.getItem('token');
@@ -53,8 +45,7 @@ export const getConversation = async (userId, productId = null) => {
       throw new Error('You must be logged in to view messages');
     }
 
-    // Extract userId - ensure it's a string
-    let extractedUserId = userId;
+        let extractedUserId = userId;
     if (typeof userId === 'object' && userId !== null) {
       extractedUserId = userId.id || userId._id || null;
     }
@@ -63,14 +54,12 @@ export const getConversation = async (userId, productId = null) => {
       throw new Error('Invalid user ID');
     }
 
-    // Extract productId - ensure it's a string or null
-    let extractedProductId = productId;
+        let extractedProductId = productId;
     if (productId) {
       if (typeof productId === 'object' && productId !== null) {
         extractedProductId = productId.id || productId._id || null;
       }
-      // Only include productId in URL if it's a valid string
-      if (!extractedProductId || typeof extractedProductId !== 'string') {
+            if (!extractedProductId || typeof extractedProductId !== 'string') {
         extractedProductId = null;
       }
     }
@@ -92,14 +81,11 @@ export const getConversation = async (userId, productId = null) => {
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching conversation:', error);
     throw error;
   }
 };
 
-/**
- * Send a message
- */
+
 export const sendMessage = async (messageData) => {
   try {
     const token = localStorage.getItem('token');
@@ -122,14 +108,11 @@ export const sendMessage = async (messageData) => {
 
     return data.data;
   } catch (error) {
-    console.error('Error sending message:', error);
     throw error;
   }
 };
 
-/**
- * Mark message as read
- */
+
 export const markMessageAsRead = async (messageId) => {
   try {
     const token = localStorage.getItem('token');
@@ -151,14 +134,11 @@ export const markMessageAsRead = async (messageId) => {
 
     return data.data;
   } catch (error) {
-    console.error('Error marking message as read:', error);
     throw error;
   }
 };
 
-/**
- * Get unread message count
- */
+
 export const getUnreadCount = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -180,7 +160,6 @@ export const getUnreadCount = async () => {
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching unread count:', error);
     return { count: 0 };
   }
 };

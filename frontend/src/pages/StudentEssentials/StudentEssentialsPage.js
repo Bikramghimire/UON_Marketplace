@@ -29,13 +29,10 @@ const StudentEssentialsPage = () => {
   const loadCategories = async () => {
     try {
       const cats = await getCategories();
-      // Extract category names from objects
-      const categoryNames = cats.map(cat => typeof cat === 'string' ? cat : cat.name);
+            const categoryNames = cats.map(cat => typeof cat === 'string' ? cat : cat.name);
       setCategories(['All', ...categoryNames]);
     } catch (error) {
-      console.error('Error loading categories:', error);
-      // Set default categories on error
-      setCategories(['All']);
+            setCategories(['All']);
     }
   };
 
@@ -45,7 +42,6 @@ const StudentEssentialsPage = () => {
       const data = await getAllStudentEssentials(filters);
       setEssentials(data);
     } catch (error) {
-      console.error('Error loading student essentials:', error);
     } finally {
       setLoading(false);
     }
@@ -75,7 +71,7 @@ const StudentEssentialsPage = () => {
       <Header />
       
       <main className="essentials-main">
-        {/* Page Header */}
+        {}
         <section className="essentials-header">
           <div className="container">
             <h1 className="page-title">Student Essentials</h1>
@@ -83,11 +79,11 @@ const StudentEssentialsPage = () => {
           </div>
         </section>
 
-        {/* Filters Section */}
+        {}
         <section className="filters-section">
           <div className="container">
             <div className="filters-container">
-              {/* Search Bar */}
+              {}
               <div className="filter-group">
                 <label htmlFor="search">Search</label>
                 <input
@@ -100,7 +96,7 @@ const StudentEssentialsPage = () => {
                 />
               </div>
 
-              {/* Category Filter */}
+              {}
               <div className="filter-group">
                 <label htmlFor="category">Category</label>
                 <select
@@ -117,7 +113,7 @@ const StudentEssentialsPage = () => {
                 </select>
               </div>
 
-              {/* Sort Filter */}
+              {}
               <div className="filter-group">
                 <label htmlFor="sort">Sort By</label>
                 <select
@@ -133,7 +129,7 @@ const StudentEssentialsPage = () => {
           </div>
         </section>
 
-        {/* Essentials Grid */}
+        {}
         <section className="essentials-section">
           <div className="container">
             {loading ? (

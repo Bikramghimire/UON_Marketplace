@@ -14,7 +14,7 @@ const HomePage = () => {
       <Header />
 
       <main className="main-content">
-        {/* Hero Section */}
+        {}
         <section className="hero-section">
           <div className="hero-content">
             <h1 className="hero-title">Welcome to Lifecycle Marketplace</h1>
@@ -42,7 +42,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Features Section */}
+        {}
         <section className="features-section">
           <div className="container">
             <h2 className="section-title">Why Choose Lifecycle Marketplace?</h2>
@@ -83,7 +83,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Student Essentials Section */}
+        {}
         <section className="student-essentials-section">
           <div className="container">
             <h2 className="section-title">Student Essentials</h2>

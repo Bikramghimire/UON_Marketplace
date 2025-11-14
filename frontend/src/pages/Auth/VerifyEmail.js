@@ -12,21 +12,18 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const VerifyEmail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  // Get email from localStorage if available (from signup) or from logged-in user
-  const pendingEmail = localStorage.getItem('pendingVerificationEmail');
+    const pendingEmail = localStorage.getItem('pendingVerificationEmail');
   const [formData, setFormData] = useState({
     email: user?.email || pendingEmail || '',
     code: ''
   });
-  const [status, setStatus] = useState('form'); // form, verifying, success, error
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('form');   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Only allow numbers for code field
-    if (name === 'code') {
+        if (name === 'code') {
       const numericValue = value.replace(/\D/g, '').slice(0, 6);
       setFormData({ ...formData, [name]: numericValue });
     } else {
@@ -72,10 +69,8 @@ const VerifyEmail = () => {
       if (response.ok && data.success) {
         setStatus('success');
         setMessage(data.message || 'Email verified successfully!');
-        // Clear pending verification email
-        localStorage.removeItem('pendingVerificationEmail');
-        // Auto-redirect to login page after 3 seconds
-        setTimeout(() => {
+                localStorage.removeItem('pendingVerificationEmail');
+                setTimeout(() => {
           navigate('/login');
         }, 3000);
       } else {
@@ -85,7 +80,6 @@ const VerifyEmail = () => {
     } catch (error) {
       setStatus('error');
       setMessage('An error occurred while verifying your email. Please try again.');
-      console.error('Verification error:', error);
     } finally {
       setLoading(false);
     }
@@ -125,7 +119,6 @@ const VerifyEmail = () => {
       }
     } catch (error) {
       setMessage('An error occurred. Please try again.');
-      console.error('Resend error:', error);
     } finally {
       setResending(false);
     }

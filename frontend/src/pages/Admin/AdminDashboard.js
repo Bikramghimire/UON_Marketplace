@@ -16,8 +16,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if user is admin
-    if (!isAuthenticated || !user || user.role !== 'admin') {
+        if (!isAuthenticated || !user || user.role !== 'admin') {
       navigate('/');
       return;
     }
@@ -33,7 +32,6 @@ const AdminDashboard = () => {
       setStats(response.data);
     } catch (error) {
       setError(error.message || 'Failed to load dashboard statistics');
-      console.error('Error loading dashboard:', error);
     } finally {
       setLoading(false);
     }
@@ -78,7 +76,7 @@ const AdminDashboard = () => {
 
           {stats && (
             <>
-              {/* Statistics Cards */}
+              {}
               <div className="stats-grid">
                 <div className="stat-card">
                   <div className="stat-icon"><FontAwesomeIcon icon={faUsers} /></div>
@@ -117,7 +115,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* Quick Actions */}
+              {}
               <div className="admin-section">
                 <h2>Quick Actions</h2>
                 <div className="actions-grid">

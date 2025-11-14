@@ -37,7 +37,6 @@ const ProductManagement = () => {
       setTotalPages(response.pagination.pages);
     } catch (err) {
       setError(err.message || 'Something went wrong');
-      console.error('Error loading products:', err);
     } finally {
       setLoading(false);
     }

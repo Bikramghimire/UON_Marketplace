@@ -32,7 +32,6 @@ const Messages = () => {
       setConversations(data);
     } catch (error) {
       setError(error.message || 'Failed to load conversations');
-      console.error('Error loading conversations:', error);
     } finally {
       setLoading(false);
     }
@@ -44,12 +43,10 @@ const Messages = () => {
 
   const handleBackToList = () => {
     setSelectedConversation(null);
-    loadConversations(); // Refresh to update unread counts
-  };
+    loadConversations();   };
 
   const handleMessageSent = () => {
-    loadConversations(); // Refresh conversations after sending message
-  };
+    loadConversations();   };
 
   if (!isAuthenticated) {
     return null;
@@ -59,7 +56,7 @@ const Messages = () => {
     <div className="messages-page">
       <Header />
       <main className="messages-main">
-        {/* Page Header */}
+        {}
         <section className="messages-header">
           <div className="container">
             <h1 className="page-title">Messages</h1>
@@ -67,7 +64,7 @@ const Messages = () => {
           </div>
         </section>
 
-        {/* Messages Content */}
+        {}
         <section className="messages-section">
           <div className="messages-container">
             {error && (

@@ -17,8 +17,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
     }
   };
 
-  // Get primary image or first image
-  const getPrimaryImage = () => {
+    const getPrimaryImage = () => {
     if (product.images && Array.isArray(product.images)) {
       const primaryImage = product.images.find(img => img.isPrimary);
       if (primaryImage) {
@@ -58,8 +57,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
     }
   };
 
-  // Helper function to get status display
-  const getStatusDisplay = (status) => {
+    const getStatusDisplay = (status) => {
     if (!status) return { text: 'Active', class: 'status-active' };
     const normalizedStatus = status.toLowerCase();
     switch (normalizedStatus) {
@@ -153,8 +151,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
                   {isActionLoading ? 'Updating...' : isStudentEssential ? 'Mark as Claimed' : 'Mark as Sold'}
                 </button>
               ) : (product.status === 'sold' || product.status === 'claimed') ? (
-                // Only show "Mark as Active" for sold products (not inactive ones set by admin)
-                <button
+                                <button
                   className="btn-action btn-mark-active"
                   onClick={handleMarkAsActive}
                   disabled={isActionLoading}

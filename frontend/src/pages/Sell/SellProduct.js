@@ -27,14 +27,11 @@ const SellProduct = () => {
     category: "",
     condition: "Good",
     location: "",
-    imageFiles: [], // Store File objects (multiple images)
-  });
+    imageFiles: [],   });
 
-  const [previewUrls, setPreviewUrls] = useState([]); // Store preview URLs for uploaded files
-
+  const [previewUrls, setPreviewUrls] = useState([]); 
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!isAuthenticated) {
+        if (!isAuthenticated) {
       navigate("/login");
       return;
     }
@@ -49,7 +46,6 @@ const SellProduct = () => {
       setCategories(categoriesData);
     } catch (error) {
       setError(error.message || "Failed to load categories");
-      console.error("Error loading categories:", error);
     } finally {
       setLoading(false);
     }
@@ -67,19 +63,16 @@ const SellProduct = () => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
-    // Validate all files
-    const validFiles = [];
+        const validFiles = [];
     const errors = [];
 
     files.forEach((file, index) => {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
+            if (!file.type.startsWith("image/")) {
         errors.push(`${file.name}: Not an image file`);
         return;
       }
 
-      // Validate file size (5MB)
-      if (file.size > 5 * 1024 * 1024) {
+            if (file.size > 5 * 1024 * 1024) {
         errors.push(`${file.name}: File size must be less than 5MB`);
         return;
       }
@@ -92,8 +85,7 @@ const SellProduct = () => {
       return;
     }
 
-    // Limit to 10 images
-    const totalFiles = formData.imageFiles.length + validFiles.length;
+        const totalFiles = formData.imageFiles.length + validFiles.length;
     if (totalFiles > 10) {
       setError(
         `Maximum 10 images allowed. You already have ${formData.imageFiles.length} image(s) and trying to add ${validFiles.length}. Please remove some images first.`
@@ -101,8 +93,7 @@ const SellProduct = () => {
       return;
     }
 
-    // Create preview URLs
-    const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
+        const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
 
     setFormData((prev) => ({
       ...prev,
@@ -114,8 +105,7 @@ const SellProduct = () => {
   };
 
   const removeImage = (index) => {
-    // Clean up preview URL
-    if (previewUrls[index]) {
+        if (previewUrls[index]) {
       URL.revokeObjectURL(previewUrls[index]);
     }
 
@@ -134,8 +124,7 @@ const SellProduct = () => {
     setSubmitting(true);
     setUploading(false);
 
-    // Validation
-    if (
+        if (
       !formData.title ||
       !formData.description ||
       !formData.price ||
@@ -155,8 +144,7 @@ const SellProduct = () => {
     try {
       let processedImages = [];
 
-      // Upload files to Cloudinary
-      if (formData.imageFiles.length > 0) {
+            if (formData.imageFiles.length > 0) {
         setUploading(true);
         try {
           const uploadResult = await uploadImages(formData.imageFiles);
@@ -174,18 +162,15 @@ const SellProduct = () => {
         setUploading(false);
       }
 
-      // If no images, use default emoji
-      if (processedImages.length === 0) {
+            if (processedImages.length === 0) {
         processedImages = [
           {
-            url: "📦", // This will be replaced with FontAwesome icon in display
-            isPrimary: true,
+            url: "📦",             isPrimary: true,
           },
         ];
       }
 
-      // Mark first image as primary
-      if (processedImages.length > 0) {
+            if (processedImages.length > 0) {
         processedImages[0].isPrimary = true;
       }
 
@@ -203,11 +188,9 @@ const SellProduct = () => {
 
       setSuccess("Product listed successfully!");
 
-      // Clean up preview URLs
-      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+            previewUrls.forEach((url) => URL.revokeObjectURL(url));
 
-      // Reset form
-      setFormData({
+            setFormData({
         title: "",
         description: "",
         price: "",
@@ -218,13 +201,11 @@ const SellProduct = () => {
       });
       setPreviewUrls([]);
 
-      // Redirect after 2 seconds
-      setTimeout(() => {
+            setTimeout(() => {
         navigate("/products");
       }, 2000);
     } catch (error) {
       setError(error.message || "Failed to create product listing");
-      console.error("Error creating product:", error);
     } finally {
       setSubmitting(false);
       setUploading(false);
@@ -275,7 +256,7 @@ const SellProduct = () => {
 
           <div className="sell-form-container">
             <form onSubmit={handleSubmit} className="sell-form">
-              {/* Basic Information */}
+              {}
               <div className="form-section">
                 <h2>Product Details</h2>
 
@@ -382,7 +363,7 @@ const SellProduct = () => {
                 </div>
               </div>
 
-              {/* Images */}
+              {}
               <div className="form-section">
                 <h2>Product Images</h2>
                 <p className="section-description">
@@ -390,7 +371,7 @@ const SellProduct = () => {
                   10 images at once. The first image will be the primary image.
                 </p>
 
-                {/* Multiple File Upload */}
+                {}
                 <div className="image-upload-section">
                   <input
                     type="file"
@@ -415,7 +396,7 @@ const SellProduct = () => {
                   </small>
                 </div>
 
-                {/* Image Preview Grid */}
+                {}
                 {previewUrls.length > 0 && (
                   <div className="image-previews-grid">
                     <h3>Selected Images ({formData.imageFiles.length})</h3>
@@ -473,7 +454,7 @@ const SellProduct = () => {
                 )}
               </div>
 
-              {/* Form Actions */}
+              {}
               <div className="form-actions">
                 <button
                   type="button"

@@ -28,9 +28,7 @@ const Message = sequelize.define('Message', {
   productId: {
     type: DataTypes.UUID,
     allowNull: true,
-    // Removed foreign key reference to allow productId to reference both products and student_essentials
-    // Validation is handled in application code (routes/messages.js)
-    field: 'product_id'
+            field: 'product_id'
   },
   subject: {
     type: DataTypes.STRING(200),
@@ -93,7 +91,6 @@ const Message = sequelize.define('Message', {
   ]
 });
 
-// Define associations
 Message.associate = (models) => {
   Message.belongsTo(models.User, {
     foreignKey: 'senderId',

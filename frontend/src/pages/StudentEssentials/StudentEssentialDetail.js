@@ -31,7 +31,6 @@ const StudentEssentialDetail = () => {
       setEssential(essentialData);
     } catch (error) {
       setError(error.message || 'Failed to load student essential');
-      console.error('Error loading student essential:', error);
     } finally {
       setLoading(false);
     }
@@ -75,8 +74,7 @@ const StudentEssentialDetail = () => {
     );
   }
 
-  // Extract images array from essential
-  const images = essential.images || (essential.image ? [essential.image] : []);
+    const images = essential.images || (essential.image ? [essential.image] : []);
 
   return (
     <div className="essential-detail-page">
@@ -88,12 +86,12 @@ const StudentEssentialDetail = () => {
           </button>
 
           <div className="essential-detail-content">
-            {/* Image Carousel Section */}
+            {}
             <div className="essential-images-section">
               <ImageCarousel images={images} />
             </div>
 
-            {/* Essential Information Section */}
+            {}
             <div className="essential-info-section">
               <div className="essential-header">
                 <div className="essential-category">
@@ -131,7 +129,7 @@ const StudentEssentialDetail = () => {
                 <p className="essential-description">{essential.description || 'No description available.'}</p>
               </div>
 
-              {/* Giver Information */}
+              {}
               {essential.user && (
                 <div className="giver-section">
                   <h2>Giver Information</h2>
@@ -150,7 +148,7 @@ const StudentEssentialDetail = () => {
                 </div>
               )}
 
-              {/* Action Buttons */}
+              {}
               <div className="essential-actions">
                 {isAuthenticated && essential?.user && (() => {
                   const giverId = essential.user.id || essential.user._id;
@@ -179,7 +177,7 @@ const StudentEssentialDetail = () => {
       </main>
       <Footer />
 
-      {/* Compose Message Modal */}
+      {}
       {showComposeMessage && essential?.user && (
         <ComposeMessage
           recipient={essential.user}

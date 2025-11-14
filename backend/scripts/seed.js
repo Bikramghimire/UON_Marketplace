@@ -5,46 +5,28 @@ import sequelize from '../config/database.js';
 
 dotenv.config();
 
-/**
- * Seed database with initial data
- */
+
 const seedDatabase = async () => {
   try {
-    console.log('Starting database seeding...\n');
+        await connectDB();
 
-    // Connect to database
-    await connectDB();
-
-    // Clear existing data using TRUNCATE CASCADE to handle foreign key constraints
-    await sequelize.query('TRUNCATE TABLE messages, products, categories, users RESTART IDENTITY CASCADE');
-    console.log('Cleared existing data\n');
-
-    // Create categories
-    console.log('Creating categories...');
+        await sequelize.query('TRUNCATE TABLE messages, products, categories, users RESTART IDENTITY CASCADE');
     const categories = await Category.bulkCreate([
       { name: 'Textbooks', description: 'Academic textbooks and course materials' },
       { name: 'Electronics', description: 'Laptops, phones, tablets, and more' },
       { name: 'Clothing', description: 'Apparel and accessories' },
       { name: 'Furniture', description: 'Desks, chairs, and room essentials' }
     ]);
-    console.log(`Created ${categories.length} categories\n`);
-
-    // Create users
-    console.log('Creating users...');
-    const password = 'password123'; // Will be hashed by hooks
-    const adminPassword = 'admin123'; // Admin password
-
+    const password = 'password123';     const adminPassword = 'admin123'; 
     const users = await User.bulkCreate([
       {
         username: 'admin',
         email: 'admin@uon.edu',
-        password: adminPassword, // Admin uses different password
-        firstName: 'Admin',
+        password: adminPassword,         firstName: 'Admin',
         lastName: 'User',
         location: 'Admin Office',
         role: 'admin',
-        emailVerified: true // Admin users don't need email verification
-      },
+        emailVerified: true       },
       {
         username: 'johndoe',
         email: 'john@example.com',
@@ -52,8 +34,7 @@ const seedDatabase = async () => {
         firstName: 'John',
         lastName: 'Doe',
         location: 'Campus Dorm',
-        emailVerified: true // Seed users don't need email verification
-      },
+        emailVerified: true       },
       {
         username: 'sarahm',
         email: 'sarah@example.com',
@@ -61,8 +42,7 @@ const seedDatabase = async () => {
         firstName: 'Sarah',
         lastName: 'Miller',
         location: 'Off-Campus',
-        emailVerified: true // Seed users don't need email verification
-      },
+        emailVerified: true       },
       {
         username: 'miket',
         email: 'mike@example.com',
@@ -70,8 +50,7 @@ const seedDatabase = async () => {
         firstName: 'Mike',
         lastName: 'Taylor',
         location: 'Student Union',
-        emailVerified: true // Seed users don't need email verification
-      },
+        emailVerified: true       },
       {
         username: 'emilyr',
         email: 'emily@example.com',
@@ -79,15 +58,9 @@ const seedDatabase = async () => {
         firstName: 'Emily',
         lastName: 'Roberts',
         location: 'Campus Dorm',
-        emailVerified: true // Seed users don't need email verification
-      }
+        emailVerified: true       }
     ], {
-      individualHooks: true // This ensures beforeCreate hooks run to hash passwords
-    });
-    console.log(`Created ${users.length} users\n`);
-
-    // Create products
-    console.log('Creating products...');
+      individualHooks: true     });
     const products = await Product.bulkCreate([
       {
         title: 'Calculus Textbook - 3rd Edition',
@@ -170,28 +143,11 @@ const seedDatabase = async () => {
         images: [{ url: 'https://placehold.co/600x400', isPrimary: true }]
       }
     ]);
-    console.log(`Created ${products.length} products\n`);
-
-    console.log('═══════════════════════════════════════════════════');
-    console.log('   Database seeded successfully!');
-    console.log('═══════════════════════════════════════════════════\n');
-    console.log(`Summary:`);
-    console.log(`   - Categories: ${categories.length}`);
-    console.log(`   - Users: ${users.length}`);
-    console.log(`   - Products: ${products.length}\n`);
-    console.log('Test accounts:');
-    console.log(`   Admin: admin@uon.edu (password: admin123)`);
-    console.log(`   - john@example.com (password: password123)`);
-    console.log(`   - sarah@example.com (password: password123)`);
-    console.log(`   - mike@example.com (password: password123)`);
-    console.log(`   - emily@example.com (password: password123)\n`);
 
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error);
     process.exit(1);
   }
 };
 
-// Run seeding
 seedDatabase();

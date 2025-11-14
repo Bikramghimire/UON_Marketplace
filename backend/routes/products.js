@@ -5,11 +5,7 @@ import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
-/**
- * @route   GET /api/products
- * @desc    Get all products with optional filters
- * @access  Public
- */
+
 router.get('/', async (req, res) => {
   try {
     const {
@@ -21,11 +17,9 @@ router.get('/', async (req, res) => {
       status = 'active'
     } = req.query;
 
-    // Build where clause
-    const where = { status };
+        const where = { status };
 
-    // Category filter
-    let categoryId = null;
+        let categoryId = null;
     if (category && category !== 'All') {
       const categoryDoc = await Category.findOne({ where: { name: category } });
       if (categoryDoc) {
@@ -39,23 +33,20 @@ router.get('/', async (req, res) => {
       }
     }
 
-    // Price filter
-    if (minPrice || maxPrice) {
+        if (minPrice || maxPrice) {
       where.price = {};
       if (minPrice) where.price[Op.gte] = Number(minPrice);
       if (maxPrice) where.price[Op.lte] = Number(maxPrice);
     }
 
-    // Search filter
-    if (search) {
+        if (search) {
       where[Op.or] = [
         { title: { [Op.iLike]: `%${search}%` } },
         { description: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
-    // Build order
-    let order = [];
+        let order = [];
     switch (sortBy) {
       case 'price-low':
         order = [['price', 'ASC']];
@@ -69,8 +60,7 @@ router.get('/', async (req, res) => {
         break;
     }
 
-    // Execute query
-    const products = await Product.findAll({
+        const products = await Product.findAll({
       where,
       include: [
         {
@@ -87,8 +77,7 @@ router.get('/', async (req, res) => {
       order
     });
 
-    // Transform products to match frontend format
-    const transformedProducts = products.map(product => {
+        const transformedProducts = products.map(product => {
       const images = product.images || [];
       return {
         id: product.id,
@@ -111,7 +100,6 @@ router.get('/', async (req, res) => {
       data: transformedProducts
     });
   } catch (error) {
-    console.error('Get products error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'
@@ -119,11 +107,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/products/my
- * @desc    Get current user's products
- * @access  Private
- */
+
 router.get('/my', protect, async (req, res) => {
   try {
     const products = await Product.findAll({
@@ -143,8 +127,7 @@ router.get('/my', protect, async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    // Transform products to match frontend format
-    const transformedProducts = products.map(product => {
+        const transformedProducts = products.map(product => {
       const images = product.images || [];
       return {
         id: product.id,
@@ -169,7 +152,6 @@ router.get('/my', protect, async (req, res) => {
       data: transformedProducts
     });
   } catch (error) {
-    console.error('Get user products error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'
@@ -177,11 +159,7 @@ router.get('/my', protect, async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/products/:id
- * @desc    Get product by ID
- * @access  Public
- */
+
 router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id, {
@@ -206,12 +184,10 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    // Increment views
-    product.views += 1;
+        product.views += 1;
     await product.save();
 
-    // Transform product
-    const images = product.images || [];
+        const images = product.images || [];
     const transformedProduct = {
       id: product.id,
       title: product.title,
@@ -226,15 +202,13 @@ router.get('/:id', async (req, res) => {
       status: product.status,
       views: product.views,
       images: product.images,
-      user: product.user // Include full user object for messaging
-    };
+      user: product.user     };
 
     res.json({
       success: true,
       data: transformedProduct
     });
   } catch (error) {
-    console.error('Get product error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'
@@ -242,11 +216,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-/**
- * @route   POST /api/products
- * @desc    Create a new product
- * @access  Private
- */
+
 router.post('/', protect, async (req, res) => {
   try {
     const {
@@ -259,16 +229,14 @@ router.post('/', protect, async (req, res) => {
       images
     } = req.body;
 
-    // Validation
-    if (!title || !description || !price || !category) {
+        if (!title || !description || !price || !category) {
       return res.status(400).json({
         success: false,
         message: 'Please provide title, description, price, and category'
       });
     }
 
-    // Find category
-    const categoryDoc = await Category.findOne({ where: { name: category } });
+        const categoryDoc = await Category.findOne({ where: { name: category } });
     
     if (!categoryDoc) {
       return res.status(400).json({
@@ -277,25 +245,21 @@ router.post('/', protect, async (req, res) => {
       });
     }
 
-    // Process images
-    let processedImages = [];
+        let processedImages = [];
     if (images && Array.isArray(images)) {
       processedImages = images.map((img, index) => ({
         url: typeof img === 'string' ? img : img.url || '',
         isPrimary: index === 0 || img.isPrimary || false
-      })).filter(img => img.url); // Remove empty images
-    }
+      })).filter(img => img.url);     }
 
-    // If no images provided, use default emoji
-    if (processedImages.length === 0) {
+        if (processedImages.length === 0) {
       processedImages = [{
         url: '',
         isPrimary: true
       }];
     }
 
-    // Create product
-    const product = await Product.create({
+        const product = await Product.create({
       title,
       description,
       price: Number(price),
@@ -327,7 +291,6 @@ router.post('/', protect, async (req, res) => {
       data: populatedProduct
     });
   } catch (error) {
-    console.error('Create product error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'
@@ -335,11 +298,7 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
-/**
- * @route   PUT /api/products/:id/status
- * @desc    Update product status (mark as sold/inactive)
- * @access  Private (product owner only)
- */
+
 router.put('/:id/status', protect, async (req, res) => {
   try {
     const { status } = req.body;
@@ -360,24 +319,21 @@ router.put('/:id/status', protect, async (req, res) => {
       });
     }
 
-    // Check if user owns the product
-    if (product.userId !== req.user.id) {
+        if (product.userId !== req.user.id) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to update this product'
       });
     }
 
-    // Prevent users from reactivating products that were deactivated by admin
-    if (product.status === 'inactive' && status === 'active') {
+        if (product.status === 'inactive' && status === 'active') {
       return res.status(403).json({
         success: false,
         message: 'You cannot reactivate a product that was deactivated by admin'
       });
     }
 
-    // Prevent users from marking products as inactive (only admin can do that)
-    if (status === 'inactive') {
+        if (status === 'inactive') {
       return res.status(403).json({
         success: false,
         message: 'Only admin can mark products as inactive'
@@ -408,7 +364,6 @@ router.put('/:id/status', protect, async (req, res) => {
       data: populatedProduct
     });
   } catch (error) {
-    console.error('Update product status error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'
@@ -416,11 +371,7 @@ router.put('/:id/status', protect, async (req, res) => {
   }
 });
 
-/**
- * @route   DELETE /api/products/:id
- * @desc    Delete product
- * @access  Private (product owner only)
- */
+
 router.delete('/:id', protect, async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
@@ -432,16 +383,14 @@ router.delete('/:id', protect, async (req, res) => {
       });
     }
 
-    // Check if user owns the product
-    if (product.userId !== req.user.id) {
+        if (product.userId !== req.user.id) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to delete this product'
       });
     }
 
-    // Prevent users from deleting products that were deactivated by admin
-    if (product.status === 'inactive') {
+        if (product.status === 'inactive') {
       return res.status(403).json({
         success: false,
         message: 'You cannot delete a product that was deactivated by admin'
@@ -455,7 +404,6 @@ router.delete('/:id', protect, async (req, res) => {
       message: 'Product deleted successfully'
     });
   } catch (error) {
-    console.error('Delete product error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'

@@ -101,40 +101,8 @@ Frontend Setup
 
 
 3.Create .env file: and add all the credential as in .env example file
-
+ add all the keys needed.
 
 4.Start the frontend
    npm start
 
-
-## 🔐 API Endpoints
-
-Authentication
-- `POST /api/auth/register` - Register new user (no token returned)
-- `POST /api/auth/login` - Login user (requires email verification)
-- `GET /api/auth/me` - Get current user (protected)
-- `POST /api/auth/verify-email` - Verify email with code
-- `POST /api/auth/resend-verification` - Resend verification code (protected)
-
-Products
-- `GET /api/products` - Get all products (supports filters)
-- `GET /api/products/:id` - Get product by ID
-- `GET /api/products/my` - Get current user's products (protected)
-- `POST /api/products` - Create product (protected)
-- `PUT /api/products/:id/status` - Update product status (protected)
-- `DELETE /api/products/:id` - Delete product (protected)
-
-Categories
-- `GET /api/categories` - Get all categories
-- `POST /api/categories` - Create category
-
-Messages
-- `GET /api/messages` - Get all conversations (protected)
-- `GET /api/messages/conversation/:userId` - Get conversation with user (protected)
-- `POST /api/messages` - Send message (protected)
-- `GET /api/messages/unread-count` - Get unread count (protected)
-
-Admin
-- `GET /api/admin/dashboard` - Dashboard statistics (admin only)
-- `GET /api/admin/users` - Get all users (admin only)
-- `GET /api/admin/products` - Get all products (admin only)

@@ -67,52 +67,44 @@ Backend Setup
   
    
    This will creates:
-   - 4 categories (Textbooks, Electronics, Clothing, Furniture)
-   - 5 test users (password: `password123`)
-   After running `npm run seed`, you can use these test accounts:
+   - 4 categories like Textbooks, Electronics, Clothing, Furniture
+   - 5 test users with password of password123
+   After running npm run seed, you can use these test accounts:
 
-- **Email:** `admin@uon.edu` | **Password:** `password123` | **Username:** `admin` (Admin account)
-- **Email:** `john@example.com` | **Password:** `password123` | **Username:** `johndoe`
-- **Email:** `sarah@example.com` | **Password:** `password123` | **Username:** `sarahm`
-- **Email:** `mike@example.com` | **Password:** `password123` | **Username:** `miket`
-- **Email:** `emily@example.com` | **Password:** `password123` | **Username:** `emilyr`
-   - 8 sample products
+-Email:admin@uon.edu | Password:password123 | Username: admin (Admin account)
+-Email: john@example.com | Password: password123 | Username: johndoe
+-Email: sarah@example.com | Password: password123 | Username: sarahm
+-Email: mike@example.com | Password: password123 | Username: miket
+-Email: emily@example.com | Password: password123 | Username: emilyr
+
 
 8. Creating admin user
   
    npm run create-admin
-
-   
    Creates admin account:
-   - Email: `admin@uon.edu`
-   - Password: `admin123`
+   - Email: admin@uon.edu
+   - Password: admin123
 
 
 11. Starting the backend server:
    cd backend
    npm run dev
-
+======================================================================
 Frontend Setup
 
-1. **Navigate to frontend directory:**
+1.Navigate to frontend directory:
    cd frontend
 
 
-2. **Install dependencies:**
+2.Install dependencies:
    npm install
 
 
-3. **Create `.env` file** (optional - uses defaults if not present):
-
-   REACT_APP_API_URL=http://localhost:5000/api
+3.Create .env file: and add all the credential as in .env example file
 
 
-4. **Start the frontend:**
-
+4.Start the frontend
    npm start
-
-   
-   The frontend will run on `http://localhost:3000`
 
 
 ## 🔐 API Endpoints
@@ -146,16 +138,3 @@ Admin
 - `GET /api/admin/dashboard` - Dashboard statistics (admin only)
 - `GET /api/admin/users` - Get all users (admin only)
 - `GET /api/admin/products` - Get all products (admin only)
-
-
-# Backend commands
-npm install                         # Install dependencies
-npm run migrate                     # Create database tables
-npm run seed                        # Seed sample data
-npm run create-admin                # Create admin user
-npm run fix-passwords               # Fix plain-text passwords
-npm run drop-db                     # Truncate all tables
-npm run drop-db:all                 # Drop all tables
-npm run dev                         # Start development server
-npm start                           # Start production server
-```

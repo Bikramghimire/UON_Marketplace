@@ -5,6 +5,8 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { getCategories, createStudentEssential } from '../../services/studentEssentialService';
 import { uploadImages } from '../../services/uploadService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import './AddStudentEssential.css';
 
 const AddStudentEssential = () => {
@@ -24,14 +26,11 @@ const AddStudentEssential = () => {
     category: '',
     condition: 'Good',
     location: '',
-    imageFiles: [] // Store File objects (multiple images)
-  });
+    imageFiles: []   });
   
-  const [previewUrls, setPreviewUrls] = useState([]); // Store preview URLs for uploaded files
-
+  const [previewUrls, setPreviewUrls] = useState([]); 
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!isAuthenticated) {
+        if (!isAuthenticated) {
       navigate('/login');
       return;
     }
@@ -46,7 +45,6 @@ const AddStudentEssential = () => {
       setCategories(categoriesData);
     } catch (error) {
       setError(error.message || 'Failed to load categories');
-      console.error('Error loading categories:', error);
     } finally {
       setLoading(false);
     }
@@ -64,19 +62,16 @@ const AddStudentEssential = () => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
-    // Validate all files
-    const validFiles = [];
+        const validFiles = [];
     const errors = [];
 
     files.forEach((file, index) => {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
+            if (!file.type.startsWith('image/')) {
         errors.push(`${file.name}: Not an image file`);
         return;
       }
 
-      // Validate file size (5MB)
-      if (file.size > 5 * 1024 * 1024) {
+            if (file.size > 5 * 1024 * 1024) {
         errors.push(`${file.name}: File size must be less than 5MB`);
         return;
       }
@@ -89,15 +84,13 @@ const AddStudentEssential = () => {
       return;
     }
 
-    // Limit to 10 images
-    const totalFiles = formData.imageFiles.length + validFiles.length;
+        const totalFiles = formData.imageFiles.length + validFiles.length;
     if (totalFiles > 10) {
       setError(`Maximum 10 images allowed. You already have ${formData.imageFiles.length} image(s) and trying to add ${validFiles.length}. Please remove some images first.`);
       return;
     }
 
-    // Create preview URLs
-    const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
+        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
     
     setFormData(prev => ({
       ...prev,
@@ -109,8 +102,7 @@ const AddStudentEssential = () => {
   };
 
   const removeImage = (index) => {
-    // Clean up preview URL
-    if (previewUrls[index]) {
+        if (previewUrls[index]) {
       URL.revokeObjectURL(previewUrls[index]);
     }
     
@@ -129,8 +121,7 @@ const AddStudentEssential = () => {
     setSubmitting(true);
     setUploading(false);
 
-    // Validation
-    if (!formData.title || !formData.description || !formData.category) {
+        if (!formData.title || !formData.description || !formData.category) {
       setError('Please fill in all required fields');
       setSubmitting(false);
       return;
@@ -139,8 +130,7 @@ const AddStudentEssential = () => {
     try {
       let processedImages = [];
 
-      // Upload files to Cloudinary
-      if (formData.imageFiles.length > 0) {
+            if (formData.imageFiles.length > 0) {
         setUploading(true);
         try {
           const uploadResult = await uploadImages(formData.imageFiles);
@@ -158,16 +148,13 @@ const AddStudentEssential = () => {
         setUploading(false);
       }
 
-      // If no images, use default emoji
-      if (processedImages.length === 0) {
+            if (processedImages.length === 0) {
         processedImages = [{
-          url: '🎁',
-          isPrimary: true
+          url: '🎁',           isPrimary: true
         }];
       }
 
-      // Mark first image as primary
-      if (processedImages.length > 0) {
+            if (processedImages.length > 0) {
         processedImages[0].isPrimary = true;
       }
 
@@ -184,11 +171,9 @@ const AddStudentEssential = () => {
       
       setSuccess('Student essential listed successfully!');
       
-      // Clean up preview URLs
-      previewUrls.forEach(url => URL.revokeObjectURL(url));
+            previewUrls.forEach(url => URL.revokeObjectURL(url));
       
-      // Reset form
-      setFormData({
+            setFormData({
         title: '',
         description: '',
         category: '',
@@ -198,14 +183,12 @@ const AddStudentEssential = () => {
       });
       setPreviewUrls([]);
 
-      // Redirect after 2 seconds
-      setTimeout(() => {
+            setTimeout(() => {
         navigate('/my-products');
       }, 2000);
 
     } catch (error) {
       setError(error.message || 'Failed to create student essential listing');
-      console.error('Error creating student essential:', error);
     } finally {
       setSubmitting(false);
       setUploading(false);
@@ -258,7 +241,7 @@ const AddStudentEssential = () => {
 
           <div className="add-essential-form-container">
             <form onSubmit={handleSubmit} className="add-essential-form">
-              {/* Basic Information */}
+              {}
               <div className="form-section">
                 <h2>Item Details</h2>
                 
@@ -345,14 +328,14 @@ const AddStudentEssential = () => {
                 </div>
               </div>
 
-              {/* Images */}
+              {}
               <div className="form-section">
                 <h2>Item Images</h2>
                 <p className="section-description">
                   Upload multiple images from your device. You can select up to 10 images at once. The first image will be the primary image.
                 </p>
                 
-                {/* Multiple File Upload */}
+                {}
                 <div className="image-upload-section">
                   <input
                     type="file"
@@ -370,14 +353,14 @@ const AddStudentEssential = () => {
                     className="btn btn-primary btn-upload"
                     disabled={submitting || uploading}
                   >
-                    📁 Select Images (Multiple)
+                    <FontAwesomeIcon icon={faFolderOpen} /> Select Images (Multiple)
                   </button>
                   <small className="upload-hint">
                     Select one or more images (max 10 images, 5MB each)
                   </small>
                 </div>
 
-                {/* Image Preview Grid */}
+                {}
                 {previewUrls.length > 0 && (
                   <div className="image-previews-grid">
                     <h3>Selected Images ({formData.imageFiles.length})</h3>
@@ -426,7 +409,7 @@ const AddStudentEssential = () => {
                 )}
               </div>
 
-              {/* Form Actions */}
+              {}
               <div className="form-actions">
                 <button
                   type="button"

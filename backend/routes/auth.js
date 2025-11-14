@@ -7,33 +7,26 @@ import { sendVerificationEmail } from '../services/emailService.js';
 
 const router = express.Router();
 
-/**
- * @route   POST /api/auth/register
- * @desc    Register a new user
- * @access  Public
- */
+
 router.post('/register', async (req, res) => {
   try {
     let { username, email, password, firstName, lastName, phone, location } = req.body;
 
-    // Trim inputs
-    if (username) username = username.trim();
+        if (username) username = username.trim();
     if (email) email = email.trim().toLowerCase();
     if (firstName) firstName = firstName.trim();
     if (lastName) lastName = lastName.trim();
     if (phone) phone = phone.trim();
     if (location) location = location.trim();
 
-    // Validation
-    if (!username || !email || !password) {
+        if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide username, email, and password'
       });
     }
 
-    // Username validation
-    if (username.length < 3) {
+        if (username.length < 3) {
       return res.status(400).json({
         success: false,
         message: 'Username must be at least 3 characters'
@@ -52,8 +45,7 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
@@ -67,8 +59,7 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Password validation
-    if (password.length < 8) {
+        if (password.length < 8) {
       return res.status(400).json({
         success: false,
         message: 'Password must be at least 8 characters long'
@@ -80,36 +71,31 @@ router.post('/register', async (req, res) => {
         message: 'Password must be less than 255 characters'
       });
     }
-    // Check for spaces
-    if (/\s/.test(password)) {
+        if (/\s/.test(password)) {
       return res.status(400).json({
         success: false,
         message: 'Password should not contain spaces'
       });
     }
-    // Check for at least one uppercase letter
-    if (!/[A-Z]/.test(password)) {
+        if (!/[A-Z]/.test(password)) {
       return res.status(400).json({
         success: false,
         message: 'Password must include at least one uppercase letter (A-Z)'
       });
     }
-    // Check for at least one lowercase letter
-    if (!/[a-z]/.test(password)) {
+        if (!/[a-z]/.test(password)) {
       return res.status(400).json({
         success: false,
         message: 'Password must include at least one lowercase letter (a-z)'
       });
     }
-    // Check for at least one digit
-    if (!/[0-9]/.test(password)) {
+        if (!/[0-9]/.test(password)) {
       return res.status(400).json({
         success: false,
         message: 'Password must include at least one digit (0-9)'
       });
     }
-    // Check for at least one special character
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+        if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
       return res.status(400).json({
         success: false,
         message: 'Password must include at least one special character (e.g., !@#$%^&*() etc.)'
@@ -192,13 +178,10 @@ router.post('/register', async (req, res) => {
     try {
       await sendVerificationEmail(user, verificationCode);
     } catch (emailError) {
-      console.error('Error sending verification email:', emailError);
       // Don't fail registration if email fails, but log it
     }
 
-    // Don't generate token - user must verify email first, then login
-    // Token will be generated only after successful login
-
+        
     res.status(201).json({
       success: true,
       message: 'User registered successfully. Please check your email to verify your account.',
@@ -218,7 +201,6 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error during registration'
@@ -226,32 +208,22 @@ router.post('/register', async (req, res) => {
   }
 });
 
-/**
- * @route   POST /api/auth/login
- * @desc    Login user
- * @access  Public
- */
+
 router.post('/login', async (req, res) => {
   try {
     let { email, username, password } = req.body;
 
-    // Trim whitespace from email and username
-    if (email) email = email.trim();
+        if (email) email = email.trim();
     if (username) username = username.trim();
     if (password) password = password.trim();
-
-    console.log('Login attempt:', { email, username, hasPassword: !!password });
-
-    // Validation - accept either email or username
-    if ((!email && !username) || !password) {
+        if ((!email && !username) || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide email or username, and password'
       });
     }
 
-    // Validate email format if email is provided
-    if (email) {
+        if (email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return res.status(400).json({
@@ -261,8 +233,7 @@ router.post('/login', async (req, res) => {
       }
     }
 
-    // Validate username format if username is provided
-    if (username) {
+        if (username) {
       if (username.length < 3) {
         return res.status(400).json({
           success: false,
@@ -277,8 +248,7 @@ router.post('/login', async (req, res) => {
       }
     }
 
-    // Password validation
-    if (password.length < 6) {
+        if (password.length < 6) {
       return res.status(400).json({
         success: false,
         message: 'Password must be at least 6 characters'
@@ -291,43 +261,26 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Build where clause to search by email or username
-    const whereClause = {};
+        const whereClause = {};
     if (email) {
       whereClause.email = email;
     } else if (username) {
       whereClause.username = username;
     }
-
-    console.log('Searching for user with:', whereClause);
-
-    // Check if user exists and get password
-    const user = await User.findOne({ 
+        const user = await User.findOne({ 
       where: whereClause,
       attributes: { include: ['password'] }
     });
 
     if (!user) {
-      console.log('User not found for:', whereClause);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
-
-    console.log('User found:', { id: user.id, username: user.username, email: user.email });
-    console.log('Stored password hash:', user.password ? user.password.substring(0, 20) + '...' : 'null');
-    console.log('Password length:', user.password ? user.password.length : 0);
-
-    // Check password
-    const isMatch = await user.matchPassword(password);
-
-    console.log('Password match:', isMatch);
+        const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      console.log('Password comparison failed');
-      // For debugging: check if password is plain text
-      if (user.password === password) {
-        console.log('WARNING: Password stored as plain text! It should be hashed.');
+            if (user.password === password) {
       }
     }
 
@@ -338,8 +291,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Check if email is verified (skip for admin users)
-    if (!user.emailVerified && user.role !== 'admin') {
+        if (!user.emailVerified && user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Please verify your email before logging in. Check your email for the verification code.',
@@ -348,8 +300,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Generate token
-    const token = generateToken(user.id);
+        const token = generateToken(user.id);
 
     res.json({
       success: true,
@@ -371,7 +322,6 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error during login'
@@ -379,15 +329,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/auth/me
- * @desc    Get current user
- * @access  Private
- */
+
 router.get('/me', async (req, res) => {
   try {
-    // Check token manually since we're not using protect middleware here
-    let token;
+        let token;
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     }
@@ -428,7 +373,6 @@ router.get('/me', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get user error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'
@@ -436,11 +380,7 @@ router.get('/me', async (req, res) => {
   }
 });
 
-/**
- * @route   POST /api/auth/verify-email
- * @desc    Verify user email with code
- * @access  Public
- */
+
 router.post('/verify-email', async (req, res) => {
   try {
     const { email, code } = req.body;
@@ -452,8 +392,7 @@ router.post('/verify-email', async (req, res) => {
       });
     }
 
-    // Find user by email
-    const user = await User.findOne({
+        const user = await User.findOne({
       where: {
         email: email.trim()
       }
@@ -466,32 +405,28 @@ router.post('/verify-email', async (req, res) => {
       });
     }
 
-    // Check if already verified
-    if (user.emailVerified) {
+        if (user.emailVerified) {
       return res.status(200).json({
         success: true,
         message: 'Email is already verified'
       });
     }
 
-    // Check if verification code matches
-    if (!user.verificationCode || user.verificationCode !== code.trim()) {
+        if (!user.verificationCode || user.verificationCode !== code.trim()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid verification code'
       });
     }
 
-    // Check if code has expired
-    if (user.verificationCodeExpiry && new Date() > new Date(user.verificationCodeExpiry)) {
+        if (user.verificationCodeExpiry && new Date() > new Date(user.verificationCodeExpiry)) {
       return res.status(400).json({
         success: false,
         message: 'Verification code has expired. Please request a new one.'
       });
     }
 
-    // Verify email
-    user.emailVerified = true;
+        user.emailVerified = true;
     user.verificationCode = null;
     user.verificationCodeExpiry = null;
     await user.save();
@@ -501,7 +436,6 @@ router.post('/verify-email', async (req, res) => {
       message: 'Email verified successfully'
     });
   } catch (error) {
-    console.error('Email verification error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error during email verification'
@@ -509,15 +443,10 @@ router.post('/verify-email', async (req, res) => {
   }
 });
 
-/**
- * @route   POST /api/auth/resend-verification
- * @desc    Resend verification email
- * @access  Private
- */
+
 router.post('/resend-verification', async (req, res) => {
   try {
-    // Check token manually
-    let token;
+        let token;
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     }
@@ -540,38 +469,32 @@ router.post('/resend-verification', async (req, res) => {
       });
     }
 
-    // Check if already verified
-    if (user.emailVerified) {
+        if (user.emailVerified) {
       return res.status(400).json({
         success: false,
         message: 'Email is already verified'
       });
     }
 
-    // Generate new 6-digit verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const verificationCodeExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCodeExpiry = new Date(Date.now() + 15 * 60 * 1000); 
     user.verificationCode = verificationCode;
     user.verificationCodeExpiry = verificationCodeExpiry;
     await user.save();
 
-    // Send verification email
-    try {
+        try {
       await sendVerificationEmail(user, verificationCode);
       res.json({
         success: true,
         message: 'Verification email sent successfully'
       });
     } catch (emailError) {
-      console.error('Error sending verification email:', emailError);
       res.status(500).json({
         success: false,
         message: 'Failed to send verification email. Please try again later.'
       });
     }
   } catch (error) {
-    console.error('Resend verification error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Server error'

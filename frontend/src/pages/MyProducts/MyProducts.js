@@ -6,6 +6,8 @@ import Footer from '../../components/layout/Footer';
 import MyProductCard from '../../components/common/MyProductCard';
 import { getUserProducts, updateProductStatus, deleteProduct } from '../../services/productService';
 import { getUserStudentEssentials, updateStudentEssentialStatus, deleteStudentEssential } from '../../services/studentEssentialService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift, faBox } from '@fortawesome/free-solid-svg-icons';
 import './MyProducts.css';
 
 const MyProducts = () => {
@@ -38,7 +40,6 @@ const MyProducts = () => {
       setEssentials(essentialsData);
     } catch (error) {
       setError(error.message || 'Failed to load your items');
-      console.error('Error loading items:', error);
     } finally {
       setLoading(false);
     }
@@ -58,11 +59,9 @@ const MyProducts = () => {
         setSuccess(`Product ${status === 'sold' ? 'marked as sold' : 'marked as active'} successfully!`);
       }
       
-      // Reload items to reflect changes
-      await loadMyProducts();
+            await loadMyProducts();
     } catch (error) {
       setError(error.message || 'Failed to update item status');
-      console.error('Error updating item status:', error);
     } finally {
       setActionLoading(null);
     }
@@ -85,7 +84,6 @@ const MyProducts = () => {
       }
     } catch (error) {
       setError(error.message || 'Failed to delete item');
-      console.error('Error deleting item:', error);
     } finally {
       setActionLoading(null);
     }
@@ -99,7 +97,7 @@ const MyProducts = () => {
     <div className="my-products-page">
       <Header />
       <main className="my-products-main">
-        {/* Page Header */}
+        {}
         <section className="my-products-header">
           <div className="container">
             <h1 className="page-title">My Products</h1>
@@ -107,7 +105,7 @@ const MyProducts = () => {
           </div>
         </section>
 
-        {/* Products Section */}
+        {}
         <section className="my-products-section">
           <div className="container">
             <div className="my-products-actions">
@@ -115,7 +113,7 @@ const MyProducts = () => {
                 + List New Product
               </Link>
               <Link to="/add-student-essential" className="btn btn-secondary">
-                🎁 Give Away for Free
+                <FontAwesomeIcon icon={faGift} /> Give Away for Free
               </Link>
             </div>
 
@@ -164,7 +162,7 @@ const MyProducts = () => {
               </>
             ) : (
               <div className="no-products">
-                <div className="no-products-icon">📦</div>
+                <div className="no-products-icon"><FontAwesomeIcon icon={faBox} /></div>
                 <h2>No products yet</h2>
                 <p>Start selling by listing your first product!</p>
                 <Link to="/sell" className="btn btn-primary">

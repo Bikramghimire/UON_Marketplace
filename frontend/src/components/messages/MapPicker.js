@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './MapPicker.css';
 
-// Fix for default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -49,8 +50,7 @@ const MapPicker = ({ onLocationSelect, initialLocation, initialCoordinates }) =>
     initialCoordinates || initialLocation?.coordinates || null
   );
 
-  // Default center (University of newcastle coordinates - adjust as needed)
-  const defaultCenter = [-32.8928, 151.7044];
+    const defaultCenter = [-32.8928, 151.7044];
   const [mapCenter, setMapCenter] = useState(
     coordinates ? [coordinates.lat, coordinates.lng] : defaultCenter
   );
@@ -93,8 +93,7 @@ const MapPicker = ({ onLocationSelect, initialLocation, initialCoordinates }) =>
     }
   };
 
-  // Get user's current location
-  const handleGetCurrentLocation = () => {
+    const handleGetCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -105,7 +104,6 @@ const MapPicker = ({ onLocationSelect, initialLocation, initialCoordinates }) =>
           handleLocationSelect(newCoordinates);
         },
         (error) => {
-          console.error('Error getting location:', error);
           alert('Unable to get your location. Please click on the map to select a location.');
         }
       );
@@ -123,7 +121,7 @@ const MapPicker = ({ onLocationSelect, initialLocation, initialCoordinates }) =>
           onClick={handleGetCurrentLocation}
           className="btn-get-location"
         >
-          📍 Use My Location
+          <FontAwesomeIcon icon={faMapMarkerAlt} /> Use My Location
         </button>
       </div>
 

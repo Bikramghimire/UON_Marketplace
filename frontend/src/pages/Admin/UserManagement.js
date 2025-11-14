@@ -37,7 +37,6 @@ const UserManagement = () => {
       setTotalPages(response.pagination.pages);
     } catch (error) {
       setError(error.message || 'Failed to load users');
-      console.error('Error loading users:', error);
     } finally {
       setLoading(false);
     }
@@ -94,7 +93,7 @@ const UserManagement = () => {
             </div>
           )}
 
-          {/* Filters */}
+          {}
           <div className="admin-filters">
             <input
               type="text"
@@ -123,7 +122,7 @@ const UserManagement = () => {
             </button>
           </div>
 
-          {/* Users Table */}
+          {}
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -177,7 +176,7 @@ const UserManagement = () => {
                 </table>
               </div>
 
-              {/* Pagination */}
+              {}
               <div className="pagination">
                 <button
                   onClick={() => setPage(page - 1)}
@@ -198,7 +197,7 @@ const UserManagement = () => {
             </>
           )}
 
-          {/* Edit Modal */}
+          {}
           {editingUser && (
             <div className="modal-overlay" onClick={() => setEditingUser(null)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>

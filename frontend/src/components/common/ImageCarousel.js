@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBox } from '@fortawesome/free-solid-svg-icons';
 import './ImageCarousel.css';
 
 const ImageCarousel = ({ images }) => {
@@ -8,18 +10,16 @@ const ImageCarousel = ({ images }) => {
     return (
       <div className="image-carousel">
         <div className="carousel-placeholder">
-          <span className="placeholder-icon">📦</span>
+          <span className="placeholder-icon"><FontAwesomeIcon icon={faBox} /></span>
           <p>No images available</p>
         </div>
       </div>
     );
   }
 
-  // Ensure images is an array
-  const imageArray = Array.isArray(images) ? images : [images];
+    const imageArray = Array.isArray(images) ? images : [images];
   
-  // Extract URLs from image objects or use strings directly
-  const imageUrls = imageArray.map(img => {
+    const imageUrls = imageArray.map(img => {
     if (typeof img === 'string') return img;
     if (img.url) return img.url;
     if (img.image) return img.image;
@@ -30,7 +30,7 @@ const ImageCarousel = ({ images }) => {
     return (
       <div className="image-carousel">
         <div className="carousel-placeholder">
-          <span className="placeholder-icon">📦</span>
+          <span className="placeholder-icon"><FontAwesomeIcon icon={faBox} /></span>
           <p>No images available</p>
         </div>
       </div>
@@ -53,15 +53,15 @@ const ImageCarousel = ({ images }) => {
     setCurrentIndex(index);
   };
 
-  // Check if image is a URL or emoji
-  const isUrl = (url) => {
+    const isUrl = (url) => {
+    if (!url || typeof url !== 'string') return false;
     return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//');
   };
 
   return (
     <div className="image-carousel">
       <div className="carousel-container">
-        {/* Main Image Display */}
+        {}
         <div className="carousel-main">
           <button 
             className="carousel-btn carousel-btn-prev"
@@ -88,10 +88,10 @@ const ImageCarousel = ({ images }) => {
               </div>
             )}
             
-            {/* Fallback for broken images */}
+            {}
             {isUrl(imageUrls[currentIndex]) && (
               <div className="carousel-emoji-fallback" style={{ display: 'none' }}>
-                <span>📦</span>
+                <span><FontAwesomeIcon icon={faBox} /></span>
               </div>
             )}
           </div>
@@ -105,14 +105,14 @@ const ImageCarousel = ({ images }) => {
           </button>
         </div>
 
-        {/* Image Counter */}
+        {}
         {imageUrls.length > 1 && (
           <div className="carousel-counter">
             {currentIndex + 1} / {imageUrls.length}
           </div>
         )}
 
-        {/* Thumbnail Navigation */}
+        {}
         {imageUrls.length > 1 && (
           <div className="carousel-thumbnails">
             {imageUrls.map((url, index) => (
@@ -134,10 +134,10 @@ const ImageCarousel = ({ images }) => {
                   <span className="thumbnail-emoji">{url}</span>
                 )}
                 
-                {/* Fallback for broken thumbnails */}
+                {}
                 {isUrl(url) && (
                   <span className="thumbnail-emoji-fallback" style={{ display: 'none' }}>
-                    📦
+                    <FontAwesomeIcon icon={faBox} />
                   </span>
                 )}
               </div>

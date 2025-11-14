@@ -6,6 +6,8 @@ import Footer from '../../components/layout/Footer';
 import ImageCarousel from '../../components/common/ImageCarousel';
 import ComposeMessage from '../../components/messages/ComposeMessage';
 import { getStudentEssentialById } from '../../services/studentEssentialService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faEnvelope, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import './StudentEssentialDetail.css';
 
 const StudentEssentialDetail = () => {
@@ -29,7 +31,6 @@ const StudentEssentialDetail = () => {
       setEssential(essentialData);
     } catch (error) {
       setError(error.message || 'Failed to load student essential');
-      console.error('Error loading student essential:', error);
     } finally {
       setLoading(false);
     }
@@ -59,7 +60,7 @@ const StudentEssentialDetail = () => {
         <main className="essential-detail-main">
           <div className="essential-detail-container">
             <div className="error-container">
-              <div className="error-icon">❌</div>
+              <div className="error-icon"><FontAwesomeIcon icon={faTimesCircle} /></div>
               <h2>Item Not Found</h2>
               <p>{error || 'The item you are looking for does not exist.'}</p>
               <button onClick={() => navigate('/student-essentials')} className="btn btn-primary">
@@ -73,8 +74,7 @@ const StudentEssentialDetail = () => {
     );
   }
 
-  // Extract images array from essential
-  const images = essential.images || (essential.image ? [essential.image] : []);
+    const images = essential.images || (essential.image ? [essential.image] : []);
 
   return (
     <div className="essential-detail-page">
@@ -86,12 +86,12 @@ const StudentEssentialDetail = () => {
           </button>
 
           <div className="essential-detail-content">
-            {/* Image Carousel Section */}
+            {}
             <div className="essential-images-section">
               <ImageCarousel images={images} />
             </div>
 
-            {/* Essential Information Section */}
+            {}
             <div className="essential-info-section">
               <div className="essential-header">
                 <div className="essential-category">
@@ -110,7 +110,7 @@ const StudentEssentialDetail = () => {
                 </div>
                 <div className="meta-item">
                   <span className="meta-label">Location:</span>
-                  <span className="meta-value">📍 {essential.location || essential.user?.location || 'N/A'}</span>
+                  <span className="meta-value"><FontAwesomeIcon icon={faMapMarkerAlt} /> {essential.location || essential.user?.location || 'N/A'}</span>
                 </div>
                 <div className="meta-item">
                   <span className="meta-label">Posted:</span>
@@ -129,7 +129,7 @@ const StudentEssentialDetail = () => {
                 <p className="essential-description">{essential.description || 'No description available.'}</p>
               </div>
 
-              {/* Giver Information */}
+              {}
               {essential.user && (
                 <div className="giver-section">
                   <h2>Giver Information</h2>
@@ -139,16 +139,16 @@ const StudentEssentialDetail = () => {
                       {essential.user.firstName || essential.user.lastName ? '' : essential.user.username}
                     </div>
                     {essential.user.email && (
-                      <div className="giver-email">📧 {essential.user.email}</div>
+                      <div className="giver-email"><FontAwesomeIcon icon={faEnvelope} /> {essential.user.email}</div>
                     )}
                     {essential.user.location && (
-                      <div className="giver-location">📍 {essential.user.location}</div>
+                      <div className="giver-location"><FontAwesomeIcon icon={faMapMarkerAlt} /> {essential.user.location}</div>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* Action Buttons */}
+              {}
               <div className="essential-actions">
                 {isAuthenticated && essential?.user && (() => {
                   const giverId = essential.user.id || essential.user._id;
@@ -177,7 +177,7 @@ const StudentEssentialDetail = () => {
       </main>
       <Footer />
 
-      {/* Compose Message Modal */}
+      {}
       {showComposeMessage && essential?.user && (
         <ComposeMessage
           recipient={essential.user}

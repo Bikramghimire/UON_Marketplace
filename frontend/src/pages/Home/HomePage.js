@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingBag, faDollarSign, faUniversity, faGift, faHandshake, faRecycle, faBook, faLaptop, faShirt, faHome } from '@fortawesome/free-solid-svg-icons';
 import "./HomePage.css";
 
 const HomePage = () => {
@@ -12,7 +14,7 @@ const HomePage = () => {
       <Header />
 
       <main className="main-content">
-        {/* Hero Section */}
+        {}
         <section className="hero-section">
           <div className="hero-content">
             <h1 className="hero-title">Welcome to Lifecycle Marketplace</h1>
@@ -40,13 +42,13 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Features Section */}
+        {}
         <section className="features-section">
           <div className="container">
             <h2 className="section-title">Why Choose Lifecycle Marketplace?</h2>
             <div className="features-grid">
               <div className="feature-card">
-                <div className="feature-icon">🛍️</div>
+                <div className="feature-icon"><FontAwesomeIcon icon={faShoppingBag} /></div>
                 <h3>Easy Buying</h3>
                 <p>
                   Find great deals on textbooks, electronics, and more from
@@ -54,7 +56,7 @@ const HomePage = () => {
                 </p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">💰</div>
+                <div className="feature-icon"><FontAwesomeIcon icon={faDollarSign} /></div>
                 <h3>Quick Selling</h3>
                 <p>
                   Turn your unused items into cash with our simple selling
@@ -62,7 +64,7 @@ const HomePage = () => {
                 </p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">🏫</div>
+                <div className="feature-icon"><FontAwesomeIcon icon={faUniversity} /></div>
                 <h3>Campus Community</h3>
                 <p>
                   Connect with your university community in a safe, trusted
@@ -70,7 +72,7 @@ const HomePage = () => {
                 </p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">🎁</div>
+                <div className="feature-icon"><FontAwesomeIcon icon={faGift} /></div>
                 <h3>Student Essentials</h3>
                 <p>
                   Get free items from fellow students - textbooks, furniture,
@@ -81,7 +83,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Student Essentials Section */}
+        {}
         <section className="student-essentials-section">
           <div className="container">
             <h2 className="section-title">Student Essentials</h2>
@@ -90,17 +92,17 @@ const HomePage = () => {
             </p>
             <div className="essentials-features">
               <div className="essentials-feature">
-                <div className="essentials-icon">🎁</div>
+                <div className="essentials-icon"><FontAwesomeIcon icon={faGift} /></div>
                 <h3>Completely Free</h3>
                 <p>All items are given away for free - no cost to you!</p>
               </div>
               <div className="essentials-feature">
-                <div className="essentials-icon">🤝</div>
+                <div className="essentials-icon"><FontAwesomeIcon icon={faHandshake} /></div>
                 <h3>Community Sharing</h3>
                 <p>Students helping students - share what you don't need!</p>
               </div>
               <div className="essentials-feature">
-                <div className="essentials-icon">♻️</div>
+                <div className="essentials-icon"><FontAwesomeIcon icon={faRecycle} /></div>
                 <h3>Reduce Waste</h3>
                 <p>Give items a second life and help the environment!</p>
               </div>
@@ -128,19 +130,19 @@ const HomePage = () => {
             <h2 className="section-title">Popular Categories</h2>
             <div className="categories-grid">
               <div className="category-card">
-                <h3>📚 Textbooks</h3>
+                <h3><FontAwesomeIcon icon={faBook} /> Textbooks</h3>
                 <p>Buy and sell course materials</p>
               </div>
               <div className="category-card">
-                <h3>💻 Electronics</h3>
+                <h3><FontAwesomeIcon icon={faLaptop} /> Electronics</h3>
                 <p>Laptops, phones, and gadgets</p>
               </div>
               <div className="category-card">
-                <h3>👕 Clothing</h3>
+                <h3><FontAwesomeIcon icon={faShirt} /> Clothing</h3>
                 <p>Fashion and accessories</p>
               </div>
               <div className="category-card">
-                <h3>🏠 Furniture</h3>
+                <h3><FontAwesomeIcon icon={faHome} /> Furniture</h3>
                 <p>Dorm and apartment essentials</p>
               </div>
             </div>

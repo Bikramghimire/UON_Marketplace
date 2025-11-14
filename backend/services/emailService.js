@@ -3,30 +3,17 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-/**
- * Create email transporter
- * Supports Gmail, SMTP, and development mode (console logging)
- */
+
 const createTransporter = () => {
-  // Development mode - just log emails to console
-  if (process.env.NODE_ENV === 'development' && !process.env.EMAIL_HOST) {
+    if (process.env.NODE_ENV === 'development' && !process.env.EMAIL_HOST) {
     return {
       sendMail: async (options) => {
-        console.log('\n═══════════════════════════════════════════════════');
-        console.log('📧 EMAIL (Development Mode - Not Sent)');
-        console.log('═══════════════════════════════════════════════════');
-        console.log('To:', options.to);
-        console.log('Subject:', options.subject);
-        console.log('\nBody:');
-        console.log(options.html || options.text);
-        console.log('═══════════════════════════════════════════════════\n');
         return { messageId: 'dev-mode' };
       }
     };
   }
 
-  // Gmail configuration
-  if (process.env.EMAIL_SERVICE === 'gmail') {
+    if (process.env.EMAIL_SERVICE === 'gmail') {
     return nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -36,38 +23,25 @@ const createTransporter = () => {
     });
   }
 
-  // SMTP configuration
-  if (process.env.EMAIL_HOST) {
+    if (process.env.EMAIL_HOST) {
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT || 587,
-      secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
-      auth: {
+      secure: process.env.EMAIL_SECURE === 'true',       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
       }
     });
   }
 
-  // Default: development mode
-  return {
+    return {
     sendMail: async (options) => {
-      console.log('\n═══════════════════════════════════════════════════');
-      console.log('📧 EMAIL (Development Mode - Not Sent)');
-      console.log('═══════════════════════════════════════════════════');
-      console.log('To:', options.to);
-      console.log('Subject:', options.subject);
-      console.log('\nBody:');
-      console.log(options.html || options.text);
-      console.log('═══════════════════════════════════════════════════\n');
       return { messageId: 'dev-mode' };
     }
   };
 };
 
-/**
- * Send email verification email with code
- */
+
 export const sendVerificationEmail = async (user, verificationCode) => {
   try {
     const transporter = createTransporter();
@@ -145,17 +119,13 @@ export const sendVerificationEmail = async (user, verificationCode) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Verification email sent to ${user.email} with code: ${verificationCode}`);
     return true;
   } catch (error) {
-    console.error('Error sending verification email:', error);
     throw error;
   }
 };
 
-/**
- * Send password reset email
- */
+
 export const sendPasswordResetEmail = async (user, resetToken) => {
   try {
     const transporter = createTransporter();
@@ -210,10 +180,8 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Password reset email sent to ${user.email}`);
     return true;
   } catch (error) {
-    console.error('Error sending password reset email:', error);
     throw error;
   }
 };

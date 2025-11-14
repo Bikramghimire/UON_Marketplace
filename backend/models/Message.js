@@ -28,11 +28,7 @@ const Message = sequelize.define('Message', {
   productId: {
     type: DataTypes.UUID,
     allowNull: true,
-    references: {
-      model: 'products',
-      key: 'id'
-    },
-    field: 'product_id'
+            field: 'product_id'
   },
   subject: {
     type: DataTypes.STRING(200),
@@ -95,7 +91,6 @@ const Message = sequelize.define('Message', {
   ]
 });
 
-// Define associations
 Message.associate = (models) => {
   Message.belongsTo(models.User, {
     foreignKey: 'senderId',

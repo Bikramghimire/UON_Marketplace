@@ -34,14 +34,12 @@ const CategoryManagement = () => {
       setError(null);
       const [categoriesResponse, productsResponse] = await Promise.all([
         getAllCategoriesAdmin(),
-        getAllProductsAdmin({ limit: 1000 }) // Get all products to count
-      ]);
+        getAllProductsAdmin({ limit: 1000 })       ]);
       
       const categoriesData = categoriesResponse.data || [];
       const productsData = productsResponse.data || [];
       
-      // Count products per category
-      const counts = {};
+            const counts = {};
       categoriesData.forEach(cat => {
         counts[cat.id] = productsData.filter(p => p.category?.id === cat.id || p.categoryId === cat.id || p.category === cat.id).length;
       });
@@ -50,7 +48,6 @@ const CategoryManagement = () => {
       setProductCounts(counts);
     } catch (error) {
       setError(error.message || 'Failed to load categories');
-      console.error('Error loading categories:', error);
     } finally {
       setLoading(false);
     }
@@ -156,7 +153,7 @@ const CategoryManagement = () => {
             </button>
           </div>
 
-          {/* Add Category Form */}
+          {}
           {showAddForm && (
             <div className="admin-form-container" style={{ marginBottom: '2rem' }}>
               <h2>Add New Category</h2>
@@ -204,7 +201,7 @@ const CategoryManagement = () => {
             </div>
           )}
 
-          {/* Categories Table */}
+          {}
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -264,7 +261,7 @@ const CategoryManagement = () => {
             </div>
           )}
 
-          {/* Edit Modal */}
+          {}
           {editingCategory && (
             <div className="modal-overlay" onClick={() => setEditingCategory(null)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>

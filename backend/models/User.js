@@ -100,12 +100,10 @@ const User = sequelize.define('User', {
   }
 });
 
-// Instance method to compare passwords
 User.prototype.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Remove password from JSON output
 User.prototype.toJSON = function() {
   const values = { ...this.get() };
   delete values.password;

@@ -3,6 +3,8 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import StudentEssentialCard from '../../components/common/StudentEssentialCard';
 import { getAllStudentEssentials, getCategories } from '../../services/studentEssentialService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift } from '@fortawesome/free-solid-svg-icons';
 import './StudentEssentialsPage.css';
 
 const StudentEssentialsPage = () => {
@@ -27,13 +29,10 @@ const StudentEssentialsPage = () => {
   const loadCategories = async () => {
     try {
       const cats = await getCategories();
-      // Extract category names from objects
-      const categoryNames = cats.map(cat => typeof cat === 'string' ? cat : cat.name);
+            const categoryNames = cats.map(cat => typeof cat === 'string' ? cat : cat.name);
       setCategories(['All', ...categoryNames]);
     } catch (error) {
-      console.error('Error loading categories:', error);
-      // Set default categories on error
-      setCategories(['All']);
+            setCategories(['All']);
     }
   };
 
@@ -43,7 +42,6 @@ const StudentEssentialsPage = () => {
       const data = await getAllStudentEssentials(filters);
       setEssentials(data);
     } catch (error) {
-      console.error('Error loading student essentials:', error);
     } finally {
       setLoading(false);
     }
@@ -73,7 +71,7 @@ const StudentEssentialsPage = () => {
       <Header />
       
       <main className="essentials-main">
-        {/* Page Header */}
+        {}
         <section className="essentials-header">
           <div className="container">
             <h1 className="page-title">Student Essentials</h1>
@@ -81,11 +79,11 @@ const StudentEssentialsPage = () => {
           </div>
         </section>
 
-        {/* Filters Section */}
+        {}
         <section className="filters-section">
           <div className="container">
             <div className="filters-container">
-              {/* Search Bar */}
+              {}
               <div className="filter-group">
                 <label htmlFor="search">Search</label>
                 <input
@@ -98,7 +96,7 @@ const StudentEssentialsPage = () => {
                 />
               </div>
 
-              {/* Category Filter */}
+              {}
               <div className="filter-group">
                 <label htmlFor="category">Category</label>
                 <select
@@ -115,7 +113,7 @@ const StudentEssentialsPage = () => {
                 </select>
               </div>
 
-              {/* Sort Filter */}
+              {}
               <div className="filter-group">
                 <label htmlFor="sort">Sort By</label>
                 <select
@@ -131,7 +129,7 @@ const StudentEssentialsPage = () => {
           </div>
         </section>
 
-        {/* Essentials Grid */}
+        {}
         <section className="essentials-section">
           <div className="container">
             {loading ? (
@@ -152,7 +150,7 @@ const StudentEssentialsPage = () => {
               </>
             ) : (
               <div className="no-essentials">
-                <div className="no-essentials-icon">🎁</div>
+                <div className="no-essentials-icon"><FontAwesomeIcon icon={faGift} /></div>
                 <h2>No items found</h2>
                 <p>Try adjusting your filters or search terms</p>
               </div>

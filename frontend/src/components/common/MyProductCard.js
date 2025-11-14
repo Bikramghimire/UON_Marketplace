@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faBox, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import './MyProductCard.css';
 
 const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) => {
@@ -15,20 +17,24 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
     }
   };
 
-  // Get primary image or first image
-  const getPrimaryImage = () => {
+    const getPrimaryImage = () => {
     if (product.images && Array.isArray(product.images)) {
       const primaryImage = product.images.find(img => img.isPrimary);
-      if (primaryImage) return primaryImage.url || primaryImage;
+      if (primaryImage) {
+        if (typeof primaryImage === 'string') return primaryImage;
+        return primaryImage.url || '';
+      }
       if (product.images.length > 0) {
-        return typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url || product.images[0];
+        const firstImage = product.images[0];
+        if (typeof firstImage === 'string') return firstImage;
+        return firstImage.url || '';
       }
     }
-    return product.image || '📦';
+    return product.image || '';
   };
 
   const displayImage = getPrimaryImage();
-  const isUrl = displayImage && (displayImage.startsWith('http://') || displayImage.startsWith('https://') || displayImage.startsWith('//'));
+  const isUrl = displayImage && typeof displayImage === 'string' && (displayImage.startsWith('http://') || displayImage.startsWith('https://') || displayImage.startsWith('//'));
 
   const handleMarkAsSold = (e) => {
     e.stopPropagation();
@@ -51,8 +57,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
     }
   };
 
-  // Helper function to get status display
-  const getStatusDisplay = (status) => {
+    const getStatusDisplay = (status) => {
     if (!status) return { text: 'Active', class: 'status-active' };
     const normalizedStatus = status.toLowerCase();
     switch (normalizedStatus) {
@@ -107,7 +112,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
         </span>
         {isUrl && (
           <span className="product-emoji-fallback" style={{ display: 'none' }}>
-            📦
+            <FontAwesomeIcon icon={faBox} />
           </span>
         )}
         {getStatusBadge()}
@@ -121,7 +126,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
         <p className="product-description">{product.description}</p>
         <div className="product-meta">
           <div className="product-location">
-            <span className="location-icon">📍</span>
+            <span className="location-icon"><FontAwesomeIcon icon={faMapMarkerAlt} /></span>
             {product.location}
           </div>
           <div className="product-condition">
@@ -146,8 +151,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
                   {isActionLoading ? 'Updating...' : isStudentEssential ? 'Mark as Claimed' : 'Mark as Sold'}
                 </button>
               ) : (product.status === 'sold' || product.status === 'claimed') ? (
-                // Only show "Mark as Active" for sold products (not inactive ones set by admin)
-                <button
+                                <button
                   className="btn-action btn-mark-active"
                   onClick={handleMarkAsActive}
                   disabled={isActionLoading}
@@ -174,7 +178,7 @@ const MyProductCard = ({ product, onStatusUpdate, onDelete, isActionLoading }) =
           {product.status === 'inactive' && (
             <>
               <div className="inactive-notice">
-                <small>⚠️ This product was deactivated by admin and cannot be modified.</small>
+                <small><FontAwesomeIcon icon={faExclamationTriangle} /> This product was deactivated by admin and cannot be modified.</small>
               </div>
               <button
                 className="btn-action btn-view"

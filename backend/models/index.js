@@ -5,7 +5,6 @@ import Product from './Product.js';
 import Message from './Message.js';
 import StudentEssential from './StudentEssential.js';
 
-// Initialize associations
 const models = {
   User,
   Category,
@@ -14,7 +13,6 @@ const models = {
   StudentEssential
 };
 
-// Set up associations
 Object.keys(models).forEach(modelName => {
   if (models[modelName].associate) {
     models[modelName].associate(models);

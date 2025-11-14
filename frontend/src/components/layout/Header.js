@@ -13,11 +13,9 @@ const Header = () => {
   useEffect(() => {
     if (isAuthenticated) {
       loadUnreadCount();
-      // Refresh unread count every 30 seconds
-      const interval = setInterval(loadUnreadCount, 30000);
+            const interval = setInterval(loadUnreadCount, 30000);
       
-      // Listen for custom event when messages are read
-      const handleMessagesRead = () => {
+            const handleMessagesRead = () => {
         loadUnreadCount();
       };
       window.addEventListener('messagesRead', handleMessagesRead);
@@ -29,14 +27,12 @@ const Header = () => {
     } else {
       setUnreadCount(0);
     }
-  }, [isAuthenticated, location.pathname]); // Refresh when route changes
-
+  }, [isAuthenticated, location.pathname]); 
   const loadUnreadCount = async () => {
     try {
       const data = await getUnreadCount();
       setUnreadCount(data.count || 0);
     } catch (error) {
-      console.error('Error loading unread count:', error);
       setUnreadCount(0);
     }
   };

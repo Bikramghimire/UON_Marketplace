@@ -27,13 +27,10 @@ const ProductsPage = () => {
   const loadCategories = async () => {
     try {
       const cats = await getCategories();
-      // Extract category names from objects
-      const categoryNames = cats.map(cat => typeof cat === 'string' ? cat : cat.name);
+            const categoryNames = cats.map(cat => typeof cat === 'string' ? cat : cat.name);
       setCategories(['All', ...categoryNames]);
     } catch (error) {
-      console.error('Error loading categories:', error);
-      // Set default categories on error
-      setCategories(['All']);
+            setCategories(['All']);
     }
   };
 
@@ -43,7 +40,6 @@ const ProductsPage = () => {
       const data = await getAllProducts(filters);
       setProducts(data);
     } catch (error) {
-      console.error('Error loading products:', error);
     } finally {
       setLoading(false);
     }
@@ -73,7 +69,7 @@ const ProductsPage = () => {
       <Header />
       
       <main className="products-main">
-        {/* Page Header */}
+        {}
         <section className="products-header">
           <div className="container">
             <h1 className="page-title">Browse Products</h1>
@@ -81,11 +77,11 @@ const ProductsPage = () => {
           </div>
         </section>
 
-        {/* Filters Section */}
+        {}
         <section className="filters-section">
           <div className="container">
             <div className="filters-container">
-              {/* Search Bar */}
+              {}
               <div className="filter-group">
                 <label htmlFor="search">Search</label>
                 <input
@@ -98,7 +94,7 @@ const ProductsPage = () => {
                 />
               </div>
 
-              {/* Category Filter */}
+              {}
               <div className="filter-group">
                 <label htmlFor="category">Category</label>
                 <select
@@ -115,7 +111,7 @@ const ProductsPage = () => {
                 </select>
               </div>
 
-              {/* Sort Filter */}
+              {}
               <div className="filter-group">
                 <label htmlFor="sort">Sort By</label>
                 <select
@@ -133,7 +129,7 @@ const ProductsPage = () => {
           </div>
         </section>
 
-        {/* Products Grid */}
+        {}
         <section className="products-section">
           <div className="container">
             {loading ? (

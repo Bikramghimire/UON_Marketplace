@@ -21,8 +21,7 @@ const SignUpPage = () => {
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Redirect if already logged in and verified
-  useEffect(() => {
+    useEffect(() => {
     if (user && user.emailVerified) {
       navigate('/products');
     }
@@ -41,15 +40,13 @@ const SignUpPage = () => {
     setFormError('');
     setIsSubmitting(true);
 
-    // Validation
-    if (!formData.username || !formData.email || !formData.password) {
+        if (!formData.username || !formData.email || !formData.password) {
       setFormError('Username, email, and password are required');
       setIsSubmitting(false);
       return;
     }
 
-    // Username validation
-    const usernameTrimmed = formData.username.trim();
+        const usernameTrimmed = formData.username.trim();
     if (usernameTrimmed.length < 3) {
       setFormError('Username must be at least 3 characters');
       setIsSubmitting(false);
@@ -66,8 +63,7 @@ const SignUpPage = () => {
       return;
     }
 
-    // Email validation
-    const emailTrimmed = formData.email.trim().toLowerCase();
+        const emailTrimmed = formData.email.trim().toLowerCase();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailTrimmed)) {
       setFormError('Please enter a valid email address');
@@ -75,8 +71,7 @@ const SignUpPage = () => {
       return;
     }
 
-    // Password validation
-    if (formData.password.length < 8) {
+        if (formData.password.length < 8) {
       setFormError('Password must be at least 8 characters long');
       setIsSubmitting(false);
       return;
@@ -86,32 +81,27 @@ const SignUpPage = () => {
       setIsSubmitting(false);
       return;
     }
-    // Check for spaces
-    if (/\s/.test(formData.password)) {
+        if (/\s/.test(formData.password)) {
       setFormError('Password should not contain spaces');
       setIsSubmitting(false);
       return;
     }
-    // Check for at least one uppercase letter
-    if (!/[A-Z]/.test(formData.password)) {
+        if (!/[A-Z]/.test(formData.password)) {
       setFormError('Password must include at least one uppercase letter (A-Z)');
       setIsSubmitting(false);
       return;
     }
-    // Check for at least one lowercase letter
-    if (!/[a-z]/.test(formData.password)) {
+        if (!/[a-z]/.test(formData.password)) {
       setFormError('Password must include at least one lowercase letter (a-z)');
       setIsSubmitting(false);
       return;
     }
-    // Check for at least one digit
-    if (!/[0-9]/.test(formData.password)) {
+        if (!/[0-9]/.test(formData.password)) {
       setFormError('Password must include at least one digit (0-9)');
       setIsSubmitting(false);
       return;
     }
-    // Check for at least one special character
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password)) {
+        if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password)) {
       setFormError('Password must include at least one special character (e.g., !@#$%^&*() etc.)');
       setIsSubmitting(false);
       return;
